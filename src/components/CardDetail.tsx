@@ -142,11 +142,9 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     <Modal onClose={onClose} panel={false} label={card.title}>
       <div className="detail" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className="detail__figure">
-          {/* 원본이 디코드될 때까지 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다 */}
-          <div
-            className="detail__stage"
-            style={{ ['--ratio' as string]: `${card.width} / ${card.height}` }}
-          >
+          {/* 스테이지는 실물 카드 비율(54:86)로 고정 — 썸네일과 같은 프레임으로 보인다.
+              원본이 디코드될 때까지는 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다. */}
+          <div className="detail__stage">
             {thumbUrl && (
               <img className="detail__img detail__img--placeholder" src={thumbUrl} alt="" />
             )}
