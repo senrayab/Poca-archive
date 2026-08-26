@@ -151,7 +151,7 @@ export function UploadPage() {
     <>
       <Header title="포토카드 등록" back />
 
-      <div className="content">
+      <div className="content content--no-fab">
         <div className="page">
           <div className="card-panel">
             <div className="row">

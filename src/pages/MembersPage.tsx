@@ -80,7 +80,7 @@ export function MembersPage() {
     <>
       <Header title="멤버 · 카테고리 관리" back />
 
-      <div className="content">
+      <div className="content content--no-fab">
         <div className="page">
           <h2>멤버</h2>
           <p style={{ fontSize: 13, color: 'var(--text-dim)', margin: '0 0 12px', lineHeight: 1.6 }}>
