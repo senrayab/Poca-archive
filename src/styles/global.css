@@ -181,8 +181,8 @@ a { color: inherit; }
   top: calc(var(--header-h) + var(--safe-top));
   z-index: 20;
   display: flex;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 6px;
+  padding: 8px 12px 7px;
   overflow-x: auto;
   scrollbar-width: none;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
@@ -193,17 +193,17 @@ a { color: inherit; }
 
 .chip {
   flex-shrink: 0;
-  height: 34px;
-  padding: 0 14px;
+  height: 30px;
+  padding: 0 11px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--bg-elev);
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: background .15s, color .15s, border-color .15s;
 }
 .chip[aria-selected='true'] {
@@ -211,17 +211,17 @@ a { color: inherit; }
   border-color: var(--accent);
   color: var(--accent-ink);
 }
-.chip__dot { width: 7px; height: 7px; border-radius: 50%; }
-.chip__count { font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; }
-.chip--add { padding-inline: 12px; color: var(--text); }
+.chip__dot { width: 6px; height: 6px; border-radius: 50%; }
+.chip__count { font-size: 10px; opacity: .75; font-variant-numeric: tabular-nums; }
+.chip--add { padding-inline: 9px; color: var(--text); }
 
 /*
  * 카테고리 필터. 멤버 탭보다 한 단계 아래 위계라 알약 대신 맨 텍스트로 둔다.
  */
 .subtabs {
   display: flex;
-  gap: 16px;
-  padding: 12px 14px 4px;
+  gap: 13px;
+  padding: 8px 14px 2px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -229,8 +229,8 @@ a { color: inherit; }
 
 .subtabs button {
   flex-shrink: 0;
-  padding: 2px 0;
-  font-size: 13px;
+  padding: 1px 0;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-dim);
   transition: color .15s;
@@ -247,7 +247,7 @@ a { color: inherit; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  padding: 10px;
+  padding: 8px 10px 10px;
 }
 @media (min-width: 560px) {
   .grid {
