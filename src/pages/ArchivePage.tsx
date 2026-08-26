@@ -186,9 +186,9 @@ export function ArchivePage({ mode }: ArchivePageProps) {
         />
 
         {categories.length > 0 && (
-          <div className="tabs" style={{ position: 'static', borderBottom: 'none', paddingBottom: 2 }}>
+          <div className="subtabs" role="tablist" aria-label="카테고리">
             <button
-              className="chip"
+              role="tab"
               aria-selected={categoryId === null}
               onClick={() => setCategoryId(null)}
             >
@@ -197,7 +197,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
             {categories.map((c) => (
               <button
                 key={c.id}
-                className="chip"
+                role="tab"
                 aria-selected={categoryId === c.id}
                 onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
               >

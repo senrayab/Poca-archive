@@ -215,6 +215,31 @@ a { color: inherit; }
 .chip__count { font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; }
 .chip--add { padding-inline: 12px; color: var(--text); }
 
+/*
+ * 카테고리 필터. 멤버 탭보다 한 단계 아래 위계라 알약 대신 맨 텍스트로 둔다.
+ */
+.subtabs {
+  display: flex;
+  gap: 16px;
+  padding: 12px 14px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.subtabs::-webkit-scrollbar { display: none; }
+
+.subtabs button {
+  flex-shrink: 0;
+  padding: 2px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  transition: color .15s;
+}
+.subtabs button[aria-selected='true'] {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* ---------- grid ---------- */
 
 /* 폰에서는 한 줄에 4장 고정, 화면이 넓어지면 칸 수를 늘린다. */
