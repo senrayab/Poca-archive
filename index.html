@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+    <meta name="theme-color" content="#0e0e12" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <title>포토카드 아카이브</title>
+    <script>
+      // 첫 페인트 전에 저장된 테마를 붙여 다크↔라이트가 번쩍이는 것을 막는다.
+      try {
+        var t = localStorage.getItem('poca:theme')
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
