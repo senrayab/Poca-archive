@@ -181,7 +181,7 @@ a { color: inherit; }
   top: calc(var(--header-h) + var(--safe-top));
   z-index: 20;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   padding: 8px 12px 7px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -194,7 +194,7 @@ a { color: inherit; }
 .chip {
   flex-shrink: 0;
   height: 30px;
-  padding: 0 11px;
+  padding: 0 8px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--bg-elev);
@@ -213,7 +213,7 @@ a { color: inherit; }
 }
 .chip__dot { width: 6px; height: 6px; border-radius: 50%; }
 .chip__count { font-size: 10px; opacity: .75; font-variant-numeric: tabular-nums; }
-.chip--add { padding-inline: 9px; color: var(--text); }
+.chip--add { padding-inline: 8px; color: var(--text); }
 
 /*
  * 카테고리 필터. 멤버 탭보다 한 단계 아래 위계라 알약 대신 맨 텍스트로 둔다.
