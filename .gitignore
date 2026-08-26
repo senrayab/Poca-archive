@@ -9,3 +9,6 @@ dev-dist
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Vite dep cache
+.vite
