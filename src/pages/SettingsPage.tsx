@@ -103,7 +103,7 @@ export function SettingsPage() {
     <>
       <Header title="백업 · 설정" back />
 
-      <div className="content">
+      <div className="content content--no-fab">
         <div className="page">
           <h2>인터페이스</h2>
           <div className="card-panel">

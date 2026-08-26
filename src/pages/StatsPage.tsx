@@ -36,7 +36,7 @@ export function StatsPage() {
     return (
       <>
         <Header title="통계" back />
-        <div className="content" />
+        <div className="content content--no-fab" />
       </>
     )
   }
@@ -47,7 +47,7 @@ export function StatsPage() {
     <>
       <Header title="통계" back />
 
-      <div className="content">
+      <div className="content content--no-fab">
         <div className="page">
           <div className="card-panel">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>

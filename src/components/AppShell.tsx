@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import type { Member } from '@/db/types'
 import { Drawer } from './Drawer'
 import { Fab } from './Fab'
@@ -46,7 +46,14 @@ export function Header({ title, back = false, actions }: HeaderProps) {
   )
 }
 
+/**
+ * 등록 FAB를 띄울 화면. 관리 계열(등록/멤버/통계/설정)에는 띄우지 않는다.
+ * 허용 목록으로 둬서 화면을 새로 추가해도 FAB가 딸려 나오지 않게 한다.
+ */
+const FAB_ROUTES = new Set(['/', '/favorites', '/trash'])
+
 export function AppShell() {
+  const { pathname } = useLocation()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editorMember, setEditorMember] = useState<Member | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
@@ -68,7 +75,7 @@ export function AppShell() {
       </div>
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <Fab onAddMember={() => openMemberEditor()} />
+      {FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />}
 
       {editorOpen && (
         <MemberEditor
