@@ -3,7 +3,12 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+// GitHub Pages는 https://<user>.github.io/<repo>/ 하위에서 서비스된다.
+// 개발 중에는 루트를 그대로 쓰는 편이 편해서 빌드일 때만 붙인다.
+const BASE = '/Poca-archive/'
+
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? BASE : '/',
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -22,7 +27,8 @@ export default defineConfig({
         background_color: '#0e0e12',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        // start_url/scope는 vite-plugin-pwa가 base에서 채운다.
+        // 여기서 '/'로 고정하면 설치된 앱이 도메인 루트를 열어버린다.
         icons: [
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
           { src: 'icon-maskable.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
@@ -33,4 +39,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+}))
