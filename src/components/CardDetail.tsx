@@ -54,8 +54,17 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const prev = index > 0 ? siblings[index - 1] : null
   const next = index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null
 
+  /*
+   * 원본 로딩 상태는 이미지 URL에만 묶는다.
+   * 카드 객체에 묶으면(하트 토글처럼) 레코드가 갱신될 때마다 false로 돌아가는데,
+   * src는 그대로라 onLoad가 다시 뜨지 않아 블러 플레이스홀더에 갇힌다.
+   */
   useEffect(() => {
     setFullLoaded(false)
+  }, [fullUrl])
+
+  // 편집 상태는 '다른 카드로 넘어갔을 때'만 초기화한다.
+  useEffect(() => {
     setEditing(false)
     setConfirmDispose(false)
     setDraft({
@@ -64,7 +73,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
       categoryId: card.categoryId ?? '',
       memo: card.memo,
     })
-  }, [card])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card.id])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -155,6 +165,10 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 src={fullUrl}
                 alt={card.title}
                 onLoad={() => setFullLoaded(true)}
+                ref={(el) => {
+                  // 이미 디코드가 끝난 상태로 붙으면 onLoad가 뜨지 않는다
+                  if (el?.complete) setFullLoaded(true)
+                }}
               />
             )}
           </div>
