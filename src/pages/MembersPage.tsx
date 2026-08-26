@@ -97,7 +97,7 @@ export function MembersPage() {
               <span className="list-row__name">{member.name}</span>
               <span className="list-row__count">{counts.get(member.id) ?? 0}장</span>
               <button
-                className="icon-btn"
+                className="icon-btn list-row__move"
                 onClick={() => move(member.id, -1)}
                 disabled={index === 0}
                 aria-label="위로"
@@ -106,7 +106,7 @@ export function MembersPage() {
                 ↑
               </button>
               <button
-                className="icon-btn"
+                className="icon-btn list-row__move"
                 onClick={() => move(member.id, 1)}
                 disabled={index === members.length - 1}
                 aria-label="아래로"
@@ -119,14 +119,14 @@ export function MembersPage() {
                 onClick={() => openMemberEditor(member)}
                 aria-label="수정"
               >
-                <EditIcon size={18} />
+                <EditIcon size={17} />
               </button>
               <button
                 className="icon-btn"
                 onClick={() => removeMember(member.id, member.name)}
                 aria-label="삭제"
               >
-                <TrashIcon size={18} />
+                <TrashIcon size={17} />
               </button>
             </div>
           ))}
