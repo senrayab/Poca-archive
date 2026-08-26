@@ -5,6 +5,8 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* 펼침/접힘에 쓰는 감속 곡선 */
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  /* 실물 포토카드 규격 54mm x 86mm */
+  --card-ratio: 54 / 86;
 }
 
 /*
@@ -259,7 +261,7 @@ a { color: inherit; }
 
 .thumb {
   position: relative;
-  aspect-ratio: 55 / 86;
+  aspect-ratio: var(--card-ratio);
   border-radius: 10px;
   overflow: hidden;
   background: var(--bg-elev-2);
@@ -460,8 +462,8 @@ a { color: inherit; }
 /* 스테이지가 카드 비율을 그대로 갖고, 원본과 썸네일이 그 안에 겹쳐 놓인다. */
 .detail__stage {
   position: relative;
-  aspect-ratio: var(--ratio, 55 / 86);
-  height: min(58dvh, 540px);
+  aspect-ratio: var(--card-ratio);
+  height: min(52dvh, 460px);
   max-width: 100%;
   border-radius: 12px;
   overflow: hidden;
@@ -699,7 +701,7 @@ a { color: inherit; }
 }
 .queue__thumb {
   width: 56px;
-  aspect-ratio: 55/86;
+  aspect-ratio: var(--card-ratio);
   border-radius: 8px;
   object-fit: cover;
   background: var(--bg-elev-2);
