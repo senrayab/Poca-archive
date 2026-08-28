@@ -6,8 +6,8 @@ const STORAGE_KEY = 'poca:theme'
 
 /** 주소창/상태바 색. CSS의 --bg와 값을 맞춰둔다. */
 const BAR_COLOR: Record<'light' | 'dark', string> = {
-  dark: '#0e0e12',
-  light: '#f6f5f8',
+  dark: '#0f0e14',
+  light: '#f4f3f9',
 }
 
 const media =

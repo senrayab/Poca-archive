@@ -220,18 +220,18 @@ export function ArchivePage({ mode }: ArchivePageProps) {
         )}
 
         {!selectMode && list.length > 0 && (
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-dim)', padding: '4px 0 8px' }}>
-            총 {list.length}장 · 카드를 길게(우클릭) 누르면 여러 장 선택
-            <br />
+          <div className="grid-foot">
+            <span>
+              총 {list.length}장 · 카드를 길게(우클릭) 누르면 여러 장 선택
+            </span>
             <button
-              className="btn btn--sm btn--ghost"
-              style={{ marginTop: 8 }}
+              className="btn btn--sm"
               onClick={() => setSelected(new Set(list.map((c) => c.id)))}
             >
               <CheckIcon size={15} />
               전체 선택
             </button>
-          </p>
+          </div>
         )}
       </div>
 
