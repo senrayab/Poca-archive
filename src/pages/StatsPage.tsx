@@ -36,7 +36,7 @@ export function StatsPage() {
   if (!stats) {
     return (
       <>
-        <Header title="통계" back />
+        <Header title="통계" />
         <div className="content content--no-fab" />
       </>
     )
@@ -46,7 +46,7 @@ export function StatsPage() {
 
   return (
     <>
-      <Header title="통계" back />
+      <Header title="통계" />
 
       <div className="content content--no-fab">
         <div className="page">

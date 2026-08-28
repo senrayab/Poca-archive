@@ -20,7 +20,11 @@ export const useShell = () => useContext(ShellContext)
 
 interface HeaderProps {
   title: string
-  /** 보관함 밖의 화면은 뒤로가기 버튼을 쓴다 */
+  /*
+   * 뒤로가기는 '흐름을 빠져나오는' 화면(등록)만 쓴다.
+   * 서랍에서 바로 여는 관리 화면은 온 길이 하나가 아니라서, 뒤로가기보다
+   * 서랍을 다시 여는 편이 자연스럽다.
+   */
   back?: boolean
   actions?: ReactNode
 }

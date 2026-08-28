@@ -119,7 +119,7 @@ export function SettingsPage() {
 
   return (
     <>
-      <Header title="백업 · 설정" back />
+      <Header title="백업 · 설정" />
 
       <div className="content content--no-fab">
         <div className="page">
