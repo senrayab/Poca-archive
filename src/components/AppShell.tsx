@@ -26,15 +26,21 @@ interface HeaderProps {
    * 서랍을 다시 여는 편이 자연스럽다.
    */
   back?: boolean
+  /*
+   * 아래에 붙는 층(멤버·분류 탭)이 헤더 자리까지 덮는 배경을 직접 그릴 때 켠다.
+   * backdrop-filter는 요소마다 따로 계산돼서, 헤더와 탭이 각자 흐림을 걸면
+   * 맞닿는 자리에 경계가 생긴다. 그래서 한쪽이 배경을 통째로 맡는다.
+   */
+  bare?: boolean
   actions?: ReactNode
 }
 
-export function Header({ title, back = false, actions }: HeaderProps) {
+export function Header({ title, back = false, bare = false, actions }: HeaderProps) {
   const { openDrawer } = useShell()
   const navigate = useNavigate()
 
   return (
-    <header className="header">
+    <header className="header" data-bare={bare || undefined}>
       {back ? (
         <button className="icon-btn" onClick={() => navigate(-1)} aria-label="뒤로">
           <ChevronLeft />

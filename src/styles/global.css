@@ -196,6 +196,8 @@ a { color: inherit; }
   background: var(--bar-bg);
   backdrop-filter: var(--bar-blur);
 }
+/* 아래 층이 배경을 통째로 그리는 화면에서는 헤더가 배경을 갖지 않는다 */
+.header[data-bare] { background: none; backdrop-filter: none; }
 
 .header__title {
   flex: 1;
@@ -344,17 +346,29 @@ a { color: inherit; }
  * 배경만 페이드해야 하므로 요소 자체가 아니라 ::before에 건다.
  * (요소에 마스크를 걸면 분류 이름까지 같이 흐려져 읽을 수 없다)
  */
+/*
+ * 헤더 자리까지 덮어 흐림을 한 겹으로 만든다.
+ *
+ * backdrop-filter는 요소마다 따로 계산되고 가장자리에서 샘플이 잘린다.
+ * 헤더와 탭이 각자 흐림을 걸면 색을 똑같이 맞춰도 맞닿는 선이 남는다
+ * (뒤로 지나가는 썸네일처럼 대비가 큰 그림에서 특히 도드라진다).
+ * 그래서 이 층 하나가 두 영역의 배경을 모두 맡는다.
+ */
 .filters::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: calc(-1 * (var(--header-h) + var(--safe-top))) 0 0 0;
   z-index: -1;
-  /* 헤더와 같은 값으로 시작해야 맞닿는 자리에 선이 생기지 않는다 */
-  background: linear-gradient(to bottom, var(--bar-bg) 0%, var(--bar-bg) 78%, transparent 100%);
+  pointer-events: none;
+  /*
+   * 끝 22px에서만 사라진다. 비율(%)로 주면 헤더까지 덮으면서 층이 길어져
+   * 페이드 구간도 같이 늘어나므로, 길이를 고정값으로 못박는다.
+   */
+  background: linear-gradient(to bottom, var(--bar-bg) calc(100% - 22px), transparent 100%);
   backdrop-filter: var(--bar-blur);
   /* 흐림도 같이 옅어져야 아래쪽 경계가 선처럼 보이지 않는다 */
-  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent 100%);
 }
 
 /*
