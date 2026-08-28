@@ -621,7 +621,7 @@ a { color: inherit; }
   aspect-ratio: var(--card-ratio);
   height: var(--stage-h);
   max-width: 100%;
-  border-radius: 30px 12px 30px 12px;
+  border-radius: 22px;
   transition: height .3s var(--ease);
   overflow: hidden;
   background: var(--bg-elev-2);
@@ -651,14 +651,10 @@ a { color: inherit; }
   color: #fff;
   transition: background .15s, opacity .15s, transform .15s;
 }
-.detail__nav {
-  background: rgba(255, 255, 255, .13);
-  border: 1px solid rgba(255, 255, 255, .22);
-  backdrop-filter: blur(20px) saturate(140%);
-}
-.detail__nav:hover { background: rgba(255, 255, 255, .22); }
-/* 닫기는 감싸는 원 없이 아이콘만 */
+/* 이동·닫기 모두 감싸는 원 없이 아이콘만 둔다 */
+.detail__nav,
 .detail__close { opacity: .8; }
+.detail__nav:hover,
 .detail__close:hover { opacity: 1; }
 .detail__nav:active,
 .detail__close:active { transform: scale(.9); }
