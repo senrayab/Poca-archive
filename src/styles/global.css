@@ -1133,9 +1133,9 @@ a { color: inherit; }
 .dropzone[data-over='true'] { border-color: var(--accent); background: var(--accent-soft); }
 .dropzone strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 14px; }
 
-/* 주소 입력 + 가져오기 버튼. .row는 자식을 모두 1:1로 나눠 갖는다. */
-.linkbar { display: flex; gap: 8px; }
-.linkbar input {
+/* 입력 한 칸 + 버튼 한 줄. .row는 자식을 모두 1:1로 나눠 가져서 안 맞는다. */
+.add-row { display: flex; gap: 8px; }
+.add-row input {
   flex: 1;
   min-width: 0;
   padding: 12px 14px;
@@ -1144,12 +1144,12 @@ a { color: inherit; }
   background: var(--bg-elev-2);
   transition: border-color .15s, box-shadow .15s;
 }
-.linkbar input:focus {
+.add-row input:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
-.linkbar .btn { flex: 0 0 auto; }
+.add-row .btn { flex: 0 0 auto; }
 
 .queue { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .queue__item {

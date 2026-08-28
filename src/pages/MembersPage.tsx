@@ -5,6 +5,7 @@ import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
 import type { Category } from '@/db/types'
 import { useCategories, useCountsByMember, useMembers } from '@/hooks/useData'
+import { CHART_PALETTE } from '@/lib/palette'
 
 export function MembersPage() {
   const { openMemberEditor } = useShell()
@@ -12,6 +13,7 @@ export function MembersPage() {
   const members = useMembers()
   const categories = useCategories()
   const { counts } = useCountsByMember()
+  const [newMember, setNewMember] = useState('')
   const [newCategory, setNewCategory] = useState('')
 
   const move = async (id: string, direction: -1 | 1) => {
@@ -34,6 +36,28 @@ export function MembersPage() {
     if (!confirm(`'${name}' 탭을 삭제할까요?`)) return
     await db.members.delete(id)
     toast('삭제했습니다.')
+  }
+
+  /*
+    * 여기서는 이름만 받는다. 대표 색은 화면에 노출되지 않고 통계 막대를
+    * 구분하는 데만 쓰이므로 등록 순서대로 배정한다.
+    */
+  const addMember = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const name = newMember.trim()
+    if (!name) return
+    if (members.some((m) => m.name === name)) return toast('이미 있는 멤버예요.')
+    const last = await db.members.orderBy('order').last()
+    const count = await db.members.count()
+    await db.members.add({
+      id: uid(),
+      name,
+      color: CHART_PALETTE[count % CHART_PALETTE.length],
+      order: (last?.order ?? -1) + 1,
+      createdAt: Date.now(),
+    })
+    setNewMember('')
+    toast(`'${name}' 탭을 추가했습니다.`)
   }
 
   const addCategory = async (e: React.FormEvent) => {
@@ -130,10 +154,19 @@ export function MembersPage() {
             </div>
           ))}
 
-          <button className="btn btn--block" onClick={() => openMemberEditor()}>
-            <PlusIcon size={18} />
-            멤버 추가
-          </button>
+          <form onSubmit={addMember} className="add-row">
+            <input
+              type="text"
+              value={newMember}
+              onChange={(e) => setNewMember(e.target.value)}
+              placeholder="새 멤버 이름"
+              maxLength={20}
+            />
+            <button type="submit" className="btn">
+              <PlusIcon size={18} />
+              추가
+            </button>
+          </form>
 
           <h2>
             <TagIcon size={15} />
@@ -163,20 +196,15 @@ export function MembersPage() {
             </div>
           ))}
 
-          <form onSubmit={addCategory} className="row">
+          <form onSubmit={addCategory} className="add-row">
             <input
               type="text"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="새 카테고리 이름"
-              style={{
-                padding: '11px 12px',
-                borderRadius: 10,
-                border: '1px solid var(--line)',
-                background: 'var(--bg-elev-2)',
-              }}
+              maxLength={20}
             />
-            <button type="submit" className="btn" style={{ flex: '0 0 auto' }}>
+            <button type="submit" className="btn">
               <PlusIcon size={18} />
               추가
             </button>
