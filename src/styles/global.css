@@ -818,7 +818,8 @@ a { color: inherit; }
 .rail-btn span { font-size: 10px; font-weight: 600; opacity: .8; }
 .rail-btn:hover::before { background: var(--glass-hover); }
 .rail-btn:active { transform: scale(.92); }
-.rail-btn[data-on='true'] { color: var(--accent); }
+/* 리스트 썸네일의 하트와 같은 색으로 — 포인트 색을 따라가지 않는다 */
+.rail-btn[data-on='true'] { color: var(--fav); }
 .rail-btn[data-on='true'] span { opacity: 1; }
 /* 삭제는 눈에 먼저 들어올 이유가 없어, 카드 아래 정보 글자와 같은 투명도로 낮춘다 */
 .rail-btn--muted { color: var(--on-scrim-dim); }
