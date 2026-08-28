@@ -304,14 +304,14 @@ a { color: inherit; }
 
 .chip {
   flex-shrink: 0;
-  height: 32px;
-  padding: 0 12px;
+  height: 36px;
+  padding: 0 14px;
   border-radius: var(--pill);
   border: none;
   background: transparent;
   box-shadow: none;
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -324,7 +324,7 @@ a { color: inherit; }
   background: var(--accent);
   color: var(--accent-ink);
 }
-.chip__dot { width: 6px; height: 6px; border-radius: 50%; }
+.chip__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 .chip__count { font-size: 10px; opacity: .75; font-variant-numeric: tabular-nums; }
 .chip--add { color: var(--text); }
 
@@ -617,7 +617,8 @@ a { color: inherit; }
   grid-template-columns: 40px minmax(0, auto) 40px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  /* 좁은 화면에서는 사진 폭을 지키려 여백을 줄인다 */
+  gap: clamp(10px, 4vw, 22px);
   position: relative;
 }
 /* 스테이지가 카드 비율을 그대로 갖고, 원본과 썸네일이 그 안에 겹쳐 놓인다. */
@@ -643,7 +644,11 @@ a { color: inherit; }
 .detail__img--placeholder { filter: blur(10px); transform: scale(1.06); }
 .detail__img[data-loaded] { opacity: 0; transition: opacity .22s ease; }
 .detail__img[data-loaded='true'] { opacity: 1; }
-.detail__nav {
+/* 닫기는 레일에서 빼 오른쪽 위에 따로 띄운다 */
+.detail__top { display: flex; justify-content: flex-end; padding-inline: 2px; }
+
+.detail__nav,
+.detail__close {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -655,8 +660,10 @@ a { color: inherit; }
   color: #fff;
   transition: background .15s, transform .15s;
 }
-.detail__nav:hover { background: rgba(255, 255, 255, .22); }
-.detail__nav:active { transform: scale(.9); }
+.detail__nav:hover,
+.detail__close:hover { background: rgba(255, 255, 255, .22); }
+.detail__nav:active,
+.detail__close:active { transform: scale(.9); }
 
 /*
  * 카드 위에 얹히는 유리 시트와 오른쪽 유리 레일.
@@ -690,15 +697,13 @@ a { color: inherit; }
   font-weight: 600;
 }
 
-/* 아이콘 + 메뉴명이 세로로 쌓인 버튼을 가로 유리 바에 담는다 */
+/*
+ * 아이콘 + 메뉴명이 세로로 쌓인 버튼을 딤 위에 바로 늘어놓는다.
+ * 유리판을 깔면 그만큼 화면이 무거워져서, 버튼이 차지하던 폭만 남겼다.
+ */
 .detail__rail {
   display: flex;
   gap: 2px;
-  padding: 5px 7px;
-  border-radius: var(--pill);
-  background: rgba(255, 255, 255, .13);
-  border: 1px solid rgba(255, 255, 255, .22);
-  backdrop-filter: blur(20px) saturate(140%);
   align-self: center;
   flex-shrink: 0;
 }
@@ -733,7 +738,7 @@ a { color: inherit; }
 .rail-btn:active { transform: scale(.92); }
 .rail-btn[data-on='true'] { color: var(--accent); }
 .rail-btn[data-on='true'] span { opacity: 1; }
-.rail-btn--danger { color: #ff9aa6; }
+
 
 /*
  * 정보 영역은 판때기 없이 딤 위에 바로 얹는다.
