@@ -23,6 +23,24 @@
   --blob-2: 30px 30px 12px 30px;
   --blob-3: 30px 12px 30px 30px;
   --blob-4: 12px 30px 30px 30px;
+  --thumb-radius: 18px;
+  --stage-radius: 22px;
+
+  /* 판때기 테두리. 파스텔은 그림자로만 띄우므로 투명하다. */
+  --panel-line: transparent;
+
+  /*
+   * 상세 팝업은 딤 위에 얹히므로 안쪽 색이 앱 테마와 따로 논다.
+   * 스킨이 통째로 갈아끼울 수 있게 토큰으로 빼둔다.
+   */
+  --on-scrim: #fff;
+  --on-scrim-dim: rgba(255, 255, 255, .68);
+  --on-scrim-shadow: 0 1px 14px rgba(0, 0, 0, .5);
+  --on-scrim-danger: #ff9aa6;
+  --glass: rgba(255, 255, 255, .14);
+  --glass-line: rgba(255, 255, 255, .24);
+  --glass-hover: rgba(255, 255, 255, .18);
+  --scrim-scheme: dark;
 }
 
 /*
@@ -194,6 +212,7 @@ a { color: inherit; }
   place-items: center;
   border-radius: 50%;
   background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
   box-shadow: var(--shadow-sm);
   color: var(--text);
   flex-shrink: 0;
@@ -248,7 +267,7 @@ a { color: inherit; }
   height: 42px;
   padding: 0 16px;
   border-radius: var(--pill);
-  border: none;
+  border: 1px solid var(--panel-line);
   background: var(--bg-elev);
   box-shadow: var(--shadow-sm);
   opacity: 0;
@@ -296,6 +315,7 @@ a { color: inherit; }
   padding: 5px;
   border-radius: var(--pill);
   background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
   box-shadow: var(--shadow-md);
   overflow-x: auto;
   scrollbar-width: none;
@@ -373,10 +393,10 @@ a { color: inherit; }
 .thumb {
   position: relative;
   aspect-ratio: var(--card-ratio);
-  border-radius: 18px;
+  border-radius: var(--thumb-radius);
   overflow: hidden;
   background: var(--bg-elev-2);
-  border: none;
+  border: 1px solid var(--panel-line);
   box-shadow: var(--shadow-md);
   display: block;
   width: 100%;
@@ -390,7 +410,6 @@ a { color: inherit; }
   top: 6px;
   right: 6px;
   color: var(--accent);
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .55));
   line-height: 0;
 }
 .thumb__label {
@@ -508,6 +527,7 @@ a { color: inherit; }
   background: var(--bg-elev);
   border: none;
   border-radius: 0 34px 34px 0;
+  border-right: 1px solid var(--panel-line);
   box-shadow: var(--shadow-xl);
   padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
   display: flex;
@@ -581,7 +601,7 @@ a { color: inherit; }
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   background: var(--bg-elev);
-  border: none;
+  border: 1px solid var(--panel-line);
   border-radius: var(--blob-1);
   box-shadow: var(--shadow-xl);
   padding: 22px;
@@ -621,7 +641,7 @@ a { color: inherit; }
   aspect-ratio: var(--card-ratio);
   height: var(--stage-h);
   max-width: 100%;
-  border-radius: 22px;
+  border-radius: var(--stage-radius);
   transition: height .3s var(--ease);
   overflow: hidden;
   background: var(--bg-elev-2);
@@ -648,7 +668,7 @@ a { color: inherit; }
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--on-scrim);
   transition: background .15s, opacity .15s, transform .15s;
 }
 /* 이동·닫기 모두 감싸는 원 없이 아이콘만 둔다 */
@@ -666,20 +686,21 @@ a { color: inherit; }
  */
 .detail__sheet {
   position: absolute;
-  inset: auto 10px 10px 10px;
-  padding: 11px 14px 12px;
-  border-radius: 22px 22px 22px 8px;
-  background: rgba(255, 255, 255, .15);
-  border: 1px solid rgba(255, 255, 255, .26);
+  /* 사진 가로폭에 꽉 채우고 아래도 딱 맞춘다. 모서리는 스테이지가 잘라준다. */
+  inset: auto 0 0 0;
+  padding: 12px 15px 13px;
+  border-radius: 0;
+  background: var(--glass);
+  border: none;
   backdrop-filter: blur(20px) saturate(140%);
-  color: #fff;
+  color: var(--on-scrim);
 }
 .detail__who {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  color: rgba(255, 255, 255, .82);
+  color: var(--on-scrim-dim);
   margin-bottom: 3px;
 }
 .detail__who b { font-weight: 700; }
@@ -687,7 +708,7 @@ a { color: inherit; }
   margin-left: 2px;
   padding: 2px 8px;
   border-radius: var(--pill);
-  background: rgba(255, 255, 255, .18);
+  background: var(--glass-hover);
   font-weight: 600;
 }
 
@@ -717,7 +738,7 @@ a { color: inherit; }
   grid-template-rows: 40px auto;
   justify-items: center;
   align-items: center;
-  color: #fff;
+  color: var(--on-scrim);
   transition: color .15s, transform .15s;
 }
 .rail-btn::before {
@@ -732,7 +753,7 @@ a { color: inherit; }
   transition: background .15s;
 }
 .rail-btn span { font-size: 10px; font-weight: 600; opacity: .8; }
-.rail-btn:hover::before { background: rgba(255, 255, 255, .18); }
+.rail-btn:hover::before { background: var(--glass-hover); }
 .rail-btn:active { transform: scale(.92); }
 .rail-btn[data-on='true'] { color: var(--accent); }
 .rail-btn[data-on='true'] span { opacity: 1; }
@@ -749,13 +770,9 @@ a { color: inherit; }
   /* 사진 높이에서 실물 비율로 폭이 정해진다. 레일이 이 폭을 그대로 쓴다. */
   --stage-h: min(52dvh, 460px);
   --stage-w: calc(var(--stage-h) * 54 / 86);
-  --on-scrim: #fff;
-  --on-scrim-dim: rgba(255, 255, 255, .68);
-  --glass: rgba(255, 255, 255, .14);
-  --glass-line: rgba(255, 255, 255, .24);
   color: var(--on-scrim);
-  /* 네이티브 위젯(셀렉트 드롭다운 등)도 어둡게 그려지도록 */
-  color-scheme: dark;
+  /* 네이티브 위젯(셀렉트 드롭다운 등)도 딤 밝기에 맞춰 그려지도록 */
+  color-scheme: var(--scrim-scheme);
 }
 
 .detail__info {
@@ -779,7 +796,7 @@ a { color: inherit; }
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -.02em;
-  text-shadow: 0 1px 14px rgba(0, 0, 0, .5);
+  text-shadow: var(--on-scrim-shadow);
 }
 .detail__meta {
   display: flex;
@@ -819,8 +836,8 @@ a { color: inherit; }
   box-shadow: var(--glow);
 }
 .detail .btn--danger {
-  color: #ff9aa6;
-  border-color: rgba(255, 154, 166, .45);
+  color: var(--on-scrim-danger);
+  border-color: color-mix(in srgb, var(--on-scrim-danger) 45%, transparent);
 }
 .detail .btn--ghost { background: transparent; }
 
@@ -833,7 +850,9 @@ a { color: inherit; }
   color: var(--on-scrim);
 }
 .detail .field input::placeholder,
-.detail .field textarea::placeholder { color: rgba(255, 255, 255, .45); }
+.detail .field textarea::placeholder {
+  color: color-mix(in srgb, var(--on-scrim) 45%, transparent);
+}
 /* 아이콘만 있는 버튼은 정사각형으로 고정하고, 글자 버튼만 남는 폭을 나눠 갖는다.
    (4개 모두 flex:1이면 좁은 화면에서 '수 정'처럼 글자가 줄바꿈된다) */
 .detail__actions { display: flex; gap: 8px; margin-top: 14px; }
@@ -927,6 +946,9 @@ a { color: inherit; }
 
 .page { padding: 12px 16px 16px; max-width: 640px; margin: 0 auto; }
 .page h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: .02em;
@@ -934,12 +956,14 @@ a { color: inherit; }
   margin: 26px 0 10px;
   padding-left: 4px;
 }
+.page h2 svg { opacity: .85; }
 .page h2:first-child { margin-top: 0; }
 
 /* 레퍼런스의 벤토 카드처럼 테두리 없이 크게 둥근 판때기 */
 .card-panel {
   background: var(--bg-elev);
   border: none;
+  border: 1px solid var(--panel-line);
   border-radius: var(--blob-1);
   box-shadow: var(--shadow-md);
   padding: 18px 20px;
@@ -955,7 +979,7 @@ a { color: inherit; }
   padding: 11px 14px;
   border-radius: 20px 20px 20px 8px;
   background: var(--bg-elev);
-  border: none;
+  border: 1px solid var(--panel-line);
   box-shadow: var(--shadow-sm);
   margin-bottom: 8px;
 }
@@ -1022,7 +1046,7 @@ a { color: inherit; }
   gap: 12px;
   padding: 11px;
   background: var(--bg-elev);
-  border: none;
+  border: 1px solid var(--panel-line);
   border-radius: 20px 20px 20px 8px;
   box-shadow: var(--shadow-sm);
 }
@@ -1064,7 +1088,7 @@ a { color: inherit; }
   padding: 12px 18px;
   border-radius: var(--pill);
   background: var(--bg-elev);
-  border: none;
+  border: 1px solid var(--panel-line);
   font-size: 13px;
   font-weight: 500;
   box-shadow: var(--shadow-lg);
@@ -1150,3 +1174,191 @@ a { color: inherit; }
     width: min(300px, calc(var(--app-w) * 0.8));
   }
 }
+
+
+/* ---------- skin: mono ---------- */
+
+/*
+ * 두 번째 스킨. 무채색 배경에 검정(다크에서는 흰색) 포인트,
+ * 얇은 테두리와 네 모서리가 같은 둥글기로 간다.
+ *
+ * 스킨은 토큰만 갈아끼운다 — 컴포넌트 규칙은 건드리지 않는다.
+ * 순서가 곧 우선순위라, 파스텔 블록 전부 뒤에 와야 한다.
+ * 안쪽 순서도 같은 규칙: 다크를 먼저 깔고 라이트가 덮는다.
+ */
+:root[data-skin='mono'],
+:root[data-skin='mono'][data-theme='dark'] {
+  --bg: #0b0b0c;
+  --desk-bg: #050506;
+  --bg-elev: #151517;
+  --bg-elev-2: #1f1f22;
+  --line: #2b2b30;
+  --panel-line: #27272b;
+  --text: #f3f3f4;
+  --text-dim: #8e8e96;
+  /* 다크에서는 흰색이 포인트가 된다 */
+  --accent: #f3f3f4;
+  --accent-ink: #0b0b0c;
+  --accent-soft: rgba(243, 243, 244, .10);
+  --danger: #e6e6e9;
+  --scrim: rgba(0, 0, 0, .62);
+  --modal-scrim: rgba(8, 8, 9, .84);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, .45);
+  --shadow-lg: 0 8px 26px rgba(0, 0, 0, .5);
+  --shadow-xl: 0 18px 50px rgba(0, 0, 0, .6);
+  /* 무채색이라 색 그림자가 없다 */
+  --glow: 0 6px 18px rgba(0, 0, 0, .5);
+  --wash:
+    radial-gradient(60% 42% at 4% 0%, rgba(255, 255, 255, .05), transparent 70%),
+    radial-gradient(66% 46% at 100% 8%, rgba(255, 255, 255, .04), transparent 72%),
+    radial-gradient(72% 50% at 88% 100%, rgba(255, 255, 255, .05), transparent 72%);
+
+  --radius: 20px;
+  --radius-sm: 16px;
+  --radius-xs: 12px;
+  /* 한쪽만 물리는 형태 대신 네 모서리를 맞춘다 */
+  --blob-1: 20px;
+  --blob-2: 20px;
+  --blob-3: 20px;
+  --blob-4: 20px;
+  --thumb-radius: 14px;
+  --stage-radius: 18px;
+
+  --on-scrim: #fff;
+  --on-scrim-dim: rgba(255, 255, 255, .62);
+  --on-scrim-shadow: none;
+  --on-scrim-danger: rgba(255, 255, 255, .62);
+  --glass: rgba(255, 255, 255, .11);
+  --glass-line: rgba(255, 255, 255, .17);
+  --glass-hover: rgba(255, 255, 255, .15);
+  --scrim-scheme: dark;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='mono']:not([data-theme='dark']) {
+    --bg: #f1f1f2;
+    --desk-bg: #e3e3e5;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #f5f5f6;
+    --line: #e3e3e5;
+    --panel-line: #e6e6e8;
+    --text: #0e0e0f;
+    --text-dim: #76767c;
+    --accent: #121214;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(18, 18, 20, .07);
+    --danger: #26262a;
+    --scrim: rgba(18, 18, 22, .34);
+    /* 딤도 밝게 — 상세 팝업이 흰 종이 위에 놓인 것처럼 보인다 */
+    --modal-scrim: rgba(236, 236, 238, .86);
+    --shadow-sm: 0 1px 2px rgba(15, 15, 20, .06);
+    --shadow-md: 0 2px 10px rgba(15, 15, 20, .07);
+    --shadow-lg: 0 8px 26px rgba(15, 15, 20, .10);
+    --shadow-xl: 0 18px 50px rgba(15, 15, 20, .16);
+    --glow: 0 6px 18px rgba(15, 15, 20, .22);
+    --wash:
+      radial-gradient(60% 42% at 4% 0%, rgba(20, 20, 26, .05), transparent 70%),
+      radial-gradient(66% 46% at 100% 8%, rgba(20, 20, 26, .04), transparent 72%),
+      radial-gradient(72% 50% at 88% 100%, rgba(20, 20, 26, .05), transparent 72%);
+
+    --on-scrim: #101012;
+    --on-scrim-dim: rgba(16, 16, 18, .58);
+    --on-scrim-shadow: none;
+    --on-scrim-danger: rgba(16, 16, 18, .58);
+    --glass: rgba(255, 255, 255, .58);
+    --glass-line: rgba(16, 16, 18, .10);
+    --glass-hover: rgba(16, 16, 18, .07);
+    --scrim-scheme: light;
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='mono'][data-theme='light'] {
+  --bg: #f1f1f2;
+  --desk-bg: #e3e3e5;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #f5f5f6;
+  --line: #e3e3e5;
+  --panel-line: #e6e6e8;
+  --text: #0e0e0f;
+  --text-dim: #76767c;
+  --accent: #121214;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(18, 18, 20, .07);
+  --danger: #26262a;
+  --scrim: rgba(18, 18, 22, .34);
+  --modal-scrim: rgba(236, 236, 238, .86);
+  --shadow-sm: 0 1px 2px rgba(15, 15, 20, .06);
+  --shadow-md: 0 2px 10px rgba(15, 15, 20, .07);
+  --shadow-lg: 0 8px 26px rgba(15, 15, 20, .10);
+  --shadow-xl: 0 18px 50px rgba(15, 15, 20, .16);
+  --glow: 0 6px 18px rgba(15, 15, 20, .22);
+  --wash:
+    radial-gradient(60% 42% at 4% 0%, rgba(20, 20, 26, .05), transparent 70%),
+    radial-gradient(66% 46% at 100% 8%, rgba(20, 20, 26, .04), transparent 72%),
+    radial-gradient(72% 50% at 88% 100%, rgba(20, 20, 26, .05), transparent 72%);
+
+  --on-scrim: #101012;
+  --on-scrim-dim: rgba(16, 16, 18, .58);
+  --on-scrim-shadow: none;
+  --on-scrim-danger: rgba(16, 16, 18, .58);
+  --glass: rgba(255, 255, 255, .58);
+  --glass-line: rgba(16, 16, 18, .10);
+  --glass-hover: rgba(16, 16, 18, .07);
+  --scrim-scheme: light;
+
+  color-scheme: light;
+}
+
+/* 모노는 그림자로 띄우는 대신 테두리로 구분하므로 썸네일 그림자를 낮춘다 */
+:root[data-skin='mono'] .thumb { box-shadow: var(--shadow-sm); }
+/* 사진 위 캡션 그라데이션도 한 톤 줄인다 */
+:root[data-skin='mono'] .thumb__label { background: linear-gradient(transparent, rgba(0, 0, 0, .7)); }
+
+/* ---------- skin picker ---------- */
+
+.skins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.skin {
+  display: grid;
+  gap: 7px;
+  padding: 11px;
+  text-align: left;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev-2);
+  border: 1px solid var(--panel-line);
+  transition: border-color .15s, box-shadow .15s;
+}
+.skin[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.skin b { font-size: 13px; }
+.skin small { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
+
+/* 미리보기는 스킨의 실제 색을 박아둔다 — 지금 켜진 테마와 무관하게 보여야 한다 */
+.skin__swatch {
+  display: flex;
+  gap: 5px;
+  height: 34px;
+  padding: 6px;
+  border-radius: 11px;
+}
+.skin__swatch i { flex: 1; border-radius: 6px; }
+.skin__swatch i:last-child { flex: 0 0 12px; }
+
+.skin[data-preview='pastel'] .skin__swatch {
+  background: linear-gradient(120deg, #ffe0e7, #dceff8, #ece2ff);
+}
+.skin[data-preview='pastel'] i:nth-child(1) { background: #fff; border-radius: 9px 4px 9px 4px; }
+.skin[data-preview='pastel'] i:nth-child(2) { background: #fff; border-radius: 4px 9px 4px 9px; }
+.skin[data-preview='pastel'] i:nth-child(3) { background: #ff3d57; }
+
+.skin[data-preview='mono'] .skin__swatch { background: #e6e6e8; }
+.skin[data-preview='mono'] i:nth-child(1) { background: #fff; border: 1px solid #dcdce0; }
+.skin[data-preview='mono'] i:nth-child(2) { background: #fff; border: 1px solid #dcdce0; }
+.skin[data-preview='mono'] i:nth-child(3) { background: #121214; }
