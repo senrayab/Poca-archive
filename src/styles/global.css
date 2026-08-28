@@ -30,6 +30,12 @@
   --panel-line: transparent;
 
   /*
+   * 즐겨찾기 하트는 포인트 색을 따라가지 않는다.
+   * 스킨이나 포인트 색을 무엇으로 바꿔도 '찜한 카드'로 읽혀야 하므로 고정한다.
+   */
+  --fav: #ff3d57;
+
+  /*
    * 상세 팝업은 딤 위에 얹히므로 안쪽 색이 앱 테마와 따로 논다.
    * 스킨이 통째로 갈아끼울 수 있게 토큰으로 빼둔다.
    */
@@ -466,7 +472,7 @@ a { color: inherit; }
   position: absolute;
   top: 6px;
   right: 6px;
-  color: var(--accent);
+  color: var(--fav);
   line-height: 0;
 }
 .thumb__label {
