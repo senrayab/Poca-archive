@@ -1,10 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
-import { Donut, type DonutSlice } from '@/components/Donut'
+import { Donut, Rings, type DonutSlice, type RingSeries } from '@/components/Charts'
 import { TagIcon, UsersIcon } from '@/components/Icons'
 import { db } from '@/db/db'
 import { useCategories, useMembers } from '@/hooks/useData'
 import { formatBytes } from '@/lib/format'
+import { chartColor } from '@/lib/palette'
 
 export function StatsPage() {
   const members = useMembers()
@@ -43,12 +44,35 @@ export function StatsPage() {
     )
   }
 
-  const memberSlices: DonutSlice[] = members.map((member) => ({
+  /*
+   * 멤버 색은 저장된 값이 아니라 목록 순서에서 뽑는다.
+   * 멤버를 추가할 때 색을 고르지 않으므로, 어떻게 만들어진 멤버든
+   * (시드/직접 추가/백업 복원) 항상 서로 구분되는 색을 갖는다.
+   */
+  const memberSlices: DonutSlice[] = members.map((member, index) => ({
     id: member.id,
     label: member.name,
     value: stats.byMember.get(member.id) ?? 0,
-    color: member.color,
+    color: chartColor(index),
   }))
+
+  // 지금까지 손을 거친 카드. 잘못 올려 지운 것(status: own)은 뺀다.
+  const handled = stats.owned + stats.traded + stats.sold
+  const statusRings: RingSeries[] = [
+    { id: 'own', label: '소장 중', value: stats.owned, color: 'var(--accent)' },
+    {
+      id: 'traded',
+      label: '양도함',
+      value: stats.traded,
+      color: 'color-mix(in srgb, var(--accent) 55%, var(--bg-elev-2))',
+    },
+    {
+      id: 'sold',
+      label: '판매함',
+      value: stats.sold,
+      color: 'color-mix(in srgb, var(--accent) 28%, var(--bg-elev-2))',
+    },
+  ]
 
   /*
    * 카테고리는 고유 색이 없다. 포인트 색을 배경 쪽으로 조금씩 섞어 한 계열로
@@ -79,13 +103,19 @@ export function StatsPage() {
       <div className="content content--no-fab">
         <div className="page">
           <div className="card-panel">
+            <Rings
+              series={statusRings}
+              total={handled}
+              centerValue={String(handled)}
+              centerLabel="장 거쳐감"
+            />
+          </div>
+
+          <div className="card-panel">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-              <Stat label="소장 중" value={`${stats.owned}장`} />
               <Stat label="즐겨찾기" value={`${stats.favorite}장`} />
-              <Stat label="저장 용량" value={formatBytes(stats.bytes)} />
-              <Stat label="양도함" value={`${stats.traded}장`} />
-              <Stat label="판매함" value={`${stats.sold}장`} />
               <Stat label="휴지통" value={`${stats.trash}장`} />
+              <Stat label="저장 용량" value={formatBytes(stats.bytes)} />
             </div>
           </div>
 
