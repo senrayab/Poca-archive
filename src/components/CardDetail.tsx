@@ -171,24 +171,80 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 }}
               />
             )}
+
+            {prev && (
+              <button
+                className="detail__nav detail__nav--prev"
+                onClick={() => onNavigate(prev)}
+                aria-label="이전 카드"
+              >
+                <ChevronLeft size={20} />
+              </button>
+            )}
+            {next && (
+              <button
+                className="detail__nav detail__nav--next"
+                onClick={() => onNavigate(next)}
+                aria-label="다음 카드"
+              >
+                <ChevronRight size={20} />
+              </button>
+            )}
+
+            {/* 카드 위에 얹히는 유리 시트. 판때기가 아니라 사진이 비쳐 보이는 층이다. */}
+            {!editing && (
+              <div className="detail__sheet">
+                <div className="detail__who">
+                  {member && (
+                    <>
+                      <span className="chip__dot" style={{ background: member.color }} />
+                      <b>{member.name}</b>
+                    </>
+                  )}
+                  {category && <span className="detail__cat">{category.name}</span>}
+                </div>
+                <h2 className="detail__title">{card.title}</h2>
+              </div>
+            )}
           </div>
-          {prev && (
-            <button
-              className="detail__nav detail__nav--prev"
-              onClick={() => onNavigate(prev)}
-              aria-label="이전 카드"
-            >
-              <ChevronLeft size={20} />
-            </button>
-          )}
-          {next && (
-            <button
-              className="detail__nav detail__nav--next"
-              onClick={() => onNavigate(next)}
-              aria-label="다음 카드"
-            >
-              <ChevronRight size={20} />
-            </button>
+
+          {/* 세로 유리 레일. 카드를 가리지 않도록 사진 오른쪽에 붙여 세운다. */}
+          {!editing && (
+            <div className="detail__rail">
+              {card.deleted === 1 ? (
+                <button className="rail-btn" onClick={restore}>
+                  <RestoreIcon size={21} />
+                  <span>복원</span>
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="rail-btn"
+                    onClick={toggleFavorite}
+                    aria-pressed={card.favorite === 1}
+                    data-on={card.favorite === 1}
+                  >
+                    <HeartIcon size={21} filled={card.favorite === 1} />
+                    <span>찜</span>
+                  </button>
+                  <button className="rail-btn" onClick={() => setEditing(true)}>
+                    <EditIcon size={21} />
+                    <span>수정</span>
+                  </button>
+                  <button
+                    className="rail-btn rail-btn--danger"
+                    onClick={() => setConfirmDispose(true)}
+                  >
+                    <TrashIcon size={21} />
+                    <span>삭제</span>
+                  </button>
+                </>
+              )}
+              <button className="rail-btn" onClick={onClose} aria-label="닫기">
+                <CloseIcon size={21} />
+                <span>닫기</span>
+              </button>
+            </div>
           )}
         </div>
 
@@ -251,56 +307,15 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               </div>
             </>
           ) : (
+            /* 제목·멤버는 카드 위 유리 시트로 올라갔고, 여기엔 부수 정보만 남는다 */
             <>
-              <h2 className="detail__title">{card.title}</h2>
+              {card.memo && <p className="detail__memo">{card.memo}</p>}
               <div className="detail__meta">
-                {member && (
-                  <span className="tag">
-                    <span className="chip__dot" style={{ background: member.color }} />
-                    {member.name}
-                  </span>
-                )}
-                {category && <span className="tag">{category.name}</span>}
                 <span>{formatDate(card.createdAt)}</span>
                 <span>
                   {card.width}×{card.height} · {formatBytes(card.bytes)}
                 </span>
                 <span>{index >= 0 ? `${index + 1} / ${siblings.length}` : ''}</span>
-              </div>
-              {card.memo && <p className="detail__memo">{card.memo}</p>}
-
-              <div className="detail__actions">
-                {card.deleted === 1 ? (
-                  <button className="btn btn--primary" onClick={restore}>
-                    <RestoreIcon size={18} />
-                    되돌리기
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      className="btn btn--icon"
-                      onClick={toggleFavorite}
-                      aria-pressed={card.favorite === 1}
-                      style={card.favorite === 1 ? { color: 'var(--accent)' } : undefined}
-                    >
-                      <HeartIcon size={18} filled={card.favorite === 1} />
-                    </button>
-                    <button className="btn" onClick={() => setEditing(true)}>
-                      <EditIcon size={18} />
-                      수정
-                    </button>
-                    <button
-                      className="btn btn--danger"
-                      onClick={() => setConfirmDispose(true)}
-                    >
-                      <TrashIcon size={18} />
-                      삭제
-                    </button>
-                  </>
-                )}
-                <button className="btn btn--icon btn--ghost" onClick={onClose} aria-label="닫기">
-                  <CloseIcon size={18} />
-                </button>
               </div>
             </>
           )}
