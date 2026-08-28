@@ -24,6 +24,14 @@
   --panel-line: transparent;
 
   /*
+   * 상단에 떠 있는 층(헤더 + 멤버/분류 탭)의 배경.
+   * 둘이 맞닿아 있어서 값이 조금만 어긋나도 경계선처럼 보인다.
+   * 한 곳에서 가져다 쓰게 묶어둔다.
+   */
+  --bar-bg: color-mix(in srgb, var(--bg) 78%, transparent);
+  --bar-blur: blur(16px);
+
+  /*
    * 즐겨찾기 하트는 포인트 색을 따라가지 않는다.
    * 스킨이나 포인트 색을 무엇으로 바꿔도 '찜한 카드'로 읽혀야 하므로 고정한다.
    */
@@ -185,8 +193,8 @@ a { color: inherit; }
   align-items: center;
   gap: 6px;
   padding-inline: 10px;
-  background: color-mix(in srgb, var(--bg) 72%, transparent);
-  backdrop-filter: blur(16px);
+  background: var(--bar-bg);
+  backdrop-filter: var(--bar-blur);
 }
 
 .header__title {
@@ -253,6 +261,8 @@ a { color: inherit; }
  */
 .search-sheet {
   width: min(100%, 440px);
+  /* 폰에서 키보드가 올라와도 입력줄이 바로 위에 붙지 않게 조금 띄운다 */
+  margin-bottom: 22vh;
   color: var(--on-scrim);
   color-scheme: var(--scrim-scheme);
   animation: rise .18s ease-out both;
@@ -339,16 +349,12 @@ a { color: inherit; }
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--bg) 84%, transparent) 0%,
-    color-mix(in srgb, var(--bg) 80%, transparent) 58%,
-    transparent 100%
-  );
-  backdrop-filter: blur(16px);
+  /* 헤더와 같은 값으로 시작해야 맞닿는 자리에 선이 생기지 않는다 */
+  background: linear-gradient(to bottom, var(--bar-bg) 0%, var(--bar-bg) 78%, transparent 100%);
+  backdrop-filter: var(--bar-blur);
   /* 흐림도 같이 옅어져야 아래쪽 경계가 선처럼 보이지 않는다 */
-  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
 }
 
 /*
@@ -881,7 +887,8 @@ a { color: inherit; }
 .detail__info {
   background: none;
   border: none;
-  padding: 2px 6px 4px;
+  /* overflow가 걸려 있어 여백이 없으면 저장 버튼의 색 그림자가 잘린다 */
+  padding: 2px 8px 18px;
   flex-shrink: 1;
   min-height: 0;
   overflow-y: auto;
