@@ -10,6 +10,7 @@ import {
   Heart,
   Image as LuImage,
   LayoutGrid,
+  Link2,
   Menu,
   Monitor,
   Moon,
@@ -124,6 +125,9 @@ export const AutoThemeIcon = ({ size = 22, className }: IconProps) => (
 )
 export const SkinIcon = ({ size = 22, className }: IconProps) => (
   <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const LinkIcon = ({ size = 22, className }: IconProps) => (
+  <Link2 size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const PaletteIcon = ({ size = 22, className }: IconProps) => (
   <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />

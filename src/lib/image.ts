@@ -4,7 +4,12 @@
  * - 그리드용 썸네일과 상세 팝업용 본체를 따로 만든다.
  */
 
-export const FULL_MAX_EDGE = 1600
+/*
+ * 상세 팝업에 실제로 보이는 폭은 300px 안팎이다. 고밀도 화면(3배)까지 감안해도
+ * 900px이면 충분한데, 확대해 보거나 나중에 큰 화면에서 볼 여지를 남겨 1000px로 둔다.
+ * (실물 카드 긴 변 86mm 기준으로 약 295dpi라 인쇄에도 모자라지 않는다)
+ */
+export const FULL_MAX_EDGE = 1000
 export const FULL_QUALITY = 0.82
 // 한 줄에 4장이라 그리드 칸이 100px 안팎 — 고해상도 화면까지 감안해 360px면 충분하다.
 export const THUMB_MAX_EDGE = 360
@@ -93,4 +98,57 @@ export async function processImage(file: File): Promise<ProcessedImage> {
   } finally {
     bitmap.close()
   }
+}
+
+/** 확장자로 타입을 짐작한다. 서버가 octet-stream으로 내려주는 경우가 있다. */
+const EXT_MIME: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  bmp: 'image/bmp',
+}
+
+/**
+ * 인터넷 주소에서 이미지를 받아 File로 만든다.
+ * 받은 뒤에는 파일로 올린 것과 똑같이 WebP로 변환해 기기에 저장하므로,
+ * 나중에 원본 주소가 사라져도 카드는 그대로 남는다.
+ */
+export async function fetchImageAsFile(input: string): Promise<File> {
+  let parsed: URL
+  try {
+    parsed = new URL(input)
+  } catch {
+    throw new Error(`주소 형식이 아닙니다: ${input}`)
+  }
+  if (!['http:', 'https:', 'data:', 'blob:'].includes(parsed.protocol)) {
+    throw new Error('http(s) 주소만 가져올 수 있습니다.')
+  }
+
+  let response: Response
+  try {
+    // 브라우저에서 남의 사이트 이미지를 직접 받으려면 그쪽이 CORS를 열어둬야 한다.
+    response = await fetch(input, {
+      mode: 'cors',
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+    })
+  } catch {
+    throw new Error(
+      '이미지를 가져오지 못했습니다. 그 사이트가 외부에서 이미지를 가져가는 것을 막고 있을 수 있어요. 사진을 저장한 뒤 파일로 올려 주세요.',
+    )
+  }
+  if (!response.ok) {
+    throw new Error(`이미지를 가져오지 못했습니다 (HTTP ${response.status}).`)
+  }
+
+  const blob = await response.blob()
+  const name = decodeURIComponent(parsed.pathname.split('/').pop() || '') || 'image'
+  const ext = name.split('.').pop()?.toLowerCase() ?? ''
+  const type = blob.type.startsWith('image/') ? blob.type : EXT_MIME[ext]
+  if (!type) throw new Error('이미지 주소가 아닌 것 같습니다.')
+
+  return new File([blob], name, { type })
 }
