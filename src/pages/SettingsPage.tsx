@@ -6,6 +6,7 @@ import {
   DownloadIcon,
   InstallIcon,
   MoonIcon,
+  PaletteIcon,
   ResetIcon,
   SkinIcon,
   StorageIcon,
@@ -25,9 +26,12 @@ import {
 } from '@/lib/backup'
 import { formatBytes, relativeDays } from '@/lib/format'
 import {
+  ACCENT_PRESETS,
   SKINS,
+  setAccent,
   setSkin,
   setThemeMode,
+  useAccent,
   useSkin,
   useThemeMode,
   type ThemeMode,
@@ -42,6 +46,7 @@ const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }
 export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
   const skin = useSkin()
+  const accent = useAccent()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
   const [working, setWorking] = useState<'export' | 'import' | null>(null)
@@ -165,6 +170,40 @@ export function SettingsPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="card-panel">
+            <p>
+              포인트 색입니다. 선택된 탭, 등록 버튼, 즐겨찾기 하트처럼 강조되는 곳에
+              쓰입니다. 고르지 않으면 스킨이 정한 색을 씁니다.
+            </p>
+            <div className="swatches">
+              {ACCENT_PRESETS.map((hex) => (
+                <button
+                  key={hex}
+                  className="swatch"
+                  style={{ background: hex }}
+                  aria-label={hex}
+                  aria-pressed={accent === hex}
+                  onClick={() => setAccent(hex)}
+                />
+              ))}
+              <label className="swatch swatch--pick" aria-label="직접 고르기">
+                <PaletteIcon size={17} />
+                <input
+                  type="color"
+                  value={accent ?? '#ff3d57'}
+                  onChange={(e) => setAccent(e.target.value)}
+                />
+              </label>
+            </div>
+            <button
+              className="btn btn--sm btn--ghost"
+              disabled={accent === null}
+              onClick={() => setAccent(null)}
+            >
+              스킨 기본색으로
+            </button>
           </div>
 
           <h2>

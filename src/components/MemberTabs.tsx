@@ -35,7 +35,6 @@ export function MemberTabs({ selected, onSelect, onAddMember }: MemberTabsProps)
           aria-selected={selected === member.id}
           onClick={() => onSelect(member.id)}
         >
-          <span className="chip__dot" style={{ background: member.color }} />
           {member.name}
         </button>
       ))}

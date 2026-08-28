@@ -201,12 +201,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
             {!editing && (
               <div className="detail__sheet">
                 <div className="detail__who">
-                  {member && (
-                    <>
-                      <span className="chip__dot" style={{ background: member.color }} />
-                      <b>{member.name}</b>
-                    </>
-                  )}
+                  {member && <b>{member.name}</b>}
                   {category && <span className="detail__cat">{category.name}</span>}
                 </div>
                 <h2 className="detail__title">{card.title}</h2>
