@@ -319,7 +319,10 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   <EditIcon size={21} />
                   <span>수정</span>
                 </button>
-                <button className="rail-btn" onClick={() => setConfirmDispose(true)}>
+                <button
+                  className="rail-btn rail-btn--muted"
+                  onClick={() => setConfirmDispose(true)}
+                >
                   <TrashIcon size={21} />
                   <span>삭제</span>
                 </button>
