@@ -1071,13 +1071,12 @@ a { color: inherit; }
   align-items: center;
   gap: 6px;
   padding: 11px 14px;
-  border-radius: 20px 20px 20px 8px;
+  border-radius: var(--panel-radius);
   background: var(--bg-elev);
   border: 1px solid var(--panel-line);
   box-shadow: var(--shadow-sm);
   margin-bottom: 8px;
 }
-.list-row:nth-of-type(even) { border-radius: 20px 20px 8px 20px; }
 /*
  * 이름은 남는 폭을 갖되 줄바꿈 대신 말줄임으로 흘린다.
  * (장수가 네 자리로 늘어나면 이름이 아래로 접히던 문제)
@@ -1158,14 +1157,13 @@ a { color: inherit; }
   padding: 11px;
   background: var(--bg-elev);
   border: 1px solid var(--panel-line);
-  border-radius: 20px 20px 20px 8px;
+  border-radius: var(--panel-radius);
   box-shadow: var(--shadow-sm);
 }
-.queue__item:nth-of-type(even) { border-radius: 20px 20px 8px 20px; }
 .queue__thumb {
   width: 56px;
   aspect-ratio: var(--card-ratio);
-  border-radius: 14px 6px 14px 6px;
+  border-radius: 8px;
   object-fit: cover;
   background: var(--bg-elev-2);
   flex-shrink: 0;
