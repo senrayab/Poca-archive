@@ -265,7 +265,7 @@ export function UploadPage() {
               여러 개는 줄바꿈이나 띄어쓰기로 구분하세요.
             </p>
             <form
-              className="linkbar"
+              className="add-row"
               onSubmit={(e) => {
                 e.preventDefault()
                 void addUrls(linkInput)

@@ -1,24 +1,9 @@
 import { useState } from 'react'
 import { db, uid } from '@/db/db'
 import type { Member } from '@/db/types'
+import { CHART_PALETTE } from '@/lib/palette'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
-
-/*
- * 대표 색은 화면에 직접 노출되지 않는다 (탭·목록의 색 원을 뺐다).
- * 통계 화면의 멤버별 막대를 구분하는 데만 쓰이므로, 고르게 하지 않고
- * 등록 순서대로 돌려가며 자동으로 배정한다.
- */
-const PRESET_COLORS = [
-  '#f5b3c8',
-  '#7aa2f7',
-  '#9ece6a',
-  '#e0af68',
-  '#f7768e',
-  '#bb9af7',
-  '#7dcfff',
-  '#ff9e64',
-]
 
 interface MemberEditorProps {
   /** 없으면 새 멤버 추가 */
@@ -44,7 +29,8 @@ export function MemberEditor({ member, onClose }: MemberEditorProps) {
       await db.members.add({
         id: uid(),
         name: trimmed,
-        color: PRESET_COLORS[count % PRESET_COLORS.length],
+        // 대표 색은 화면에 노출되지 않는다 — 통계 막대를 구분하는 용도라 순서대로 준다
+        color: CHART_PALETTE[count % CHART_PALETTE.length],
         order: (last?.order ?? -1) + 1,
         createdAt: Date.now(),
       })
