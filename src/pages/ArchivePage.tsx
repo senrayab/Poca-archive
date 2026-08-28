@@ -109,6 +109,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   return (
     <>
       <Header
+        bare
         title={
           selectMode
             ? `${selected.size}장 선택`
