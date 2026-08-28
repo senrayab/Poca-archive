@@ -179,33 +179,40 @@ export function ArchivePage({ mode }: ArchivePageProps) {
           </div>
         </div>
 
-        <MemberTabs
-          selected={memberId}
-          onSelect={setMemberId}
-          onAddMember={() => openMemberEditor()}
-        />
+        {/*
+          멤버 레일과 분류 텍스트를 한 덩어리로 묶어 통째로 sticky 시킨다.
+          따로 두면 스크롤할 때 둘 사이 틈으로 카드가 비쳐 지나가고,
+          레일 그림자가 아래 분류줄에 잘려 보였다.
+        */}
+        <div className="filters">
+          <MemberTabs
+            selected={memberId}
+            onSelect={setMemberId}
+            onAddMember={() => openMemberEditor()}
+          />
 
-        {categories.length > 0 && (
-          <div className="subtabs" role="tablist" aria-label="카테고리">
-            <button
-              role="tab"
-              aria-selected={categoryId === null}
-              onClick={() => setCategoryId(null)}
-            >
-              전체 분류
-            </button>
-            {categories.map((c) => (
+          {categories.length > 0 && (
+            <div className="subtabs" role="tablist" aria-label="카테고리">
               <button
-                key={c.id}
                 role="tab"
-                aria-selected={categoryId === c.id}
-                onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
+                aria-selected={categoryId === null}
+                onClick={() => setCategoryId(null)}
               >
-                {c.name}
+                전체 분류
               </button>
-            ))}
-          </div>
-        )}
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  role="tab"
+                  aria-selected={categoryId === c.id}
+                  onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {loading ? null : list.length === 0 ? (
           <EmptyState mode={mode} filtered={Boolean(query || memberId || categoryId)} />
