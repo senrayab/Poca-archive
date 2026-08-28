@@ -837,7 +837,6 @@ a { color: inherit; }
     margin-inline: auto;
     background: var(--bg);
     border-inline: 1px solid var(--line);
-    box-shadow: var(--shadow-xl);
   }
 
   /* 컬럼이 좁아졌으니 넓은 화면용 그리드가 아니라 폰과 같은 4열을 쓴다 */
