@@ -78,7 +78,7 @@ export function MembersPage() {
 
   return (
     <>
-      <Header title="멤버 · 카테고리 관리" back />
+      <Header title="멤버 · 카테고리 관리" />
 
       <div className="content content--no-fab">
         <div className="page">
