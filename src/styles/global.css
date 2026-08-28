@@ -390,7 +390,6 @@ a { color: inherit; }
 
 .tabs {
   display: flex;
-  gap: 3px;
   padding: 5px;
   border-radius: var(--pill);
   background: var(--bg-elev);
@@ -398,8 +397,20 @@ a { color: inherit; }
   box-shadow: var(--shadow-md);
   overflow-x: auto;
   scrollbar-width: none;
+  /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
+  overscroll-behavior-x: contain;
 }
 .tabs::-webkit-scrollbar { display: none; }
+
+/*
+ * 칩을 감싸는 층. 끝에서 더 밀었을 때 이 층만 통째로 밀어내 반동을 준다
+ * (스크롤 위치가 아니라 transform이라 스크롤 상태와 엉키지 않는다).
+ */
+.tabs__inner {
+  display: flex;
+  gap: 3px;
+  will-change: transform;
+}
 
 .chip {
   flex-shrink: 0;
