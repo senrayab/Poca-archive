@@ -25,6 +25,8 @@
   --blob-4: 12px 30px 30px 30px;
   --thumb-radius: 18px;
   --stage-radius: 22px;
+  /* 판때기는 네 모서리를 같은 값으로 — 지금 쓰는 둥글기 중 가장 작은 값 */
+  --panel-radius: 12px;
 
   /* 판때기 테두리. 파스텔은 그림자로만 띄우므로 투명하다. */
   --panel-line: transparent;
@@ -1028,12 +1030,11 @@ a { color: inherit; }
   background: var(--bg-elev);
   border: none;
   border: 1px solid var(--panel-line);
-  border-radius: var(--blob-1);
+  border-radius: var(--panel-radius);
   box-shadow: var(--shadow-md);
   padding: 18px 20px;
   margin-bottom: 12px;
 }
-.card-panel:nth-of-type(even) { border-radius: var(--blob-2); }
 .card-panel p { margin: 0 0 12px; font-size: 13px; color: var(--text-dim); line-height: 1.65; }
 
 .list-row {
@@ -1091,12 +1092,12 @@ a { color: inherit; }
 
 .dropzone {
   border: 1.5px dashed var(--line);
-  border-radius: var(--blob-3);
+  border-radius: var(--panel-radius);
   padding: 34px 16px;
   text-align: center;
   color: var(--text-dim);
-  /* 점선 테두리만으로 영역이 읽히므로 판때기를 깔지 않는다 */
-  background: none;
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-sm);
   transition: border-color .15s, background .15s;
   width: 100%;
 }
