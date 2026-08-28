@@ -7,12 +7,26 @@ const SEED_MEMBERS: Array<[string, string]> = [
   ['은석', '#9ece6a'],
   ['성찬', '#e0af68'],
   ['원빈', '#f7768e'],
-  ['승한', '#bb9af7'],
   ['소희', '#7dcfff'],
   ['앤톤', '#ff9e64'],
 ]
 
 const SEED_CATEGORIES = ['앨범', '팬사인회', '특전', '시즌그리팅', '트레카', '기타']
+
+/**
+ * 이전 시드로 이미 만들어진 기기에서 기본 멤버를 정리한다.
+ * 카드가 한 장이라도 걸려 있으면 사용자가 쓰고 있다는 뜻이므로 건드리지 않는다.
+ */
+const RETIRED_MEMBERS = ['승한']
+
+async function dropRetiredMembers() {
+  for (const name of RETIRED_MEMBERS) {
+    const member = await db.members.where('name').equals(name).first()
+    if (!member) continue
+    const cards = await db.cards.where('memberId').equals(member.id).count()
+    if (cards === 0) await db.members.delete(member.id)
+  }
+}
 
 export async function seedIfEmpty() {
   const now = Date.now()
@@ -37,4 +51,6 @@ export async function seedIfEmpty() {
     }))
     await db.categories.bulkAdd(categories)
   }
+
+  await dropRetiredMembers()
 }
