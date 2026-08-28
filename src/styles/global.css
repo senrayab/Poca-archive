@@ -1094,8 +1094,8 @@ a { color: inherit; }
   padding: 34px 16px;
   text-align: center;
   color: var(--text-dim);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-sm);
+  /* 점선 테두리만으로 영역이 읽히므로 판때기를 깔지 않는다 */
+  background: none;
   transition: border-color .15s, background .15s;
   width: 100%;
 }
