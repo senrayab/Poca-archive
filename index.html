@@ -14,6 +14,17 @@
         if (t === 'light' || t === 'dark') r.dataset.theme = t
         var s = localStorage.getItem('poca:skin')
         r.dataset.skin = s === 'mono' ? 'mono' : 'pastel'
+
+        var a = localStorage.getItem('poca:accent')
+        if (a && /^#[0-9a-f]{6}$/i.test(a)) {
+          var n = parseInt(a.slice(1), 16)
+          // 대비용 밝기(간이 계산). theme.ts의 inkFor와 같은 기준이다.
+          var y = (0.2126 * ((n >> 16) & 255) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255
+          r.style.setProperty('--accent', a)
+          r.style.setProperty('--accent-ink', y > 0.65 ? '#111114' : '#ffffff')
+          r.style.setProperty('--accent-soft', 'color-mix(in srgb, ' + a + ' 12%, transparent)')
+          r.style.setProperty('--glow', '0 8px 22px color-mix(in srgb, ' + a + ' 34%, transparent)')
+        }
       } catch (e) {}
     </script>
   </head>

@@ -93,10 +93,6 @@ export function MembersPage() {
 
           {members.map((member, index) => (
             <div className="list-row" key={member.id}>
-              <span
-                className="chip__dot"
-                style={{ background: member.color, width: 12, height: 12 }}
-              />
               <span className="list-row__name">{member.name}</span>
               <span className="list-row__count">{counts.get(member.id) ?? 0}장</span>
               <button

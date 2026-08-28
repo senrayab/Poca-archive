@@ -125,6 +125,9 @@ export const AutoThemeIcon = ({ size = 22, className }: IconProps) => (
 export const SkinIcon = ({ size = 22, className }: IconProps) => (
   <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
+export const PaletteIcon = ({ size = 22, className }: IconProps) => (
+  <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
 export const StorageIcon = ({ size = 22, className }: IconProps) => (
   <HardDrive size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
