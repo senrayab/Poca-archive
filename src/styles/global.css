@@ -321,26 +321,34 @@ a { color: inherit; }
   position: sticky;
   top: calc(var(--header-h) + var(--safe-top));
   z-index: 20;
-  padding: 2px 0 10px;
-  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  padding: 2px 0 18px;
+}
+
+/*
+ * 배경은 내용 뒤에 따로 깐다.
+ *
+ * 스크롤 방향을 보고 분류 탭을 접었다 폈다 하니, 손가락이 조금만 흔들려도
+ * 계속 여닫혀 파닥거렸다. 그래서 접지 않고 늘 펴두되, 아래로 갈수록 투명해지는
+ * 배경을 깔아 지나가는 카드와 자연스럽게 겹치게 한다.
+ *
+ * 배경만 페이드해야 하므로 요소 자체가 아니라 ::before에 건다.
+ * (요소에 마스크를 걸면 분류 이름까지 같이 흐려져 읽을 수 없다)
+ */
+.filters::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--bg) 84%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 80%, transparent) 58%,
+    transparent 100%
+  );
   backdrop-filter: blur(16px);
-  transition: padding-bottom .26s var(--ease);
-}
-.filters[data-compact='true'] { padding-bottom: 6px; }
-
-/* 검색창과 같은 방식 — 높이를 모르는 요소도 하드코딩 없이 접힌다 */
-.subtabs-wrap {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows .26s var(--ease);
-}
-.filters[data-compact='true'] .subtabs-wrap { grid-template-rows: 0fr; }
-.subtabs-wrap__inner { overflow: hidden; min-height: 0; }
-.subtabs-wrap .subtabs { transition: opacity .2s ease; }
-.filters[data-compact='true'] .subtabs { opacity: 0; }
-
-@media (prefers-reduced-motion: reduce) {
-  .filters, .subtabs-wrap, .subtabs-wrap .subtabs { transition: none; }
+  /* 흐림도 같이 옅어져야 아래쪽 경계가 선처럼 보이지 않는다 */
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
 }
 
 /*
