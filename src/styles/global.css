@@ -613,7 +613,8 @@ a { color: inherit; }
 .detail__figure {
   flex: 1;
   min-height: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: 40px minmax(0, auto) 40px;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -626,6 +627,7 @@ a { color: inherit; }
   height: min(52dvh, 460px);
   max-width: 100%;
   border-radius: 30px 12px 30px 12px;
+  transition: height .3s var(--ease);
   overflow: hidden;
   background: var(--bg-elev-2);
   box-shadow: var(--shadow-xl);
@@ -642,21 +644,19 @@ a { color: inherit; }
 .detail__img[data-loaded] { opacity: 0; transition: opacity .22s ease; }
 .detail__img[data-loaded='true'] { opacity: 1; }
 .detail__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, .45);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, .13);
+  border: 1px solid rgba(255, 255, 255, .22);
+  backdrop-filter: blur(20px) saturate(140%);
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, .2);
   color: #fff;
+  transition: background .15s, transform .15s;
 }
-.detail__nav--prev { left: 8px; }
-.detail__nav--next { right: 8px; }
+.detail__nav:hover { background: rgba(255, 255, 255, .22); }
+.detail__nav:active { transform: scale(.9); }
 
 /*
  * 카드 위에 얹히는 유리 시트와 오른쪽 유리 레일.
@@ -690,11 +690,11 @@ a { color: inherit; }
   font-weight: 600;
 }
 
+/* 아이콘 + 메뉴명이 세로로 쌓인 버튼을 가로 유리 바에 담는다 */
 .detail__rail {
   display: flex;
-  flex-direction: column;
   gap: 2px;
-  padding: 7px 5px;
+  padding: 5px 7px;
   border-radius: var(--pill);
   background: rgba(255, 255, 255, .13);
   border: 1px solid rgba(255, 255, 255, .22);
@@ -753,8 +753,17 @@ a { color: inherit; }
   background: none;
   border: none;
   padding: 2px 6px 4px;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-height: 0;
   overflow-y: auto;
+}
+
+/* 수정 중에는 사진을 줄여 폼이 겹치지 않게 자리를 낸다 */
+.detail[data-editing='true'] .detail__stage { height: min(26dvh, 220px); }
+.detail[data-editing='true'] .detail__figure { flex: 0 0 auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .detail__stage { transition: none; }
 }
 .detail__title {
   margin: 0;
