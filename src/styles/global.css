@@ -15,14 +15,6 @@
   --radius-xs: 11px;
   --pill: 999px;
 
-  /*
-   * 액체 같은 둥글기. 네 모서리 중 하나만 꽉 물려 형태가 한쪽으로 흐르게 한다.
-   * 물리는 모서리를 요소 순서대로 돌려 쓰면 격자가 손으로 놓은 것처럼 풀린다.
-   */
-  --blob-1: 30px 30px 30px 12px;
-  --blob-2: 30px 30px 12px 30px;
-  --blob-3: 30px 12px 30px 30px;
-  --blob-4: 12px 30px 30px 30px;
   --thumb-radius: 18px;
   --stage-radius: 22px;
   /* 판때기는 네 모서리를 같은 값으로 — 지금 쓰는 둥글기 중 가장 작은 값 */
@@ -264,6 +256,12 @@ a { color: inherit; }
   color: var(--on-scrim);
   color-scheme: var(--scrim-scheme);
   animation: rise .18s ease-out both;
+}
+
+.search-sheet__top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
 }
 
 .search-sheet__field {
@@ -682,7 +680,8 @@ a { color: inherit; }
   overflow-y: auto;
   background: var(--bg-elev);
   border: 1px solid var(--panel-line);
-  border-radius: var(--blob-1);
+  /* 판때기 둥글기는 앱 전체가 한 값을 쓴다 */
+  border-radius: var(--panel-radius);
   box-shadow: var(--shadow-xl);
   padding: 22px;
   animation: rise .18s ease-out both;
@@ -742,7 +741,8 @@ a { color: inherit; }
 .detail__top { display: flex; justify-content: flex-end; padding-inline: 2px; }
 
 .detail__nav,
-.detail__close {
+.detail__close,
+.search-sheet__close {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -753,11 +753,14 @@ a { color: inherit; }
 }
 /* 이동·닫기 모두 감싸는 원 없이 아이콘만 둔다 */
 .detail__nav,
-.detail__close { opacity: .8; }
+.detail__close,
+.search-sheet__close { opacity: .8; }
 .detail__nav:hover,
-.detail__close:hover { opacity: 1; }
+.detail__close:hover,
+.search-sheet__close:hover { opacity: 1; }
 .detail__nav:active,
-.detail__close:active { transform: scale(.9); }
+.detail__close:active,
+.search-sheet__close:active { transform: scale(.9); }
 
 /*
  * 카드 위에 얹히는 유리 시트와 오른쪽 유리 레일.
@@ -1098,7 +1101,7 @@ a { color: inherit; }
   text-align: center;
   color: var(--text-dim);
   background: color-mix(in srgb, var(--bg-elev) 62%, transparent);
-  border-radius: var(--blob-1);
+  border-radius: var(--panel-radius);
 }
 .empty strong { display: block; font-size: 15px; color: var(--text); margin-bottom: 6px; }
 .empty p { margin: 0; font-size: 13px; line-height: 1.65; }
@@ -1194,6 +1197,90 @@ a { color: inherit; }
 
 .bar { height: 6px; border-radius: var(--pill); background: var(--bg-elev-2); overflow: hidden; }
 .bar > i { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+
+/* ---------- history list ---------- */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 12px 12px;
+}
+
+.history__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  border-radius: var(--panel-radius);
+  background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease);
+}
+.history__row:active { transform: scale(.99); }
+
+.history__thumb {
+  flex-shrink: 0;
+  height: 60px;
+  aspect-ratio: var(--card-ratio);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-elev-2);
+  line-height: 0;
+}
+.history__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 제목이 길어도 오른쪽 날짜를 밀어내지 않게 */
+.history__body { flex: 1 1 auto; min-width: 0; display: grid; gap: 4px; }
+.history__title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  min-width: 0;
+}
+.history__meta b { font-weight: 600; color: var(--text); }
+.history__meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history__side {
+  flex-shrink: 0;
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+.history__badge {
+  padding: 3px 9px;
+  border-radius: var(--pill);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+/* 판매는 한 단계 약하게 — 양도가 더 자주 궁금한 쪽이다 */
+.history__badge[data-status='sold'] {
+  background: var(--bg-elev-2);
+  color: var(--text-dim);
+}
+.history__date {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
 
 /* ---------- donut chart ---------- */
 
@@ -1402,11 +1489,6 @@ a { color: inherit; }
   --radius: 20px;
   --radius-sm: 16px;
   --radius-xs: 12px;
-  /* 한쪽만 물리는 형태 대신 네 모서리를 맞춘다 */
-  --blob-1: 20px;
-  --blob-2: 20px;
-  --blob-3: 20px;
-  --blob-4: 20px;
   --thumb-radius: 14px;
   --stage-radius: 18px;
 

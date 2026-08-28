@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { ToastProvider } from '@/components/Toast'
 import { ArchivePage } from '@/pages/ArchivePage'
+import { HistoryPage } from '@/pages/HistoryPage'
 import { MembersPage } from '@/pages/MembersPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { StatsPage } from '@/pages/StatsPage'
@@ -17,6 +18,7 @@ export function App() {
           <Route path="/trash" element={<ArchivePage mode="trash" />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/members" element={<MembersPage />} />
+          <Route path="/history" element={<HistoryPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

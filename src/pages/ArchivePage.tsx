@@ -348,6 +348,17 @@ function SearchSheet({
           onClose()
         }}
       >
+        <div className="search-sheet__top">
+          <button
+            type="button"
+            className="search-sheet__close"
+            onClick={onClose}
+            aria-label="닫기"
+          >
+            <CloseIcon size={20} />
+          </button>
+        </div>
+
         <div className="search-sheet__field">
           <SearchIcon size={20} />
           <input
@@ -374,9 +385,8 @@ function SearchSheet({
           {value ? `${resultCount}장 찾았어요` : '카드 제목과 메모에서 찾습니다'}
         </p>
 
-        <button className="btn btn--primary btn--block" type="submit">
-          {value ? '결과 보기' : '닫기'}
-        </button>
+        {/* 엔터로 닫히도록 폼은 유지하되, 버튼은 화면에 두지 않는다 */}
+        <button type="submit" hidden />
       </form>
     </Modal>
   )
