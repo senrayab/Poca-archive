@@ -7,6 +7,7 @@ import {
   ChartIcon,
   CloseIcon,
   GridIcon,
+  HistoryIcon,
   SettingsIcon,
   TagIcon,
   TrashIcon,
@@ -68,6 +69,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
         <div className="drawer__section">관리</div>
         {item('/upload', <UploadIcon size={20} />, '포토카드 등록')}
         {item('/members', <UsersIcon size={20} />, '멤버 · 카테고리 관리')}
+        {item('/history', <HistoryIcon size={20} />, '양도 · 판매 내역')}
         {item('/stats', <ChartIcon size={20} />, '통계')}
         {item('/settings', <SettingsIcon size={20} />, '백업 · 설정')}
       </nav>

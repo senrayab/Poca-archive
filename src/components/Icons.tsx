@@ -6,6 +6,7 @@ import {
   ChevronRight as LuChevronRight,
   ChartColumn,
   Download,
+  ArrowLeftRight,
   HardDrive,
   Heart,
   Image as LuImage,
@@ -125,6 +126,9 @@ export const AutoThemeIcon = ({ size = 22, className }: IconProps) => (
 )
 export const SkinIcon = ({ size = 22, className }: IconProps) => (
   <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const HistoryIcon = ({ size = 22, className }: IconProps) => (
+  <ArrowLeftRight size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const LinkIcon = ({ size = 22, className }: IconProps) => (
   <Link2 size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
