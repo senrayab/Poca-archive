@@ -41,8 +41,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [openCard, setOpenCard] = useState<Card | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  // 아래로 내리면 분류 탭을 접어 멤버 탭만 붙여둔다
-  const [compact, setCompact] = useState(false)
 
   const cards = useCards({
     memberId,
@@ -66,27 +64,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   useEffect(() => {
     setSelected(new Set())
   }, [mode, memberId, categoryId])
-
-  /*
-   * 스크롤 방향으로 분류 탭을 접고 편다.
-   * 위치가 아니라 '방향'을 보는 이유는, 목록을 보다가 분류를 바꾸고 싶어질 때
-   * 맨 위까지 올리지 않고 조금만 올려도 다시 나오게 하기 위해서다.
-   */
-  useEffect(() => {
-    let lastY = window.scrollY
-
-    const onScroll = () => {
-      const y = window.scrollY
-      // 손가락 떨림 정도로는 반응하지 않게 여유를 둔다
-      if (y < 40) setCompact(false)
-      else if (y > lastY + 6) setCompact(true)
-      else if (y < lastY - 6) setCompact(false)
-      lastY = y
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   const toggleSelect = (card: Card) => {
     setSelected((prev) => {
@@ -190,7 +167,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
           따로 두면 스크롤할 때 둘 사이 틈으로 카드가 비쳐 지나가고,
           레일 그림자가 아래 분류줄에 잘려 보였다.
         */}
-        <div className="filters" data-compact={compact}>
+        <div className="filters">
           <MemberTabs
             selected={memberId}
             onSelect={setMemberId}
@@ -198,31 +175,24 @@ export function ArchivePage({ mode }: ArchivePageProps) {
           />
 
           {categories.length > 0 && (
-            /* 높이를 0fr↔1fr로 굴려야 항목 수와 무관하게 부드럽게 접힌다 */
-            <div className="subtabs-wrap">
-              <div className="subtabs-wrap__inner">
-                <div className="subtabs" role="tablist" aria-label="카테고리">
-                  <button
-                    role="tab"
-                    aria-selected={categoryId === null}
-                    tabIndex={compact ? -1 : 0}
-                    onClick={() => setCategoryId(null)}
-                  >
-                    전체 분류
-                  </button>
-                  {categories.map((c) => (
-                    <button
-                      key={c.id}
-                      role="tab"
-                      aria-selected={categoryId === c.id}
-                      tabIndex={compact ? -1 : 0}
-                      onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div className="subtabs" role="tablist" aria-label="카테고리">
+              <button
+                role="tab"
+                aria-selected={categoryId === null}
+                onClick={() => setCategoryId(null)}
+              >
+                전체 분류
+              </button>
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  role="tab"
+                  aria-selected={categoryId === c.id}
+                  onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
+                >
+                  {c.name}
+                </button>
+              ))}
             </div>
           )}
         </div>
