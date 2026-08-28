@@ -150,8 +150,27 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
 
   return (
     <Modal onClose={onClose} panel={false} label={card.title}>
-      <div className="detail" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
+      <div
+        className="detail"
+        data-editing={editing}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {/*
+          좌우 이동 버튼은 사진 양옆의 빈 칸에 세운다. 사진 위에 얹으면
+          반투명이어도 그 부분이 가려져 카드가 잘 안 보인다.
+          한쪽이 없을 때도 사진이 가운데 그대로 있도록 칸은 비워서 남긴다.
+        */}
         <div className="detail__figure">
+          {prev ? (
+            <button className="detail__nav" onClick={() => onNavigate(prev)} aria-label="이전 카드">
+              <ChevronLeft size={20} />
+            </button>
+          ) : (
+            <span />
+          )}
+
           {/* 스테이지는 실물 카드 비율(54:86)로 고정 — 썸네일과 같은 프레임으로 보인다.
               원본이 디코드될 때까지는 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다. */}
           <div className="detail__stage">
@@ -172,25 +191,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               />
             )}
 
-            {prev && (
-              <button
-                className="detail__nav detail__nav--prev"
-                onClick={() => onNavigate(prev)}
-                aria-label="이전 카드"
-              >
-                <ChevronLeft size={20} />
-              </button>
-            )}
-            {next && (
-              <button
-                className="detail__nav detail__nav--next"
-                onClick={() => onNavigate(next)}
-                aria-label="다음 카드"
-              >
-                <ChevronRight size={20} />
-              </button>
-            )}
-
             {/* 카드 위에 얹히는 유리 시트. 판때기가 아니라 사진이 비쳐 보이는 층이다. */}
             {!editing && (
               <div className="detail__sheet">
@@ -208,43 +208,12 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
             )}
           </div>
 
-          {/* 세로 유리 레일. 카드를 가리지 않도록 사진 오른쪽에 붙여 세운다. */}
-          {!editing && (
-            <div className="detail__rail">
-              {card.deleted === 1 ? (
-                <button className="rail-btn" onClick={restore}>
-                  <RestoreIcon size={21} />
-                  <span>복원</span>
-                </button>
-              ) : (
-                <>
-                  <button
-                    className="rail-btn"
-                    onClick={toggleFavorite}
-                    aria-pressed={card.favorite === 1}
-                    data-on={card.favorite === 1}
-                  >
-                    <HeartIcon size={21} filled={card.favorite === 1} />
-                    <span>찜</span>
-                  </button>
-                  <button className="rail-btn" onClick={() => setEditing(true)}>
-                    <EditIcon size={21} />
-                    <span>수정</span>
-                  </button>
-                  <button
-                    className="rail-btn rail-btn--danger"
-                    onClick={() => setConfirmDispose(true)}
-                  >
-                    <TrashIcon size={21} />
-                    <span>삭제</span>
-                  </button>
-                </>
-              )}
-              <button className="rail-btn" onClick={onClose} aria-label="닫기">
-                <CloseIcon size={21} />
-                <span>닫기</span>
-              </button>
-            </div>
+          {next ? (
+            <button className="detail__nav" onClick={() => onNavigate(next)} aria-label="다음 카드">
+              <ChevronRight size={20} />
+            </button>
+          ) : (
+            <span />
           )}
         </div>
 
@@ -320,6 +289,45 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
             </>
           )}
         </div>
+
+        {/* 아이콘 + 메뉴명이 세로로 쌓인 버튼을, 가로 유리 바에 담아 맨 아래 둔다 */}
+        {!editing && (
+          <div className="detail__rail">
+            {card.deleted === 1 ? (
+              <button className="rail-btn" onClick={restore}>
+                <RestoreIcon size={21} />
+                <span>복원</span>
+              </button>
+            ) : (
+              <>
+                <button
+                  className="rail-btn"
+                  onClick={toggleFavorite}
+                  aria-pressed={card.favorite === 1}
+                  data-on={card.favorite === 1}
+                >
+                  <HeartIcon size={21} filled={card.favorite === 1} />
+                  <span>찜</span>
+                </button>
+                <button className="rail-btn" onClick={() => setEditing(true)}>
+                  <EditIcon size={21} />
+                  <span>수정</span>
+                </button>
+                <button
+                  className="rail-btn rail-btn--danger"
+                  onClick={() => setConfirmDispose(true)}
+                >
+                  <TrashIcon size={21} />
+                  <span>삭제</span>
+                </button>
+              </>
+            )}
+            <button className="rail-btn" onClick={onClose} aria-label="닫기">
+              <CloseIcon size={21} />
+              <span>닫기</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {confirmDispose && (
