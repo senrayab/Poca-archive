@@ -157,6 +157,12 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
+        <div className="detail__top">
+          <button className="detail__close" onClick={onClose} aria-label="닫기">
+            <CloseIcon size={20} />
+          </button>
+        </div>
+
         {/*
           좌우 이동 버튼은 사진 양옆의 빈 칸에 세운다. 사진 위에 얹으면
           반투명이어도 그 부분이 가려져 카드가 잘 안 보인다.
@@ -313,19 +319,12 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   <EditIcon size={21} />
                   <span>수정</span>
                 </button>
-                <button
-                  className="rail-btn rail-btn--danger"
-                  onClick={() => setConfirmDispose(true)}
-                >
+                <button className="rail-btn" onClick={() => setConfirmDispose(true)}>
                   <TrashIcon size={21} />
                   <span>삭제</span>
                 </button>
               </>
             )}
-            <button className="rail-btn" onClick={onClose} aria-label="닫기">
-              <CloseIcon size={21} />
-              <span>닫기</span>
-            </button>
           </div>
         )}
       </div>
