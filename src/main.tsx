@@ -3,10 +3,12 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { App } from './App'
 import { seedIfEmpty } from './db/seed'
+import { initAppName } from './lib/appName'
 import { initTheme } from './lib/theme'
 import './styles/global.css'
 
 initTheme()
+initAppName()
 
 // 첫 실행일 때만 RIIZE 멤버와 기본 카테고리를 넣어둔다.
 void seedIfEmpty()

@@ -24,6 +24,7 @@ import {
   importArchive,
   markBackedUp,
 } from '@/lib/backup'
+import { DEFAULT_APP_NAME, setAppName, useAppNameInput } from '@/lib/appName'
 import { formatBytes, relativeDays } from '@/lib/format'
 import {
   ACCENT_PRESETS,
@@ -47,6 +48,7 @@ export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
   const skin = useSkin()
   const accent = useAccent()
+  const appNameInput = useAppNameInput()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
   const [working, setWorking] = useState<'export' | 'import' | null>(null)
@@ -127,6 +129,23 @@ export function SettingsPage() {
             <SkinIcon size={15} />
             인터페이스
           </h2>
+          <div className="card-panel">
+            <p>
+              보관함 화면 제목과 서랍 메뉴에 쓰이는 이름입니다. 비워두면
+              <b> {DEFAULT_APP_NAME}</b>로 돌아갑니다.
+            </p>
+            <label className="field" style={{ marginBottom: 0 }}>
+              <span>보관함 이름</span>
+              <input
+                type="text"
+                value={appNameInput}
+                onChange={(e) => setAppName(e.target.value)}
+                placeholder={DEFAULT_APP_NAME}
+                maxLength={40}
+              />
+            </label>
+          </div>
+
           <div className="card-panel">
             <p>
               스킨은 색·둥글기·그림자를 한 벌로 묶은 것입니다. 아래 테마(다크·라이트)와
