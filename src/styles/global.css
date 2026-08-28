@@ -309,10 +309,50 @@ a { color: inherit; }
  * 알약 하나 안에 칩이 담긴 레일. 그림자는 레일이 지고 칩은 평평하게 둔다.
  * 칩마다 그림자를 주면 overflow-x: auto 때문에 위아래로 잘린다.
  */
+/*
+ * 스크롤이 가려진 쪽만 알약 색으로 덮어 '더 있다'는 걸 보여준다.
+ * 레일 자신은 overflow-x: auto라 그 안에 덧대면 같이 밀려나므로,
+ * 감싸는 래퍼에 절대 배치한다.
+ */
+.tabs-wrap { position: relative; margin: 0 12px; }
+
+.tabs-fade {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  width: 36px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.tabs-fade--start {
+  left: 1px;
+  border-radius: var(--pill) 0 0 var(--pill);
+  background: linear-gradient(
+    to right,
+    var(--bg-elev),
+    color-mix(in srgb, var(--bg-elev) 0%, transparent)
+  );
+}
+.tabs-fade--end {
+  right: 1px;
+  border-radius: 0 var(--pill) var(--pill) 0;
+  background: linear-gradient(
+    to left,
+    var(--bg-elev),
+    color-mix(in srgb, var(--bg-elev) 0%, transparent)
+  );
+}
+.tabs-wrap[data-start='true'] .tabs-fade--start,
+.tabs-wrap[data-end='true'] .tabs-fade--end { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs-fade { transition: none; }
+}
+
 .tabs {
   display: flex;
   gap: 3px;
-  margin: 0 12px;
   padding: 5px;
   border-radius: var(--pill);
   background: var(--bg-elev);
