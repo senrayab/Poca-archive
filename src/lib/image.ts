@@ -7,7 +7,7 @@
 export const FULL_MAX_EDGE = 1600
 export const FULL_QUALITY = 0.82
 // 한 줄에 4장이라 그리드 칸이 100px 안팎 — 고해상도 화면까지 감안해 360px면 충분하다.
-export const THUMB_MAX_EDGE = 420
+export const THUMB_MAX_EDGE = 360
 export const THUMB_QUALITY = 0.72
 
 export interface EncodedImage {
