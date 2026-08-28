@@ -267,14 +267,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   placeholder="구매처, 교환 상대, 상태 등"
                 />
               </label>
-              <div className="row">
-                <button className="btn" onClick={() => setEditing(false)}>
-                  취소
-                </button>
-                <button className="btn btn--primary" onClick={save}>
-                  저장
-                </button>
-              </div>
             </>
           ) : (
             /* 제목·멤버는 카드 위 유리 시트로 올라갔고, 여기엔 부수 정보만 남는다 */
@@ -290,6 +282,21 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
             </>
           )}
         </div>
+
+        {/*
+          저장/취소는 정보 영역 밖에 둔다. 그 안은 overflow가 걸려 있어
+          버튼의 색 그림자가 잘리고, 메모가 길면 버튼이 스크롤로 밀려난다.
+        */}
+        {editing && (
+          <div className="row detail__form-actions">
+            <button className="btn" onClick={() => setEditing(false)}>
+              취소
+            </button>
+            <button className="btn btn--primary" onClick={save}>
+              저장
+            </button>
+          </div>
+        )}
 
         {/* 아이콘 + 메뉴명이 세로로 쌓인 버튼을, 가로 유리 바에 담아 맨 아래 둔다 */}
         {!editing && (

@@ -901,12 +901,14 @@ a { color: inherit; }
 .detail__info {
   background: none;
   border: none;
-  /* overflow가 걸려 있어 여백이 없으면 저장 버튼의 색 그림자가 잘린다 */
-  padding: 2px 8px 18px;
+  padding: 2px 8px 6px;
   flex-shrink: 1;
   min-height: 0;
   overflow-y: auto;
 }
+
+/* 스크롤 영역 밖이라 색 그림자가 온전히 보인다 */
+.detail__form-actions { flex-shrink: 0; padding: 0 8px; }
 
 /* 수정 중에는 사진을 줄여 폼이 겹치지 않게 자리를 낸다 */
 .detail[data-editing='true'] { --stage-h: min(26dvh, 220px); }
