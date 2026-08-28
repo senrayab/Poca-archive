@@ -7,10 +7,13 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <title>포토카드 아카이브</title>
     <script>
-      // 첫 페인트 전에 저장된 테마를 붙여 다크↔라이트가 번쩍이는 것을 막는다.
+      // 첫 페인트 전에 저장된 테마·스킨을 붙여 화면이 번쩍이는 것을 막는다.
       try {
+        var r = document.documentElement
         var t = localStorage.getItem('poca:theme')
-        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+        if (t === 'light' || t === 'dark') r.dataset.theme = t
+        var s = localStorage.getItem('poca:skin')
+        r.dataset.skin = s === 'mono' ? 'mono' : 'pastel'
       } catch (e) {}
     </script>
   </head>

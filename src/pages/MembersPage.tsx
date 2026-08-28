@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Header, useShell } from '@/components/AppShell'
-import { EditIcon, PlusIcon, TrashIcon } from '@/components/Icons'
+import { EditIcon, PlusIcon, TagIcon, TrashIcon, UsersIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
 import type { Category } from '@/db/types'
@@ -82,7 +82,10 @@ export function MembersPage() {
 
       <div className="content content--no-fab">
         <div className="page">
-          <h2>멤버</h2>
+          <h2>
+            <UsersIcon size={15} />
+            멤버
+          </h2>
           <p style={{ fontSize: 13, color: 'var(--text-dim)', margin: '0 0 12px', lineHeight: 1.6 }}>
             탭 순서대로 보관함 상단에 나옵니다. 그룹이 바뀌거나 다른 아티스트를 모으게 되면
             여기서 자유롭게 추가하세요.
@@ -136,7 +139,10 @@ export function MembersPage() {
             멤버 추가
           </button>
 
-          <h2>카테고리</h2>
+          <h2>
+            <TagIcon size={15} />
+            카테고리
+          </h2>
           <p style={{ fontSize: 13, color: 'var(--text-dim)', margin: '0 0 12px', lineHeight: 1.6 }}>
             앨범·팬사인회·특전처럼 카드를 얻은 경로로 나눠두면 나중에 찾기 쉬워요.
           </p>

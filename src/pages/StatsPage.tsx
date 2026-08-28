@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
+import { TagIcon, UsersIcon } from '@/components/Icons'
 import { db } from '@/db/db'
 import { useCategories, useMembers } from '@/hooks/useData'
 import { formatBytes } from '@/lib/format'
@@ -60,7 +61,10 @@ export function StatsPage() {
             </div>
           </div>
 
-          <h2>멤버별</h2>
+          <h2>
+            <UsersIcon size={15} />
+            멤버별
+          </h2>
           <div className="card-panel">
             {members.map((member) => {
               const count = stats.byMember.get(member.id) ?? 0
@@ -91,7 +95,10 @@ export function StatsPage() {
             {members.length === 0 && <p style={{ margin: 0 }}>등록된 멤버가 없습니다.</p>}
           </div>
 
-          <h2>카테고리별</h2>
+          <h2>
+            <TagIcon size={15} />
+            카테고리별
+          </h2>
           <div className="card-panel">
             {categories.map((category) => (
               <div className="list-row" key={category.id} style={{ marginBottom: 6 }}>

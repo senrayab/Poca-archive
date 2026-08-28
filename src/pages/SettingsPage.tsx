@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Header } from '@/components/AppShell'
 import {
   AutoThemeIcon,
+  BackupIcon,
   DownloadIcon,
+  InstallIcon,
   MoonIcon,
+  ResetIcon,
+  SkinIcon,
+  StorageIcon,
   SunIcon,
   UploadIcon,
 } from '@/components/Icons'
@@ -19,7 +24,14 @@ import {
   markBackedUp,
 } from '@/lib/backup'
 import { formatBytes, relativeDays } from '@/lib/format'
-import { setThemeMode, useThemeMode, type ThemeMode } from '@/lib/theme'
+import {
+  SKINS,
+  setSkin,
+  setThemeMode,
+  useSkin,
+  useThemeMode,
+  type ThemeMode,
+} from '@/lib/theme'
 
 const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }> = [
   { mode: 'system', label: '시스템', icon: <AutoThemeIcon size={16} /> },
@@ -29,6 +41,7 @@ const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }
 
 export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
+  const skin = useSkin()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
   const [working, setWorking] = useState<'export' | 'import' | null>(null)
@@ -105,7 +118,36 @@ export function SettingsPage() {
 
       <div className="content content--no-fab">
         <div className="page">
-          <h2>인터페이스</h2>
+          <h2>
+            <SkinIcon size={15} />
+            인터페이스
+          </h2>
+          <div className="card-panel">
+            <p>
+              스킨은 색·둥글기·그림자를 한 벌로 묶은 것입니다. 아래 테마(다크·라이트)와
+              따로 놀지 않고, 고른 스킨 안에서 다시 밝기가 갈립니다.
+            </p>
+            <div className="skins">
+              {SKINS.map((option) => (
+                <button
+                  key={option.id}
+                  className="skin"
+                  data-preview={option.id}
+                  aria-pressed={skin === option.id}
+                  onClick={() => setSkin(option.id)}
+                >
+                  <span className="skin__swatch" aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                  <b>{option.name}</b>
+                  <small>{option.hint}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="card-panel">
             <p>
               테마를 고르세요. <b>시스템</b>은 폰·PC의 다크 모드 설정을 그대로 따라갑니다.
@@ -125,7 +167,10 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <h2>백업</h2>
+          <h2>
+            <BackupIcon size={15} />
+            백업
+          </h2>
           <div className="card-panel">
             <p>
               모든 카드 이미지와 정보를 ZIP 한 개로 묶어 내려받습니다. 이 앱의 데이터는
@@ -165,7 +210,10 @@ export function SettingsPage() {
             />
           </div>
 
-          <h2>저장소</h2>
+          <h2>
+            <StorageIcon size={15} />
+            저장소
+          </h2>
           <div className="card-panel">
             <p>
               {quota
@@ -181,7 +229,10 @@ export function SettingsPage() {
             )}
           </div>
 
-          <h2>앱으로 설치</h2>
+          <h2>
+            <InstallIcon size={15} />
+            앱으로 설치
+          </h2>
           <div className="card-panel">
             <p>
               브라우저 메뉴에서 <b>홈 화면에 추가</b>(iOS는 공유 → 홈 화면에 추가)를 누르면
@@ -189,7 +240,10 @@ export function SettingsPage() {
             </p>
           </div>
 
-          <h2>초기화</h2>
+          <h2>
+            <ResetIcon size={15} />
+            초기화
+          </h2>
           <div className="card-panel">
             <p>모든 데이터를 지우고 처음 상태로 되돌립니다.</p>
             <button className="btn btn--danger btn--block" onClick={resetAll}>
