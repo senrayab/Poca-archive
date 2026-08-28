@@ -23,8 +23,8 @@ export default defineConfig(({ command }) => ({
         short_name: 'POCA',
         description: '소장 중인 포토카드를 썸네일로 모아보는 아카이브',
         lang: 'ko',
-        theme_color: '#0e0e12',
-        background_color: '#0e0e12',
+        theme_color: '#0f0e14',
+        background_color: '#0f0e14',
         display: 'standalone',
         orientation: 'portrait',
         // start_url/scope는 vite-plugin-pwa가 base에서 채운다.
