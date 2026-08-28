@@ -256,45 +256,60 @@ a { color: inherit; }
 /* ---------- search ---------- */
 
 /*
- * 0fr → 1fr 그리드 행 애니메이션. 높이를 모르는 요소도 부드럽게 펼칠 수 있어서
- * max-height 하드코딩 없이 동작한다.
+ * 검색은 목록 위에 얹는 팝업이다. 목록 맨 위에 붙여두면 한참 내려가서
+ * 보던 중에 검색하려고 매번 위로 올라와야 한다.
  */
-.searchbar {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows .26s var(--ease);
+.search-sheet {
+  width: min(100%, 440px);
+  color: var(--on-scrim);
+  color-scheme: var(--scrim-scheme);
+  animation: rise .18s ease-out both;
 }
-.searchbar[data-open='true'] { grid-template-rows: 1fr; }
 
-.searchbar__inner { overflow: hidden; min-height: 0; }
-/* __inner가 overflow:hidden이라, 아래 여백이 없으면 입력창의 그림자와
-   포커스 링이 잘린다. 링 두께 + 그림자만큼은 반드시 남겨둔다. */
-.searchbar__pad { padding: 8px 14px 10px; }
-
-.searchbar input {
-  width: 100%;
-  height: 42px;
-  padding: 0 16px;
-  border-radius: var(--pill);
-  border: 1px solid var(--panel-line);
-  background: var(--bg-elev);
-  box-shadow: var(--shadow-sm);
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity .18s ease, transform .26s var(--ease), box-shadow .18s ease;
+.search-sheet__field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px 12px;
+  border-bottom: 1.5px solid var(--glass-line);
 }
-.searchbar[data-open='true'] input { opacity: 1; transform: none; }
-
-/* 앱처럼 쓰는 화면이라 브라우저 기본 포커스 링은 뺀다.
-   완전히 없애면 어디에 입력되는지 알 수 없어 그림자만 악센트로 물들인다. */
-.searchbar input:focus,
-.searchbar input:focus-visible {
+.search-sheet__field input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
   outline: none;
-  box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
+  padding: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--on-scrim);
+}
+.search-sheet__field input::placeholder {
+  color: color-mix(in srgb, var(--on-scrim) 40%, transparent);
+  font-weight: 500;
+}
+.search-sheet__clear {
+  display: grid;
+  place-items: center;
+  color: var(--on-scrim-dim);
+  flex-shrink: 0;
+}
+.search-sheet__clear:hover { color: var(--on-scrim); }
+
+.search-sheet__hint {
+  margin: 12px 2px 18px;
+  font-size: 12px;
+  color: var(--on-scrim-dim);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .searchbar, .searchbar input { transition: none; }
+/* 팝업을 닫아도 무엇으로 걸렀는지 남겨둔다 */
+.active-query { padding: 10px 12px 0; }
+.active-query .tag {
+  max-width: 100%;
+  cursor: pointer;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 /* ---------- member tabs ---------- */
