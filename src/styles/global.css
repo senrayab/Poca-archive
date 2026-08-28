@@ -1179,6 +1179,94 @@ a { color: inherit; }
 .bar { height: 6px; border-radius: var(--pill); background: var(--bg-elev-2); overflow: hidden; }
 .bar > i { display: block; height: 100%; background: var(--accent); transition: width .2s; }
 
+/* ---------- donut chart ---------- */
+
+.chart {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+/* 항목이 많아 범례가 길어지면 위아래로 쌓는다 */
+@media (max-width: 379px) {
+  .chart { flex-direction: column; align-items: stretch; }
+  .chart__ring { align-self: center; }
+}
+
+.chart__ring {
+  position: relative;
+  flex-shrink: 0;
+  line-height: 0;
+  animation: chart-in .34s var(--ease) both;
+}
+@keyframes chart-in {
+  from { opacity: 0; transform: scale(.92) rotate(-8deg); }
+}
+
+.chart__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1.15;
+}
+.chart__center strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+.chart__center span { font-size: 10px; color: var(--text-dim); }
+
+.legend {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.legend__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+.legend__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.legend__value {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+/* 비율은 장수보다 한 단계 약하게 */
+.legend__value b {
+  margin-left: 6px;
+  font-weight: 600;
+  opacity: .65;
+}
+.legend__empty { font-size: 13px; color: var(--text-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  .chart__ring { animation: none; }
+}
+
 /* ---------- segmented control (테마 전환 등) ---------- */
 
 .segmented {

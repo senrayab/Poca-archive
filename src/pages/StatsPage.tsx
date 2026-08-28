@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
+import { Donut, type DonutSlice } from '@/components/Donut'
 import { TagIcon, UsersIcon } from '@/components/Icons'
 import { db } from '@/db/db'
 import { useCategories, useMembers } from '@/hooks/useData'
@@ -42,7 +43,34 @@ export function StatsPage() {
     )
   }
 
-  const max = Math.max(1, ...members.map((m) => stats.byMember.get(m.id) ?? 0))
+  const memberSlices: DonutSlice[] = members.map((member) => ({
+    id: member.id,
+    label: member.name,
+    value: stats.byMember.get(member.id) ?? 0,
+    color: member.color,
+  }))
+
+  /*
+   * 카테고리는 고유 색이 없다. 포인트 색을 배경 쪽으로 조금씩 섞어 한 계열로
+   * 만들면, 스킨이나 포인트 색을 바꿔도 화면과 따로 놀지 않는다.
+   */
+  const categorySlices: DonutSlice[] = [
+    ...categories.map((category, index) => ({
+      id: category.id,
+      label: category.name,
+      value: stats.byCategory.get(category.id) ?? 0,
+      color: `color-mix(in srgb, var(--accent) ${Math.max(
+        22,
+        100 - index * 14,
+      )}%, var(--bg-elev-2))`,
+    })),
+    {
+      id: '__none__',
+      label: '분류 없음',
+      value: stats.byCategory.get('__none__') ?? 0,
+      color: 'var(--line)',
+    },
+  ]
 
   return (
     <>
@@ -66,33 +94,11 @@ export function StatsPage() {
             멤버별
           </h2>
           <div className="card-panel">
-            {members.map((member) => {
-              const count = stats.byMember.get(member.id) ?? 0
-              return (
-                <div key={member.id} style={{ marginBottom: 12 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: 13,
-                      marginBottom: 6,
-                    }}
-                  >
-                    <span>{member.name}</span>
-                    <span style={{ color: 'var(--text-dim)' }}>{count}장</span>
-                  </div>
-                  <div className="bar">
-                    <i
-                      style={{
-                        width: `${(count / max) * 100}%`,
-                        background: member.color,
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-            {members.length === 0 && <p style={{ margin: 0 }}>등록된 멤버가 없습니다.</p>}
+            {members.length === 0 ? (
+              <p style={{ margin: 0 }}>등록된 멤버가 없습니다.</p>
+            ) : (
+              <Donut slices={memberSlices} centerLabel="장 소장" keepEmpty />
+            )}
           </div>
 
           <h2>
@@ -100,18 +106,7 @@ export function StatsPage() {
             카테고리별
           </h2>
           <div className="card-panel">
-            {categories.map((category) => (
-              <div className="list-row" key={category.id} style={{ marginBottom: 6 }}>
-                <span className="list-row__name">{category.name}</span>
-                <span className="list-row__count">{stats.byCategory.get(category.id) ?? 0}장</span>
-              </div>
-            ))}
-            <div className="list-row" style={{ marginBottom: 0 }}>
-              <span className="list-row__name" style={{ color: 'var(--text-dim)' }}>
-                분류 없음
-              </span>
-              <span className="list-row__count">{stats.byCategory.get('__none__') ?? 0}장</span>
-            </div>
+            <Donut slices={categorySlices} centerLabel="장 소장" />
           </div>
         </div>
       </div>
