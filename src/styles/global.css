@@ -303,6 +303,23 @@ a { color: inherit; }
   padding: 2px 0 10px;
   background: color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter: blur(16px);
+  transition: padding-bottom .26s var(--ease);
+}
+.filters[data-compact='true'] { padding-bottom: 6px; }
+
+/* 검색창과 같은 방식 — 높이를 모르는 요소도 하드코딩 없이 접힌다 */
+.subtabs-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows .26s var(--ease);
+}
+.filters[data-compact='true'] .subtabs-wrap { grid-template-rows: 0fr; }
+.subtabs-wrap__inner { overflow: hidden; min-height: 0; }
+.subtabs-wrap .subtabs { transition: opacity .2s ease; }
+.filters[data-compact='true'] .subtabs { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .filters, .subtabs-wrap, .subtabs-wrap .subtabs { transition: none; }
 }
 
 /*
