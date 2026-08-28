@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Header, useShell } from '@/components/AppShell'
 import { CardDetail } from '@/components/CardDetail'
 import { CardGrid } from '@/components/CardGrid'
@@ -10,6 +10,7 @@ import {
   TrashIcon,
 } from '@/components/Icons'
 import { MemberTabs } from '@/components/MemberTabs'
+import { Modal } from '@/components/Modal'
 import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
@@ -42,7 +43,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   // 아래로 내리면 분류 탭을 접어 멤버 탭만 붙여둔다
   const [compact, setCompact] = useState(false)
-  const searchRef = useRef<HTMLInputElement>(null)
 
   const cards = useCards({
     memberId,
@@ -87,19 +87,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  // 검색을 열면 분류 탭도 같이 보이게 (둘 다 걸러내는 수단이라 함께 쓴다)
-  useEffect(() => {
-    if (searchOpen) setCompact(false)
-  }, [searchOpen])
-
-  const toggleSearch = () => {
-    const next = !searchOpen
-    setSearchOpen(next)
-    // autoFocus는 항상 마운트된 입력에는 안 먹으니 열릴 때 직접 포커스를 준다.
-    if (next) requestAnimationFrame(() => searchRef.current?.focus())
-    else setQuery('')
-  }
 
   const toggleSelect = (card: Card) => {
     setSelected((prev) => {
@@ -186,9 +173,8 @@ export function ArchivePage({ mode }: ArchivePageProps) {
               )}
               <button
                 className="icon-btn"
-                data-active={searchOpen}
-                onClick={toggleSearch}
-                aria-expanded={searchOpen}
+                data-active={searchOpen || query !== ''}
+                onClick={() => setSearchOpen(true)}
                 aria-label="검색"
               >
                 <SearchIcon />
@@ -199,22 +185,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
       />
 
       <div className="content">
-        {/* 항상 마운트해두고 높이를 0fr↔1fr로 굴려야 펼침이 부드럽다 */}
-        <div className="searchbar" data-open={searchOpen}>
-          <div className="searchbar__inner">
-            <div className="searchbar__pad">
-              <input
-                ref={searchRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="제목 · 메모에서 검색"
-                tabIndex={searchOpen ? 0 : -1}
-              />
-            </div>
-          </div>
-        </div>
-
         {/*
           멤버 레일과 분류 텍스트를 한 덩어리로 묶어 통째로 sticky 시킨다.
           따로 두면 스크롤할 때 둘 사이 틈으로 카드가 비쳐 지나가고,
@@ -257,6 +227,16 @@ export function ArchivePage({ mode }: ArchivePageProps) {
           )}
         </div>
 
+        {query && (
+          <div className="active-query">
+            <button className="tag" onClick={() => setQuery('')}>
+              <SearchIcon size={13} />
+              {query}
+              <CloseIcon size={13} />
+            </button>
+          </div>
+        )}
+
         {loading ? null : list.length === 0 ? (
           <EmptyState mode={mode} filtered={Boolean(query || memberId || categoryId)} />
         ) : (
@@ -284,6 +264,15 @@ export function ArchivePage({ mode }: ArchivePageProps) {
           </div>
         )}
       </div>
+
+      {searchOpen && (
+        <SearchSheet
+          value={query}
+          onChange={setQuery}
+          resultCount={list.length}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
 
       {openCard && (
         <CardDetail
@@ -331,5 +320,64 @@ function EmptyState({ mode, filtered }: { mode: ArchiveMode; filtered: boolean }
         올린 사진은 자동으로 WebP로 변환돼 용량을 크게 줄입니다.
       </p>
     </div>
+  )
+}
+
+/*
+ * 검색은 목록 위에 얹는 팝업으로 연다.
+ * 목록 맨 위에 붙여두면 한참 스크롤해 내려간 상태에서 검색하려고
+ * 매번 맨 위까지 올라와야 한다.
+ */
+function SearchSheet({
+  value,
+  onChange,
+  resultCount,
+  onClose,
+}: {
+  value: string
+  onChange: (next: string) => void
+  resultCount: number
+  onClose: () => void
+}) {
+  return (
+    <Modal onClose={onClose} panel={false} label="검색">
+      <form
+        className="search-sheet"
+        onSubmit={(e) => {
+          e.preventDefault()
+          onClose()
+        }}
+      >
+        <div className="search-sheet__field">
+          <SearchIcon size={20} />
+          <input
+            type="text"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="제목 · 메모에서 검색"
+            autoFocus
+          />
+          {value && (
+            <button
+              type="button"
+              className="search-sheet__clear"
+              onClick={() => onChange('')}
+              aria-label="지우기"
+            >
+              <CloseIcon size={18} />
+            </button>
+          )}
+        </div>
+
+        {/* 입력하는 동안 뒤쪽 목록이 이미 걸러지고 있으므로 장수를 바로 보여준다 */}
+        <p className="search-sheet__hint">
+          {value ? `${resultCount}장 찾았어요` : '카드 제목과 메모에서 찾습니다'}
+        </p>
+
+        <button className="btn btn--primary btn--block" type="submit">
+          {value ? '결과 보기' : '닫기'}
+        </button>
+      </form>
+    </Modal>
   )
 }
