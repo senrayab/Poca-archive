@@ -14,11 +14,12 @@ import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
 import { useCategories, useCards } from '@/hooks/useData'
+import { useAppName } from '@/lib/appName'
 
 export type ArchiveMode = 'all' | 'favorites' | 'trash'
 
-const TITLES: Record<ArchiveMode, string> = {
-  all: '포토카드 아카이브',
+/* 전체 보관함의 제목은 설정에서 바꾼 이름을 쓴다 */
+const TITLES: Record<Exclude<ArchiveMode, 'all'>, string> = {
   favorites: '즐겨찾기',
   trash: '휴지통',
 }
@@ -29,6 +30,7 @@ interface ArchivePageProps {
 
 export function ArchivePage({ mode }: ArchivePageProps) {
   const { openMemberEditor } = useShell()
+  const appName = useAppName()
   const toast = useToast()
   const categories = useCategories()
 
@@ -115,7 +117,13 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   return (
     <>
       <Header
-        title={selectMode ? `${selected.size}장 선택` : TITLES[mode]}
+        title={
+          selectMode
+            ? `${selected.size}장 선택`
+            : mode === 'all'
+              ? appName
+              : TITLES[mode]
+        }
         actions={
           selectMode ? (
             <>

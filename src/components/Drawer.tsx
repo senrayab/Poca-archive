@@ -1,5 +1,6 @@
 import { useEffect, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
+import { useAppName } from '@/lib/appName'
 import { NavLink } from 'react-router-dom'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
 import {
@@ -19,6 +20,7 @@ interface DrawerProps {
 }
 
 export function Drawer({ open, onClose }: DrawerProps) {
+  const appName = useAppName()
   const { total } = useCountsByMember()
   const trash = useTrashCount()
 
@@ -51,7 +53,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
         <div style={{ display: 'flex', alignItems: 'flex-start' }}>
           <div className="drawer__brand" style={{ flex: 1 }}>
             <strong>POCA</strong>
-            <span>포토카드 아카이브</span>
+            <span>{appName}</span>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label="메뉴 닫기">
             <CloseIcon size={20} />
