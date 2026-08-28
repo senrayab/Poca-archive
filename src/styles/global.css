@@ -619,7 +619,7 @@ a { color: inherit; }
 .detail__stage {
   position: relative;
   aspect-ratio: var(--card-ratio);
-  height: min(52dvh, 460px);
+  height: var(--stage-h);
   max-width: 100%;
   border-radius: 30px 12px 30px 12px;
   transition: height .3s var(--ease);
@@ -700,8 +700,11 @@ a { color: inherit; }
  * 유리판을 깔면 그만큼 화면이 무거워져서, 버튼이 차지하던 폭만 남겼다.
  */
 .detail__rail {
-  display: flex;
-  gap: 2px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  width: var(--stage-w);
+  max-width: 100%;
   align-self: center;
   flex-shrink: 0;
 }
@@ -712,7 +715,7 @@ a { color: inherit; }
  */
 .rail-btn {
   position: relative;
-  width: 66px;
+  width: 100%;
   padding: 4px 0 7px;
   display: grid;
   grid-template-rows: 40px auto;
@@ -747,6 +750,9 @@ a { color: inherit; }
  * 딤은 라이트 테마에서도 어두우므로 이 안쪽 색은 테마와 무관하게 고정한다.
  */
 .detail {
+  /* 사진 높이에서 실물 비율로 폭이 정해진다. 레일이 이 폭을 그대로 쓴다. */
+  --stage-h: min(52dvh, 460px);
+  --stage-w: calc(var(--stage-h) * 54 / 86);
   --on-scrim: #fff;
   --on-scrim-dim: rgba(255, 255, 255, .68);
   --glass: rgba(255, 255, 255, .14);
@@ -766,7 +772,7 @@ a { color: inherit; }
 }
 
 /* 수정 중에는 사진을 줄여 폼이 겹치지 않게 자리를 낸다 */
-.detail[data-editing='true'] .detail__stage { height: min(26dvh, 220px); }
+.detail[data-editing='true'] { --stage-h: min(26dvh, 220px); }
 .detail[data-editing='true'] .detail__figure { flex: 0 0 auto; }
 
 @media (prefers-reduced-motion: reduce) {
