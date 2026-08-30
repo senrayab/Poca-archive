@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { Card, CardStatus } from '@/db/types'
@@ -9,7 +8,6 @@ import { formatBytes, formatDate } from '@/lib/format'
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   CloseIcon,
   EditIcon,
   HeartIcon,
@@ -44,8 +42,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const toast = useToast()
 
   const [editing, setEditing] = useState(false)
-  // 사진 위 유리바에서 위로 펼쳐지는 찜·수정 메뉴
-  const [dialOpen, setDialOpen] = useState(false)
   const [confirmDispose, setConfirmDispose] = useState(false)
   const [draft, setDraft] = useState({
     title: card.title,
@@ -70,7 +66,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   // 편집 상태는 '다른 카드로 넘어갔을 때'만 초기화한다.
   useEffect(() => {
     setEditing(false)
-    setDialOpen(false)
     setConfirmDispose(false)
     setDraft({
       title: card.title,
@@ -202,6 +197,24 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               />
             )}
 
+{/*
+              찜은 메뉴에 넣지 않고 카드 오른쪽 위에 그냥 띄워둔다.
+              누르는 버튼이면서 동시에 '이 카드를 찜했는지' 보여주는 표시라,
+              열어봐야 보이는 자리에 두면 표시로서의 값이 사라진다.
+            */}
+            {!editing && card.deleted !== 1 && (
+              <button
+                className="detail__fav"
+                onClick={toggleFavorite}
+                aria-pressed={card.favorite === 1}
+                data-on={card.favorite === 1}
+                aria-label={card.favorite === 1 ? '찜 해제' : '찜하기'}
+                title="찜"
+              >
+                <HeartIcon size={20} filled={card.favorite === 1} />
+              </button>
+            )}
+
             {/* 카드 위에 얹히는 유리 시트. 판때기가 아니라 사진이 비쳐 보이는 층이다. */}
             {!editing && (
               <div className="detail__sheet">
@@ -211,49 +224,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 </div>
                 <h2 className="detail__title">{card.title}</h2>
 
-                {/*
-                  자주 쓰는 찜·수정은 유리바 오른쪽 위 버튼에서 위로 펼친다.
-                  아래 레일에 다 늘어놓으면 사진 밑이 무거워지고, 손이 닿는
-                  자리도 사진 옆쪽이 더 가깝다. --i는 열릴 때, --r은 닫힐 때의
-                  순서 — 열 땐 아래에서 위로, 닫을 땐 위에서 아래로 사라진다.
-                */}
-                {card.deleted !== 1 && (
-                  <div className="detail__dial" data-open={dialOpen}>
-                    <button
-                      className="dial-btn dial-btn--toggle"
-                      onClick={() => setDialOpen((open) => !open)}
-                      aria-expanded={dialOpen}
-                      aria-label={dialOpen ? '메뉴 닫기' : '메뉴 열기'}
-                    >
-                      <ChevronUp size={20} />
-                    </button>
-
-                    <button
-                      className="dial-btn"
-                      style={{ '--i': 0, '--r': 1 } as CSSProperties}
-                      onClick={toggleFavorite}
-                      aria-pressed={card.favorite === 1}
-                      data-on={card.favorite === 1}
-                      aria-label="찜"
-                      title="찜"
-                    >
-                      <HeartIcon size={19} filled={card.favorite === 1} />
-                    </button>
-
-                    <button
-                      className="dial-btn"
-                      style={{ '--i': 1, '--r': 0 } as CSSProperties}
-                      onClick={() => {
-                        setDialOpen(false)
-                        setEditing(true)
-                      }}
-                      aria-label="수정"
-                      title="수정"
-                    >
-                      <EditIcon size={19} />
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -347,10 +317,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           </div>
         )}
 
-        {/*
-          찜·수정이 사진 위 다이얼로 올라가, 아래 레일에는 삭제만 남았다.
-          한 칸짜리 그리드라 저절로 가운데에 선다.
-        */}
+{/* 찜은 카드 위로 올라갔고, 레일에는 가끔 쓰는 수정·삭제만 남는다 */}
         {!editing && (
           <div className="detail__rail">
             {card.deleted === 1 ? (
@@ -359,13 +326,19 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 <span>복원</span>
               </button>
             ) : (
-              <button
-                className="rail-btn rail-btn--muted"
-                onClick={() => setConfirmDispose(true)}
-              >
-                <TrashIcon size={21} />
-                <span>삭제</span>
-              </button>
+              <>
+                <button className="rail-btn" onClick={() => setEditing(true)}>
+                  <EditIcon size={21} />
+                  <span>수정</span>
+                </button>
+                <button
+                  className="rail-btn rail-btn--muted"
+                  onClick={() => setConfirmDispose(true)}
+                >
+                  <TrashIcon size={21} />
+                  <span>삭제</span>
+                </button>
+              </>
             )}
           </div>
         )}

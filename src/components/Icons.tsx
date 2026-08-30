@@ -4,7 +4,6 @@ import {
   Check,
   ChevronLeft as LuChevronLeft,
   ChevronRight as LuChevronRight,
-  ChevronUp as LuChevronUp,
   ChartColumn,
   Download,
   ArrowLeftRight,
@@ -111,9 +110,6 @@ export const ChevronLeft = ({ size = 22, className }: IconProps) => (
 )
 export const ChevronRight = ({ size = 22, className }: IconProps) => (
   <LuChevronRight size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
-)
-export const ChevronUp = ({ size = 22, className }: IconProps) => (
-  <LuChevronUp size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const CheckIcon = ({ size = 22, className }: IconProps) => (
   <Check size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
