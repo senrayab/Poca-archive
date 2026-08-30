@@ -835,23 +835,15 @@ a { color: inherit; }
 }
 
 /*
- * 사진 위 유리바 오른쪽 위에 붙는 펼침 버튼.
- * 자주 쓰는 찜·수정을 아래 레일까지 내려가지 않고 사진 옆에서 바로 누른다.
- * 컨테이너는 아래쪽 모서리를 유리바에 고정해두고 위로만 자란다 —
- * 그래야 항목이 늘고 줄어도 토글 자리는 움직이지 않는다.
+ * 찜 하트는 카드 오른쪽 위에 그냥 떠 있다.
+ * 메뉴 안에 넣으면 열어보기 전엔 찜 여부를 알 수 없어, 버튼이자 표시인
+ * 성격을 잃는다. 사진 위라 유리 원으로 띄워 어떤 사진에서도 읽히게 했다.
  */
-.detail__dial {
+.detail__fav {
   position: absolute;
-  right: 12px;
-  /* 유리바 윗선에 살짝 걸치게 */
-  bottom: calc(100% - 8px);
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  gap: 8px;
-}
-.dial-btn {
-  flex: none;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -863,46 +855,26 @@ a { color: inherit; }
   backdrop-filter: blur(16px) saturate(140%);
   box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
   transition: background .15s, color .15s, transform .15s;
+  /* 카드를 넘길 때마다 톡 하고 자리를 잡는다 */
+  animation: fav-in .3s cubic-bezier(.2, 1.6, .45, 1) both;
 }
-.dial-btn:hover { background: var(--glass-hover); }
-.dial-btn:active { transform: scale(.9); }
+.detail__fav:hover { background: var(--glass-hover); }
+.detail__fav:active { transform: scale(.9); }
 /* 리스트 썸네일의 하트와 같은 색 — 포인트 색을 따라가지 않는다 */
-.dial-btn[data-on='true'] { color: var(--fav); }
+.detail__fav[data-on='true'] { color: var(--fav); }
+/* 찜을 켜는 순간에만 규칙이 맞기 시작해 한 번 뛴다 */
+.detail__fav[data-on='true'] svg { animation: fav-beat .34s cubic-bezier(.2, 1.6, .45, 1); }
 
-/* 열리는 방향을 화살표로 알려주고, 열리면 뒤집혀 닫기가 된다 */
-.dial-btn--toggle svg { transition: transform .26s var(--ease); }
-.detail__dial[data-open='true'] .dial-btn--toggle svg { transform: rotate(180deg); }
-
-/*
- * 닫혀 있을 땐 토글 뒤에 숨어 있다가 하나씩 튀어 오른다.
- * 되튀는 이징이라 끝에서 살짝 넘어갔다 제자리로 돌아온다.
- * 열 땐 아래에서 위로(--i), 닫을 땐 위에서 아래로(--r) 차례가 돈다.
- */
-.detail__dial .dial-btn:not(.dial-btn--toggle) {
-  opacity: 0;
-  transform: translateY(16px) scale(.4);
-  pointer-events: none;
-  transition:
-    opacity .16s ease,
-    transform .3s cubic-bezier(.2, 1.6, .45, 1),
-    background .15s,
-    color .15s;
-  transition-delay: calc(var(--r, 0) * 45ms);
+@keyframes fav-in {
+  from { opacity: 0; transform: scale(.4); }
 }
-.detail__dial[data-open='true'] .dial-btn:not(.dial-btn--toggle) {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-  transition-delay: calc(var(--i, 0) * 60ms);
-}
-.detail__dial[data-open='true'] .dial-btn:not(.dial-btn--toggle):active {
-  transform: scale(.9);
+@keyframes fav-beat {
+  40% { transform: scale(1.28); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dial-btn,
-  .dial-btn--toggle svg { transition-duration: .01ms; }
-  .detail__dial .dial-btn { transition-delay: 0s; }
+  .detail__fav,
+  .detail__fav[data-on='true'] svg { animation: none; }
 }
 
 /*
