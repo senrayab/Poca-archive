@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { Card, CardStatus } from '@/db/types'
@@ -25,6 +26,12 @@ interface CardDetailProps {
   onClose: () => void
 }
 
+/*
+ * 찜할 때 하트에서 튀어나가는 조각의 방향(도).
+ * 정확히 균등하게 나누면 기계로 찍은 티가 나서 일부러 어긋나게 뒀다.
+ */
+const BURST_ANGLES = [4, 41, 76, 119, 155, 198, 235, 272, 309, 343]
+
 const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }> = [
   { status: 'traded', label: '양도함', hint: '다른 사람에게 넘긴 카드' },
   { status: 'sold', label: '판매함', hint: '판매로 정리한 카드' },
@@ -43,6 +50,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
 
   const [editing, setEditing] = useState(false)
   const [confirmDispose, setConfirmDispose] = useState(false)
+  // 찜을 켤 때마다 1씩 올려, key로 조각 애니메이션을 처음부터 다시 태운다
+  const [burst, setBurst] = useState(0)
   const [draft, setDraft] = useState({
     title: card.title,
     memberId: card.memberId,
@@ -102,10 +111,9 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const category = categories.find((c) => c.id === card.categoryId)
 
   const toggleFavorite = async () => {
-    await db.cards.update(card.id, {
-      favorite: card.favorite === 1 ? 0 : 1,
-      updatedAt: Date.now(),
-    })
+    const next = card.favorite === 1 ? 0 : 1
+    if (next === 1) setBurst((n) => n + 1)
+    await db.cards.update(card.id, { favorite: next, updatedAt: Date.now() })
   }
 
   const save = async () => {
@@ -212,6 +220,15 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 title="찜"
               >
                 <HeartIcon size={20} filled={card.favorite === 1} />
+
+                {/* key가 바뀌면 통째로 다시 붙어, 연달아 눌러도 매번 처음부터 터진다 */}
+                {burst > 0 && (
+                  <span className="fav-burst" key={burst} aria-hidden="true">
+                    {BURST_ANGLES.map((angle) => (
+                      <span key={angle} style={{ '--a': `${angle}deg` } as CSSProperties} />
+                    ))}
+                  </span>
+                )}
               </button>
             )}
 

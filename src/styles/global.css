@@ -841,8 +841,9 @@ a { color: inherit; }
  */
 .detail__fav {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  /* 조각이 사방으로 튀는데 스테이지가 넘치는 부분을 잘라서, 반경만큼 띄운다 */
+  top: 13px;
+  right: 13px;
   z-index: 1;
   width: 38px;
   height: 38px;
@@ -851,9 +852,9 @@ a { color: inherit; }
   place-items: center;
   color: var(--on-scrim);
   background: var(--glass);
-  border: 1px solid var(--glass-line);
+  /* 테두리 없이 그림자만으로 사진에서 떠 보인다 */
   backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .22);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .26);
   transition: background .15s, color .15s, transform .15s;
   /* 카드를 넘길 때마다 톡 하고 자리를 잡는다 */
   animation: fav-in .3s cubic-bezier(.2, 1.6, .45, 1) both;
@@ -872,9 +873,49 @@ a { color: inherit; }
   40% { transform: scale(1.28); }
 }
 
+/*
+ * 찜을 켜는 순간 하트에서 조각이 사방으로 튀고, 파문이 한 번 번진다.
+ * 조각은 rotate로 방향을 잡고 translateY로 밀어내 각도별 좌표를 따로 안 준다.
+ */
+.fav-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fav-burst::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--fav);
+  animation: fav-ring .46s ease-out both;
+}
+.fav-burst span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--fav);
+  animation: fav-particle .54s cubic-bezier(.15, .75, .3, 1) both;
+}
+@keyframes fav-ring {
+  from { transform: scale(.55); opacity: .75; }
+  to { transform: scale(1.5); opacity: 0; }
+}
+@keyframes fav-particle {
+  from { transform: rotate(var(--a)) translateY(-3px) scale(.35); opacity: 1; }
+  65% { opacity: 1; }
+  to { transform: rotate(var(--a)) translateY(-23px) scale(.2); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .detail__fav,
   .detail__fav[data-on='true'] svg { animation: none; }
+  /* 조각은 animation만 끄면 시작 위치에 그대로 남아 보이므로 통째로 뺀다 */
+  .fav-burst { display: none; }
 }
 
 /*
@@ -918,6 +959,17 @@ a { color: inherit; }
   transition: background .15s;
 }
 .rail-btn span { font-size: 10px; font-weight: 600; opacity: .8; }
+/* 버튼이 둘 이상일 때만 사이에 세로선을 넣는다 (복원 하나뿐일 땐 안 생긴다) */
+.rail-btn + .rail-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 28px;
+  margin-top: -14px;
+  background: var(--glass-line);
+}
 .rail-btn:hover::before { background: var(--glass-hover); }
 .rail-btn:active { transform: scale(.92); }
 /* 리스트 썸네일의 하트와 같은 색으로 — 포인트 색을 따라가지 않는다 */
