@@ -1048,7 +1048,7 @@ a { color: inherit; }
   display: flex;
   flex-wrap: wrap;
   gap: 4px 10px;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--on-scrim-dim);
   align-items: center;
   justify-content: center;
