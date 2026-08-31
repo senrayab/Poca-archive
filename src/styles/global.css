@@ -230,11 +230,6 @@ a { color: inherit; }
 }
 .icon-btn:hover { background: var(--bg-elev-2); }
 .icon-btn:active { transform: scale(.94); }
-.icon-btn[data-active='true'] {
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: var(--glow);
-}
 /* 이미 판때기 위에 놓인 버튼은 흰 원·그림자가 겹쳐 보이지 않으므로 벗긴다 */
 .drawer .icon-btn,
 .card-panel .icon-btn,
