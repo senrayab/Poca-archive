@@ -898,8 +898,28 @@ a { color: inherit; }
   height: 5px;
   margin: -2.5px 0 0 -2.5px;
   border-radius: 50%;
-  background: var(--fav);
   animation: fav-particle .54s cubic-bezier(.15, .75, .3, 1) both;
+}
+/*
+ * 조각 색은 하나씩 지정한다. nth-child(5n+k) 식으로 돌리면 같은 순서가
+ * 반복돼 회전하는 무늬로 읽히는데, 열 개뿐이라 그냥 나열하는 편이 확실하다.
+ * 파문만 코랄로 남겨 하트와 같은 색을 지킨다.
+ */
+.fav-burst span:nth-child(1) { background: var(--fav); }
+.fav-burst span:nth-child(2) { background: #ffb02e; }
+.fav-burst span:nth-child(3) { background: #4bb8f0; }
+.fav-burst span:nth-child(4) { background: #ffe14d; }
+.fav-burst span:nth-child(5) { background: #8b7cf6; }
+.fav-burst span:nth-child(6) { background: #5ed6a4; }
+.fav-burst span:nth-child(7) { background: var(--fav); }
+.fav-burst span:nth-child(8) { background: #ff7ab8; }
+.fav-burst span:nth-child(9) { background: #ffd166; }
+.fav-burst span:nth-child(10) { background: #6ee7c8; }
+/* 크기가 다 같으면 무늬처럼 보여서 몇 개만 작게 흘린다 */
+.fav-burst span:nth-child(3n) {
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
 }
 @keyframes fav-ring {
   from { transform: scale(.55); opacity: .75; }
