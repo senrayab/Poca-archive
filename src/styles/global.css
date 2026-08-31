@@ -842,8 +842,8 @@ a { color: inherit; }
 .detail__fav {
   position: absolute;
   /* 조각이 사방으로 튀는데 스테이지가 넘치는 부분을 잘라서, 반경만큼 띄운다 */
-  top: 18px;
-  right: 18px;
+  top: 21px;
+  right: 21px;
   z-index: 1;
   width: 38px;
   height: 38px;

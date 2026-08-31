@@ -34,18 +34,18 @@ interface CardDetailProps {
  * 조각들이 한 줄로 서서 원을 그리며 퍼져, 파문과 겹쳐 보인다.
  */
 const BURST_PARTICLES = [
-  { a: 4, d: 32, s: 7, t: 0, c: 'var(--fav)' },
-  { a: 38, d: 20, s: 6, t: 56, c: '#ffb02e' },
-  { a: 71, d: 28, s: 9, t: 18, c: '#4bb8f0' },
-  { a: 104, d: 18, s: 6, t: 82, c: '#ffe14d' },
-  { a: 133, d: 30, s: 8, t: 8, c: '#8b7cf6' },
-  { a: 166, d: 23, s: 7, t: 64, c: '#5ed6a4' },
-  { a: 197, d: 34, s: 9, t: 0, c: 'var(--fav)' },
-  { a: 224, d: 19, s: 6, t: 92, c: '#ff7ab8' },
-  { a: 252, d: 27, s: 8, t: 32, c: '#ffd166' },
-  { a: 283, d: 21, s: 6, t: 74, c: '#6ee7c8' },
-  { a: 312, d: 31, s: 7, t: 12, c: '#ffb02e' },
-  { a: 344, d: 24, s: 9, t: 46, c: '#4bb8f0' },
+  { a: 4, d: 32, s: 9, t: 0, c: 'var(--fav)' },
+  { a: 38, d: 20, s: 8, t: 56, c: '#ffb02e' },
+  { a: 71, d: 28, s: 12, t: 18, c: '#4bb8f0' },
+  { a: 104, d: 18, s: 8, t: 82, c: '#ffe14d' },
+  { a: 133, d: 30, s: 11, t: 8, c: '#8b7cf6' },
+  { a: 166, d: 23, s: 9, t: 64, c: '#5ed6a4' },
+  { a: 197, d: 34, s: 12, t: 0, c: 'var(--fav)' },
+  { a: 224, d: 19, s: 8, t: 92, c: '#ff7ab8' },
+  { a: 252, d: 27, s: 11, t: 32, c: '#ffd166' },
+  { a: 283, d: 21, s: 8, t: 74, c: '#6ee7c8' },
+  { a: 312, d: 31, s: 9, t: 12, c: '#ffb02e' },
+  { a: 344, d: 24, s: 12, t: 46, c: '#4bb8f0' },
 ]
 
 const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }> = [
@@ -57,8 +57,8 @@ const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }
 export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailProps) {
   // 본체 이미지는 팝업을 열 때 그 카드 것만 읽는다 (그리드는 썸네일만 들고 있다).
   const stored = useLiveQuery(() => db.images.get(card.id), [card.id])
-  const fullUrl = useObjectUrl(stored?.blob)
-  const thumbUrl = useObjectUrl(card.thumb)
+  const fullUrl = useObjectUrl(stored?.blob, card.id)
+  const thumbUrl = useObjectUrl(card.thumb, card.id)
   const [fullLoaded, setFullLoaded] = useState(false)
   const members = useMembers()
   const categories = useCategories()
