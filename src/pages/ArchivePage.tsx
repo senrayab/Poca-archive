@@ -149,9 +149,13 @@ export function ArchivePage({ mode }: ArchivePageProps) {
                   <TrashIcon />
                 </button>
               )}
+              {/*
+                검색어가 걸려 있다는 건 탭 아래 칩이 이미 말해준다.
+                버튼까지 포인트색으로 켜두면, 검색 시트가 전체화면 딤으로
+                열려 있는 동안 그 색만 딤 뒤에서 떠 보인다.
+              */}
               <button
                 className="icon-btn"
-                data-active={searchOpen || query !== ''}
                 onClick={() => setSearchOpen(true)}
                 aria-label="검색"
               >
