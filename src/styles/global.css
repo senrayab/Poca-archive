@@ -643,7 +643,8 @@ a { color: inherit; }
   width: min(78vw, 300px);
   background: var(--bg-elev);
   border: none;
-  border-radius: 0 34px 34px 0;
+  /* 오른쪽 위만 둥글다 (좌·하단은 화면 끝에 붙는다) */
+  border-radius: 0 34px 0 0;
   border-right: 1px solid var(--panel-line);
   box-shadow: var(--shadow-xl);
   padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
