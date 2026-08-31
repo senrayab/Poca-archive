@@ -27,10 +27,26 @@ interface CardDetailProps {
 }
 
 /*
- * 찜할 때 하트에서 튀어나가는 조각의 방향(도).
- * 정확히 균등하게 나누면 기계로 찍은 티가 나서 일부러 어긋나게 뒀다.
+ * 찜할 때 터지는 조각 하나하나.
+ * a=각도, d=날아가는 거리, s=지름, t=터지기까지의 시간(ms), c=색.
+ *
+ * 넷 다 제각각이어야 폭죽처럼 보인다. 거리와 시간을 하나로 맞추면
+ * 조각들이 한 줄로 서서 원을 그리며 퍼져, 파문과 겹쳐 보인다.
  */
-const BURST_ANGLES = [4, 41, 76, 119, 155, 198, 235, 272, 309, 343]
+const BURST_PARTICLES = [
+  { a: 4, d: 32, s: 7, t: 0, c: 'var(--fav)' },
+  { a: 38, d: 20, s: 6, t: 56, c: '#ffb02e' },
+  { a: 71, d: 28, s: 9, t: 18, c: '#4bb8f0' },
+  { a: 104, d: 18, s: 6, t: 82, c: '#ffe14d' },
+  { a: 133, d: 30, s: 8, t: 8, c: '#8b7cf6' },
+  { a: 166, d: 23, s: 7, t: 64, c: '#5ed6a4' },
+  { a: 197, d: 34, s: 9, t: 0, c: 'var(--fav)' },
+  { a: 224, d: 19, s: 6, t: 92, c: '#ff7ab8' },
+  { a: 252, d: 27, s: 8, t: 32, c: '#ffd166' },
+  { a: 283, d: 21, s: 6, t: 74, c: '#6ee7c8' },
+  { a: 312, d: 31, s: 7, t: 12, c: '#ffb02e' },
+  { a: 344, d: 24, s: 9, t: 46, c: '#4bb8f0' },
+]
 
 const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }> = [
   { status: 'traded', label: '양도함', hint: '다른 사람에게 넘긴 카드' },
@@ -224,8 +240,19 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 {/* key가 바뀌면 통째로 다시 붙어, 연달아 눌러도 매번 처음부터 터진다 */}
                 {burst > 0 && (
                   <span className="fav-burst" key={burst} aria-hidden="true">
-                    {BURST_ANGLES.map((angle) => (
-                      <span key={angle} style={{ '--a': `${angle}deg` } as CSSProperties} />
+                    {BURST_PARTICLES.map((p) => (
+                      <span
+                        key={p.a}
+                        style={
+                          {
+                            '--a': `${p.a}deg`,
+                            '--d': p.d,
+                            '--s': p.s,
+                            '--t': p.t,
+                            '--c': p.c,
+                          } as CSSProperties
+                        }
+                      />
                     ))}
                   </span>
                 )}
