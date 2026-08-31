@@ -41,22 +41,17 @@ export function Header({ title, back = false, bare = false, actions }: HeaderPro
 
   return (
     <header className="header" data-bare={bare || undefined}>
-      {back && (
+      {back ? (
         <button className="icon-btn" onClick={() => navigate(-1)} aria-label="뒤로">
           <ChevronLeft />
+        </button>
+      ) : (
+        <button className="icon-btn" onClick={openDrawer} aria-label="메뉴 열기">
+          <MenuIcon />
         </button>
       )}
       <h1 className="header__title">{title}</h1>
       {actions}
-      {/*
-        메뉴는 헤더 맨 오른쪽 끝에 둔다. 폰을 한 손으로 쥐면 왼쪽 위가
-        엄지에서 제일 먼 구석이라, 매일 여는 버튼을 거기 두면 안 된다.
-        가장자리 스와이프는 답이 못 된다 — 좌우 끝은 OS 뒤로가기 제스처가
-        먼저 가져간다.
-      */}
-      <button className="icon-btn" onClick={openDrawer} aria-label="메뉴 열기">
-        <MenuIcon />
-      </button>
     </header>
   )
 }

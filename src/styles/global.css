@@ -638,15 +638,14 @@ a { color: inherit; }
 
 .drawer {
   position: fixed;
-  /* 여는 버튼이 헤더 오른쪽 끝에 있으니 서랍도 같은 쪽에서 나온다 */
-  inset: 0 0 0 auto;
+  inset: 0 auto 0 0;
   z-index: 51;
   width: min(78vw, 300px);
   background: var(--bg-elev);
   border: none;
-  /* 화면 안쪽을 향한 왼쪽 위만 둥글다 */
-  border-radius: 34px 0 0 0;
-  border-left: 1px solid var(--panel-line);
+  /* 오른쪽 위만 둥글다 (좌·하단은 화면 끝에 붙는다) */
+  border-radius: 0 34px 0 0;
+  border-right: 1px solid var(--panel-line);
   box-shadow: var(--shadow-xl);
   padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
   display: flex;
@@ -655,15 +654,7 @@ a { color: inherit; }
   overflow-y: auto;
   animation: slide-in .22s var(--ease);
 }
-@keyframes slide-in { from { transform: translateX(100%); } }
-
-/*
- * 브랜드는 위에, 메뉴는 바닥에. 사이를 이 칸이 벌린다.
- * 목록이 화면보다 길어지면 0까지 줄어들어 자리를 내주고,
- * 나머지 항목은 눌리지 않게 flex-shrink를 막아둔다.
- */
-.drawer > * { flex-shrink: 0; }
-.drawer__spacer { flex: 1 1 0; min-height: 0; }
+@keyframes slide-in { from { transform: translateX(-100%); } }
 
 .drawer__brand { padding: 10px 12px 14px; }
 .drawer__brand strong {
@@ -1605,9 +1596,9 @@ a { color: inherit; }
   }
 
   .drawer {
-    right: 50%;
-    left: auto;
-    margin-right: calc(var(--app-w) / -2);
+    left: 50%;
+    right: auto;
+    margin-left: calc(var(--app-w) / -2);
     width: min(300px, calc(var(--app-w) * 0.8));
   }
 }
