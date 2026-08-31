@@ -235,7 +235,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 aria-label={card.favorite === 1 ? '찜 해제' : '찜하기'}
                 title="찜"
               >
-                <HeartIcon size={20} filled={card.favorite === 1} />
+                <HeartIcon size={22} filled={card.favorite === 1} />
 
                 {/* key가 바뀌면 통째로 다시 붙어, 연달아 눌러도 매번 처음부터 터진다 */}
                 {burst > 0 && (
