@@ -212,8 +212,13 @@ a { color: inherit; }
 }
 
 /*
- * 떠 있는 동그란 버튼. 레퍼런스의 상단 컨트롤처럼 판때기 위가 아니라
- * 배경 위에 얹혀 보이도록 흰 원 + 옅은 그림자로 만든다.
+ * 헤더의 동그란 아이콘 버튼.
+ *
+ * 흰 원 + 그림자를 상시로 깔았었는데, 호버하면 그 원이 배경색으로 덮여
+ * 오히려 사라져 보였다 — 판때기가 상태를 거꾸로 말하고 있었다.
+ * 평소엔 아이콘만 두고, 원은 호버·탭 때만 들어온다.
+ *
+ * 판때기가 없어졌으니 서랍·모달·행 안에서 원을 벗기던 예외들도 필요 없다.
  */
 .icon-btn {
   width: 38px;
@@ -221,29 +226,12 @@ a { color: inherit; }
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--bg-elev);
-  border: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-sm);
   color: var(--text);
   flex-shrink: 0;
-  transition: background .15s, color .15s, box-shadow .15s, transform .15s;
+  transition: background .15s, color .15s, transform .15s;
 }
 .icon-btn:hover { background: var(--bg-elev-2); }
 .icon-btn:active { transform: scale(.94); }
-/* 이미 판때기 위에 놓인 버튼은 흰 원·그림자가 겹쳐 보이지 않으므로 벗긴다 */
-.drawer .icon-btn,
-.card-panel .icon-btn,
-.modal__panel .icon-btn,
-.queue__item .icon-btn,
-.list-row .icon-btn {
-  background: none;
-  box-shadow: none;
-}
-.drawer .icon-btn:hover,
-.card-panel .icon-btn:hover,
-.modal__panel .icon-btn:hover,
-.queue__item .icon-btn:hover,
-.list-row .icon-btn:hover { background: var(--bg-elev-2); }
 
 /* FAB(58px + 아래 20px)를 살짝 넘길 만큼만 남긴다 */
 .content { flex: 1; padding-bottom: calc(86px + var(--safe-bottom)); }
