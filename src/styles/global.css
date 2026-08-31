@@ -965,18 +965,12 @@ a { color: inherit; }
   color: var(--on-scrim);
   transition: color .15s, transform .15s;
 }
-.rail-btn::before {
-  content: '';
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  margin-left: -20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: background .15s;
+.rail-btn span {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: .8;
+  transition: opacity .15s;
 }
-.rail-btn span { font-size: 10px; font-weight: 600; opacity: .8; }
 /* 버튼이 둘 이상일 때만 사이에 세로선을 넣는다 (복원 하나뿐일 땐 안 생긴다) */
 .rail-btn + .rail-btn::after {
   content: '';
@@ -988,14 +982,18 @@ a { color: inherit; }
   margin-top: -14px;
   background: var(--glass-line);
 }
-.rail-btn:hover::before { background: var(--glass-hover); }
-.rail-btn:active { transform: scale(.92); }
-/* 리스트 썸네일의 하트와 같은 색으로 — 포인트 색을 따라가지 않는다 */
-.rail-btn[data-on='true'] { color: var(--fav); }
-.rail-btn[data-on='true'] span { opacity: 1; }
 /* 삭제는 눈에 먼저 들어올 이유가 없어, 카드 아래 정보 글자와 같은 투명도로 낮춘다 */
 .rail-btn--muted { color: var(--on-scrim-dim); }
 .rail-btn--muted span { opacity: 1; }
+/*
+ * 호버 표시는 원 없이 밝기만 올린다.
+ * 아이콘 자리에만 원을 그리면 바로 아래 라벨과 맞붙어, 아이콘·라벨이
+ * 한 버튼이 아니라 원이 글자를 이고 있는 것처럼 읽혔다.
+ * 어차피 손으로 쓸 땐 호버가 없고, 누른 느낌은 :active가 낸다.
+ */
+.rail-btn:hover { color: var(--on-scrim); }
+.rail-btn:hover span { opacity: 1; }
+.rail-btn:active { transform: scale(.92); }
 
 
 /*
