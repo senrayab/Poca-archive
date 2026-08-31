@@ -61,6 +61,13 @@ export function Drawer({ open, onClose }: DrawerProps) {
           </button>
         </div>
 
+        {/*
+          메뉴는 서랍 바닥에서부터 쌓는다. 위에서 채우면 자주 쓰는 항목이
+          화면 꼭대기로 올라가 엄지에서 멀어지고, 남는 여백만 아래에서 논다.
+          화면이 짧아 목록이 넘칠 땐 이 칸이 0으로 줄어 자리를 내준다.
+        */}
+        <div className="drawer__spacer" aria-hidden="true" />
+
         <div className="drawer__section">보관함</div>
         {item('/', <GridIcon size={20} />, '전체 포토카드', total)}
         {item('/favorites', <TagIcon size={20} />, '즐겨찾기')}
