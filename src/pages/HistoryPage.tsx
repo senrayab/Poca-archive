@@ -113,7 +113,7 @@ function HistoryRow({
   category?: string
   onOpen: () => void
 }) {
-  const url = useObjectUrl(card.thumb)
+  const url = useObjectUrl(card.thumb, card.id)
 
   return (
     <button className="history__row" onClick={onOpen}>

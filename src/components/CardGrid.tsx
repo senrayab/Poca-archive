@@ -20,7 +20,7 @@ const Thumb = memo(function Thumb({
   onOpen,
   onToggleSelect,
 }: ThumbProps) {
-  const url = useObjectUrl(card.thumb)
+  const url = useObjectUrl(card.thumb, card.id)
 
   return (
     <button
