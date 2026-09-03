@@ -80,12 +80,13 @@ function readAccent(): string | null {
   }
 }
 
+/** 고른 적 없으면 목록의 첫 번째 — 화면에서 왼쪽에 놓인 쪽을 쓴다. */
 function readFavCut(): FavCut {
   try {
     const raw = localStorage.getItem(FAVCUT_KEY) as FavCut | null
-    return raw && FAV_CUT_IDS.includes(raw) ? raw : 'disc'
+    return raw && FAV_CUT_IDS.includes(raw) ? raw : 'notch'
   } catch {
-    return 'disc'
+    return 'notch'
   }
 }
 
@@ -226,7 +227,7 @@ export function useFavCut(): FavCut {
   return useSyncExternalStore(
     subscribe,
     () => favCut,
-    () => 'disc' as FavCut,
+    () => 'notch' as FavCut,
   )
 }
 
