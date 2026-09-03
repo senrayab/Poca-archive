@@ -865,15 +865,16 @@ a { color: inherit; }
 }
 
 /*
- * 유리의 윗 경계를 흐린다.
+ * 유리의 윗 경계를 흐린다. 층 하나에 마스크를 걸어 위로 갈수록 꺼뜨린다.
  *
- * 마스크 하나로 흐린 층을 서서히 켜면, 중간에서 또렷한 사진과 20px 블러가
- * 반반 겹쳐 상이 두 겹으로 번진다. 그래서 층을 둘로 나눈다 —
- * 아래 깔린 20px 층이 켜지기 전에, 7px짜리 얕은 층이 그 구간을 대신 채운다.
- * 또렷함에서 블러로 한 번에 뛰지 않고 중간을 거치는 셈이다.
+ * 얕게 흐리는 층을 하나 더 겹쳐 '징검다리'로 삼아 봤는데, 그게 오히려
+ * 경계를 만들었다. 두 층의 마스크가 서로 다른 속도로 켜지고 꺼지는 바람에
+ * 흐림의 총량이 아래로 갈수록 단조롭게 늘지 않고, 중간에서 한 번 도로
+ * 줄었다가 다시 늘었다. 흐려졌다 또렷해졌다 하는 그 반환점이 눈에는
+ * 직선 하나로 보인다. 한 겹으로 두면 흐림이 끝까지 단조롭게 는다.
  *
- * 마스크는 층마다 따로 걸어야 한다. 감싸는 요소에 걸면 그 안의 층까지
- * 같이 지워져서, 애써 나눈 두 층이 다시 하나처럼 군다.
+ * 마스크는 backdrop-filter에도 그대로 먹으니(부모에 걸면 안 된다 — 그러면
+ * 자식의 배경 자체가 사라진다) 층 하나로 충분하다.
  */
 .detail__glass {
   position: absolute;
@@ -881,15 +882,11 @@ a { color: inherit; }
   border-radius: inherit;
   pointer-events: none;
 }
-.detail__glass::before,
-.detail__glass::after {
+.detail__glass::before {
   content: '';
   position: absolute;
-  border-radius: inherit;
-}
-/* 본체: 아래는 그대로, 위로 올라갈수록 꺼진다 */
-.detail__glass::before {
   inset: 0;
+  border-radius: inherit;
   background: var(--glass);
   backdrop-filter: blur(20px) saturate(140%);
   --ramp: linear-gradient(
@@ -899,15 +896,6 @@ a { color: inherit; }
     rgba(0, 0, 0, .52) calc(var(--sheet-fade) * .64),
     #000 var(--sheet-fade)
   );
-  -webkit-mask-image: var(--ramp);
-  mask-image: var(--ramp);
-}
-/* 징검다리: 본체가 꺼져 있는 구간에서만 얕게 흐린다 */
-.detail__glass::after {
-  inset: 0 0 auto 0;
-  height: var(--sheet-fade);
-  backdrop-filter: blur(7px);
-  --ramp: linear-gradient(to bottom, transparent 0, #000 58%, transparent 100%);
   -webkit-mask-image: var(--ramp);
   mask-image: var(--ramp);
 }
