@@ -15,7 +15,7 @@
   --radius-xs: 11px;
   --pill: 999px;
 
-  --thumb-radius: 18px;
+  --thumb-radius: 12px;
   --stage-radius: 22px;
   /* 판때기는 네 모서리를 같은 값으로 — 지금 쓰는 둥글기 중 가장 작은 값 */
   --panel-radius: 12px;
@@ -1752,7 +1752,7 @@ a { color: inherit; }
   --radius: 20px;
   --radius-sm: 16px;
   --radius-xs: 12px;
-  --thumb-radius: 14px;
+  --thumb-radius: 12px;
   --stage-radius: 18px;
 
   --on-scrim: #fff;
