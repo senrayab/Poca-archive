@@ -125,6 +125,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
 
   const member = members.find((m) => m.id === card.memberId)
   const category = categories.find((c) => c.id === card.categoryId)
+  // 하트를 띄울 때만 사진 모서리를 파낸다 — 안 그러면 빈 구멍만 남는다
+  const showFav = !editing && card.deleted !== 1
 
   const toggleFavorite = async () => {
     const next = card.favorite === 1 ? 0 : 1
@@ -204,29 +206,32 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           {/* 스테이지는 실물 카드 비율(54:86)로 고정 — 썸네일과 같은 프레임으로 보인다.
               원본이 디코드될 때까지는 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다. */}
           <div className="detail__stage">
-            {thumbUrl && (
-              <img className="detail__img detail__img--placeholder" src={thumbUrl} alt="" />
-            )}
-            {fullUrl && (
-              <img
-                className="detail__img"
-                data-loaded={fullLoaded}
-                src={fullUrl}
-                alt={card.title}
-                onLoad={() => setFullLoaded(true)}
-                ref={(el) => {
-                  // 이미 디코드가 끝난 상태로 붙으면 onLoad가 뜨지 않는다
-                  if (el?.complete) setFullLoaded(true)
-                }}
-              />
-            )}
+            {/* 사진만 이 층에서 잘린다. 하트와 조각은 밖에 있어야 구멍 밖으로 나갈 수 있다. */}
+            <div className="detail__canvas" data-cut={showFav || undefined}>
+              {thumbUrl && (
+                <img className="detail__img detail__img--placeholder" src={thumbUrl} alt="" />
+              )}
+              {fullUrl && (
+                <img
+                  className="detail__img"
+                  data-loaded={fullLoaded}
+                  src={fullUrl}
+                  alt={card.title}
+                  onLoad={() => setFullLoaded(true)}
+                  ref={(el) => {
+                    // 이미 디코드가 끝난 상태로 붙으면 onLoad가 뜨지 않는다
+                    if (el?.complete) setFullLoaded(true)
+                  }}
+                />
+              )}
+            </div>
 
-{/*
+            {/*
               찜은 메뉴에 넣지 않고 카드 오른쪽 위에 그냥 띄워둔다.
               누르는 버튼이면서 동시에 '이 카드를 찜했는지' 보여주는 표시라,
               열어봐야 보이는 자리에 두면 표시로서의 값이 사라진다.
             */}
-            {!editing && card.deleted !== 1 && (
+            {showFav && (
               <button
                 className="detail__fav"
                 onClick={toggleFavorite}
