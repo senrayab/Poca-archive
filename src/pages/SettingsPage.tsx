@@ -13,6 +13,7 @@ import {
   SkinIcon,
   StorageIcon,
   SunIcon,
+  SyncIcon,
   UploadIcon,
 } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
@@ -27,7 +28,8 @@ import {
   markBackedUp,
 } from '@/lib/backup'
 import { DEFAULT_APP_NAME, setAppName, useAppNameInput } from '@/lib/appName'
-import { formatBytes, relativeDays } from '@/lib/format'
+import { BUILD_TIME, checkForUpdate } from '@/lib/update'
+import { formatBytes, formatDateTime, relativeDays } from '@/lib/format'
 import {
   ACCENT_PRESETS,
   FAV_CUTS,
@@ -61,6 +63,7 @@ export function SettingsPage() {
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
   const [working, setWorking] = useState<'export' | 'import' | null>(null)
+  const [syncing, setSyncing] = useState(false)
   const [lastBackup, setLastBackup] = useState(getLastBackupAt())
   const [quota, setQuota] = useState<{ usage: number; quota: number } | null>(null)
   const [persisted, setPersisted] = useState<boolean | null>(null)
@@ -101,6 +104,28 @@ export function SettingsPage() {
       toast(error instanceof Error ? error.message : '복원에 실패했습니다.')
     } finally {
       setWorking(null)
+    }
+  }
+
+  /**
+   * 새로 배포된 화면으로 맞춘다.
+   * 받아온 게 있을 때만 다시 여는 이유는, 이미 최신인데 새로고침해 봐야
+   * 같은 화면이 다시 뜰 뿐이어서다 — 그건 결과로 말해주는 편이 낫다.
+   */
+  const syncNow = async () => {
+    setSyncing(true)
+    try {
+      const result = await checkForUpdate()
+      if (result === 'latest') {
+        toast('이미 최신 화면입니다.')
+        return
+      }
+      toast(result === 'updated' ? '새 버전을 받았습니다. 다시 엽니다…' : '다시 엽니다…')
+      window.setTimeout(() => window.location.reload(), 700)
+    } catch {
+      toast('확인하지 못했습니다. 네트워크를 확인해 주세요.')
+    } finally {
+      setSyncing(false)
     }
   }
 
@@ -316,6 +341,24 @@ export function SettingsPage() {
                 영구 저장 요청하기
               </button>
             )}
+          </div>
+
+          <h2>
+            <SyncIcon size={15} />
+            업데이트
+          </h2>
+          <div className="card-panel">
+            <p>
+              이 앱은 화면 파일을 기기에 저장해 두고 오프라인에서도 열리게 합니다. 그래서
+              새 버전이 올라가도 <b>새로고침만으로는 바뀌지 않을 수 있어요.</b> 아래 버튼은
+              새 버전이 있는지 직접 확인하고, 있으면 받아서 다시 엽니다.
+              <br />
+              지금 화면: {formatDateTime(Date.parse(BUILD_TIME))} 빌드
+            </p>
+            <button className="btn btn--block" onClick={syncNow} disabled={syncing}>
+              <SyncIcon size={18} />
+              {syncing ? '확인 중…' : '최신으로 맞추기'}
+            </button>
           </div>
 
           <h2>

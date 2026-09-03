@@ -17,6 +17,7 @@ import {
   Moon,
   Palette,
   Plus,
+  RefreshCw,
   RotateCcw,
   Search,
   Settings,
@@ -160,6 +161,9 @@ export const CutDiscIcon = ({ size = 22, className }: IconProps) => (
   />
 )
 
+export const SyncIcon = ({ size = 22, className }: IconProps) => (
+  <RefreshCw size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
 export const SkinIcon = ({ size = 22, className }: IconProps) => (
   <Palette size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )

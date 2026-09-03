@@ -12,6 +12,12 @@ export function formatDate(ts: number): string {
   return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`
 }
 
+export function formatDateTime(ts: number): string {
+  const d = new Date(ts)
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${formatDate(ts)} ${p(d.getHours())}:${p(d.getMinutes())}`
+}
+
 export function relativeDays(ts: number): string {
   const days = Math.floor((Date.now() - ts) / 86_400_000)
   if (days <= 0) return '오늘'
