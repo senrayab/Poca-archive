@@ -747,15 +747,9 @@ a { color: inherit; }
   transition: height .3s var(--ease);
   box-shadow: var(--shadow-xl);
 
-  /*
-   * 오른쪽 위를 동그랗게 베어낸 자리 — 그 안에 찜 하트가 앉는다.
-   * 중심을 모서리 둥글기(22px)의 원 중심에 그대로 맞췄기 때문에,
-   * 반지름을 그보다 키운 만큼(27 - 22 = 5px) 위·오른쪽 변을 파고든다.
-   * 덕분에 모서리가 통째로 사라지고 오목한 자국만 남는다.
-   */
+  /* 오른쪽 위를 베어낸 자리의 중심 — 하트가 여기에 앉는다 */
   --fav-x: 22px;
   --fav-y: 22px;
-  --fav-r: 27px;
 }
 /*
  * 사진을 자르는 층. 스테이지가 아니라 여기서 잘라야,
@@ -768,15 +762,30 @@ a { color: inherit; }
   overflow: hidden;
   background: var(--bg-elev-2);
 }
-/* 하트가 없는 동안(수정 중·휴지통) 구멍만 남으면 이상하니 그때는 안 판다 */
+/*
+ * 베어낸 자국. 하트가 없는 동안(수정 중·휴지통)엔 빈 구멍만 남으니 안 판다.
+ *
+ * 원만 빼면 원호가 직선 변에 닿는 두 지점이 뾰족한 뿔로 끝난다.
+ * 그래서 그 두 자리에 반지름 14px 원호를 한 번 더 물려
+ * 직선 → 볼록 → 오목으로 이어지는 S자를 만든다.
+ * 곡선의 끝이 변에 부드럽게 흡수되는 건 이 필렛 덕분이다.
+ *
+ * 자국은 모서리 쪽 80×80 칸 안에서 끝나므로 그 칸만 SVG로 그리고,
+ * 남는 두 덩어리는 통짜로 채워 합친다 (마스크 레이어는 기본이 합집합).
+ *
+ * path의 좌표는 파낸 원 — 중심 (22, 22), 반지름 27 — 에서 손으로 푼 값이라
+ * 픽셀로 굳어 있다. --fav-x/--fav-y를 옮기면 path도 같이 다시 풀어야 한다.
+ */
 .detail__canvas[data-cut] {
-  --cut: radial-gradient(
-    circle at calc(100% - var(--fav-x)) var(--fav-y),
-    transparent calc(var(--fav-r) - .5px),
-    #000 calc(var(--fav-r) + .5px)
-  );
-  -webkit-mask-image: var(--cut);
-  mask-image: var(--cut);
+  --cut: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><path d="M0 0H17.788A14 14 0 0 1 31.519 16.732A27 27 0 0 0 63.268 48.481A14 14 0 0 1 80 62.212V80H0Z" fill="%23fff"/></svg>');
+  -webkit-mask-image: var(--cut), linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-image: var(--cut), linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  -webkit-mask-position: top right, top left, bottom right;
+  mask-position: top right, top left, bottom right;
+  -webkit-mask-size: 80px 80px, calc(100% - 80px) 100%, 80px calc(100% - 80px);
+  mask-size: 80px 80px, calc(100% - 80px) 100%, 80px calc(100% - 80px);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 .detail__img {
   position: absolute;
