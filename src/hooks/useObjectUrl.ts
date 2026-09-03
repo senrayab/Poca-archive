@@ -10,6 +10,12 @@ import { useEffect, useRef, useState } from 'react'
  * src가 바뀌었으니 브라우저가 전부 다시 디코드한다 — 목록이 길수록
  * 그 한 번의 탭이 눈에 띄게 굼떠진다. 그래서 카드 id처럼 사진이
  * 실제로 바뀔 때만 달라지는 값을 기준으로 삼는다.
+ *
+ * 다만 key만 보면 위험하다. 별도 쿼리로 읽어오는 Blob은 key보다 늦게
+ * 도착할 수 있는데, 그 사이 렌더에서 '새 key + 옛 Blob'으로 URL을 만들면
+ * 뒤늦게 온 진짜 Blob은 key가 그대로라 영영 반영되지 않는다.
+ * 그래서 바이트 수를 함께 본다 — 같은 사진이면 늘 같으니 URL은 그대로고,
+ * 다른 사진이 들어오면 key가 같아도 다시 만든다.
  */
 export function useObjectUrl(
   blob: Blob | null | undefined,
@@ -22,7 +28,7 @@ export function useObjectUrl(
   latest.current = blob
 
   // key가 없으면 예전처럼 Blob 자체를 기준으로 삼는다
-  const dep = blob ? (key ?? blob) : undefined
+  const dep: unknown = blob ? (key === undefined ? blob : `${key}:${blob.size}`) : undefined
 
   useEffect(() => {
     const current = latest.current

@@ -57,7 +57,13 @@ const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }
 export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailProps) {
   // 본체 이미지는 팝업을 열 때 그 카드 것만 읽는다 (그리드는 썸네일만 들고 있다).
   const stored = useLiveQuery(() => db.images.get(card.id), [card.id])
-  const fullUrl = useObjectUrl(stored?.blob, card.id)
+  /*
+   * 라이브 쿼리는 카드를 넘긴 직후 한 렌더 동안 이전 카드의 사진을 그대로 들고 있다.
+   * cardId를 확인하지 않으면 그 사진으로 URL이 만들어져, 제목과 멤버만 바뀌고
+   * 사진은 앞 카드에 머문다.
+   */
+  const image = stored?.cardId === card.id ? stored : undefined
+  const fullUrl = useObjectUrl(image?.blob, card.id)
   const thumbUrl = useObjectUrl(card.thumb, card.id)
   const [fullLoaded, setFullLoaded] = useState(false)
   const members = useMembers()
