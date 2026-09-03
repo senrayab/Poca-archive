@@ -856,12 +856,12 @@ a { color: inherit; }
   /* 사진 가로폭에 꽉 채우고 아래도 딱 맞춘다 */
   inset: auto 0 0 0;
   /* 글자는 유리가 거의 다 켜진 뒤부터 — 켜지는 구간 자체는 그보다 훨씬 길다 */
-  padding: 70px 15px 13px;
+  padding: 84px 15px 13px;
   /* 스테이지가 더 이상 잘라주지 않으니 아래 모서리는 직접 맞춘다 */
   border-radius: 0 0 var(--stage-radius) var(--stage-radius);
   border: none;
   color: var(--on-scrim);
-  --sheet-fade: 110px;
+  --sheet-fade: 150px;
 }
 
 /*
