@@ -911,6 +911,13 @@ a { color: inherit; }
   -webkit-mask-image: var(--ramp);
   mask-image: var(--ramp);
 }
+/*
+ * 유리 층은 position: absolute라 z-index를 안 줘도 흐름 속 글자보다 늦게 칠해진다.
+ * 그 층에 backdrop-filter가 걸려 있어, 그냥 두면 밑에 깔린 글자까지 blur(20px)로
+ * 뭉개 놓는다. 글자도 positioned로 올려 유리 위에 오게 한다.
+ */
+.detail__who,
+.detail__title { position: relative; }
 .detail__who {
   display: flex;
   align-items: center;
