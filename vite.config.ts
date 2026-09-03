@@ -13,6 +13,8 @@ export default defineConfig(({ command }) => ({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   server: { host: true, port: 5173 },
+  // 설정 화면에서 '지금 보고 있는 화면이 언제 것인지' 보여주는 데 쓴다
+  define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
   plugins: [
     react(),
     VitePWA({
