@@ -2,10 +2,12 @@ import { useSyncExternalStore } from 'react'
 
 export type ThemeMode = 'system' | 'light' | 'dark'
 export type SkinId = 'pastel' | 'mono'
+export type FavCut = 'notch' | 'disc'
 
 const THEME_KEY = 'poca:theme'
 const SKIN_KEY = 'poca:skin'
 const ACCENT_KEY = 'poca:accent'
+const FAVCUT_KEY = 'poca:favcut'
 
 /** 포인트 색 추천값. 직접 고르는 것도 되니 안내용에 가깝다. */
 export const ACCENT_PRESETS = [
@@ -29,6 +31,17 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
 ]
 
 const SKIN_IDS: SkinId[] = SKINS.map((s) => s.id)
+
+/**
+ * 자세히보기에서 찜 하트가 앉는 자리의 모양.
+ * 실제 곡선은 CSS의 --fav-shape가 갖고 있고, 여기서는 이름만 안다.
+ */
+export const FAV_CUTS: Array<{ id: FavCut; name: string }> = [
+  { id: 'notch', name: '잘린 모서리' },
+  { id: 'disc', name: '떨어진 조각' },
+]
+
+const FAV_CUT_IDS: FavCut[] = FAV_CUTS.map((c) => c.id)
 
 /** 주소창/상태바 색. CSS의 --bg와 값을 맞춰둔다. */
 const BAR_COLOR: Record<SkinId, Record<'light' | 'dark', string>> = {
@@ -67,9 +80,19 @@ function readAccent(): string | null {
   }
 }
 
+function readFavCut(): FavCut {
+  try {
+    const raw = localStorage.getItem(FAVCUT_KEY) as FavCut | null
+    return raw && FAV_CUT_IDS.includes(raw) ? raw : 'disc'
+  } catch {
+    return 'disc'
+  }
+}
+
 let mode: ThemeMode = readTheme()
 let skin: SkinId = readSkin()
 let accent: string | null = readAccent()
+let favCut: FavCut = readFavCut()
 const listeners = new Set<() => void>()
 
 function emit() {
@@ -97,6 +120,7 @@ function apply() {
   if (mode === 'system') delete root.dataset.theme
   else root.dataset.theme = mode
   root.dataset.skin = skin
+  root.dataset.favcut = favCut
 
   /*
    * 포인트 색은 인라인 스타일로 얹는다. 인라인이 스타일시트보다 세므로
@@ -134,6 +158,17 @@ export function setSkin(next: SkinId) {
   skin = next
   try {
     localStorage.setItem(SKIN_KEY, next)
+  } catch {
+    /* 저장에 실패해도 이번 세션에는 적용된다 */
+  }
+  apply()
+  emit()
+}
+
+export function setFavCut(next: FavCut) {
+  favCut = next
+  try {
+    localStorage.setItem(FAVCUT_KEY, next)
   } catch {
     /* 저장에 실패해도 이번 세션에는 적용된다 */
   }
@@ -184,6 +219,14 @@ export function useSkin(): SkinId {
     subscribe,
     () => skin,
     () => 'pastel' as SkinId,
+  )
+}
+
+export function useFavCut(): FavCut {
+  return useSyncExternalStore(
+    subscribe,
+    () => favCut,
+    () => 'disc' as FavCut,
   )
 }
 

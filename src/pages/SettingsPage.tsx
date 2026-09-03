@@ -3,6 +3,8 @@ import { Header } from '@/components/AppShell'
 import {
   AutoThemeIcon,
   BackupIcon,
+  CutDiscIcon,
+  CutNotchIcon,
   DownloadIcon,
   InstallIcon,
   MoonIcon,
@@ -28,15 +30,21 @@ import { DEFAULT_APP_NAME, setAppName, useAppNameInput } from '@/lib/appName'
 import { formatBytes, relativeDays } from '@/lib/format'
 import {
   ACCENT_PRESETS,
+  FAV_CUTS,
   SKINS,
   setAccent,
+  setFavCut,
   setSkin,
   setThemeMode,
   useAccent,
+  useFavCut,
   useSkin,
   useThemeMode,
   type ThemeMode,
 } from '@/lib/theme'
+
+/** 미리보기 아이콘은 실제 마스크와 같은 곡선을 쓴다 */
+const CUT_ICONS = { notch: CutNotchIcon, disc: CutDiscIcon } as const
 
 const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }> = [
   { mode: 'system', label: '시스템', icon: <AutoThemeIcon size={16} /> },
@@ -47,6 +55,7 @@ const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }
 export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
   const skin = useSkin()
+  const favCut = useFavCut()
   const accent = useAccent()
   const appNameInput = useAppNameInput()
   const toast = useToast()
@@ -169,6 +178,28 @@ export function SettingsPage() {
                   <small>{option.hint}</small>
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="card-panel">
+            <p>
+              자세히보기에서 찜 하트가 앉는 자리입니다. 카드 오른쪽 위를
+              <b> 모서리째 베어내거나</b>, 그 안에 <b>사진 조각을 하나 남길</b> 수 있어요.
+            </p>
+            <div className="segmented" role="group" aria-label="찜 하트 자리">
+              {FAV_CUTS.map((option) => {
+                const Icon = CUT_ICONS[option.id]
+                return (
+                  <button
+                    key={option.id}
+                    aria-pressed={favCut === option.id}
+                    onClick={() => setFavCut(option.id)}
+                  >
+                    <Icon size={20} />
+                    {option.name}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
