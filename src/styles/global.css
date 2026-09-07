@@ -978,6 +978,56 @@ a { color: inherit; }
 /* 찜을 켜는 순간에만 규칙이 맞기 시작해 한 번 뛴다 */
 .detail__fav[data-on='true'] svg { animation: fav-beat .34s cubic-bezier(.2, 1.6, .45, 1); }
 
+/*
+ * 수정 중에는 사진 자체가 '사진 바꾸기' 버튼이 된다.
+ * 배지만 누르게 하면 손가락으로 집기엔 너무 작아, 판정은 사진 전체로 두고
+ * 배지는 '여기를 눌러 바꿀 수 있다'는 표시만 맡는다.
+ */
+.detail__pick {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  cursor: pointer;
+}
+/* 누르는 동안만 사진을 살짝 덮어, 눌린 게 사진 전체임을 알려준다 */
+.detail__pick::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #000;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.detail__pick:active::before { opacity: .18; }
+.detail__pick-badge {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--on-scrim);
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: var(--shadow-md);
+  /* 수정으로 들어가는 순간 톡 하고 자리를 잡는다 (하트와 같은 동작) */
+  animation: fav-in .3s cubic-bezier(.2, 1.6, .45, 1) both;
+  transition: background .15s, transform .15s;
+}
+.detail__pick:hover .detail__pick-badge { background: var(--glass-hover); }
+.detail__pick:active .detail__pick-badge { transform: scale(.92); }
+/* 변환하는 동안엔 눌러도 반응이 없으니, 배지가 깜빡여 일하고 있음을 알린다 */
+.detail__pick-badge[data-busy] { animation: pick-busy 1s ease-in-out infinite; }
+
+@keyframes pick-busy {
+  50% { opacity: .45; }
+}
+
 @keyframes fav-in {
   from { opacity: 0; transform: scale(.4); }
 }
@@ -1043,6 +1093,8 @@ a { color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   .detail__fav,
+  .detail__pick-badge,
+  .detail__pick-badge[data-busy],
   .detail__fav[data-on='true'] svg { animation: none; }
   /* 조각은 animation만 끄면 시작 위치에 그대로 남아 보이므로 통째로 뺀다 */
   .fav-burst { display: none; }
