@@ -979,6 +979,111 @@ a { color: inherit; }
 .detail__fav[data-on='true'] svg { animation: fav-beat .34s cubic-bezier(.2, 1.6, .45, 1); }
 
 /*
+ * 사진 자르기.
+ *
+ * 틀은 카드 비율로 고정하고 사진이 그 안에서 움직인다. 틀 밖도 어둡게나마
+ * 남겨둬야 지금 사진의 어디를 보고 있는지 알 수 있어, 무대는 틀보다 넓게 잡고
+ * 넘치는 부분을 잘라낸다.
+ */
+.crop {
+  width: min(100%, 440px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--on-scrim);
+  color-scheme: var(--scrim-scheme);
+  animation: rise .18s ease-out both;
+  --crop-h: min(46dvh, 380px);
+}
+.crop__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-inline: 4px 2px;
+}
+.crop__hint { font-size: 11px; color: var(--on-scrim-dim); }
+
+.crop__stage {
+  position: relative;
+  height: var(--crop-h);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: #000;
+  /* 브라우저가 끌기를 스크롤로 가로채지 않게 */
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+.crop__stage:active { cursor: grabbing; }
+
+/* 틀 밖으로 넘치는 부분. 틀의 그림자가 이 위를 덮어 어둡게 만든다. */
+.crop__spill {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  will-change: transform;
+}
+
+.crop__frame {
+  position: relative;
+  height: calc(var(--crop-h) - 34px);
+  aspect-ratio: var(--card-ratio);
+  overflow: hidden;
+  border-radius: 10px;
+  /*
+   * 안쪽 흰 선이 틀의 경계, 바깥으로 한없이 퍼지는 그림자가 잘려나갈 부분을 덮는 막이다.
+   * 막을 따로 그리면 틀과 1px씩 어긋나는데, 그림자로 두면 어긋날 자리가 없다.
+   */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .9), 0 0 0 100vmax rgba(0, 0, 0, .58);
+}
+.crop__img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  will-change: transform;
+}
+/* 삼분할 선 — 인물을 어디에 둘지 가늠하는 데만 쓰고, 흐릿하게 둔다 */
+.crop__grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .35;
+  background:
+    linear-gradient(to right, transparent 33.3%, #fff 33.3%, #fff calc(33.3% + 1px), transparent calc(33.3% + 1px)),
+    linear-gradient(to right, transparent 66.6%, #fff 66.6%, #fff calc(66.6% + 1px), transparent calc(66.6% + 1px)),
+    linear-gradient(to bottom, transparent 33.3%, #fff 33.3%, #fff calc(33.3% + 1px), transparent calc(33.3% + 1px)),
+    linear-gradient(to bottom, transparent 66.6%, #fff 66.6%, #fff calc(66.6% + 1px), transparent calc(66.6% + 1px));
+}
+
+.crop__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px;
+}
+.crop__slider {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--on-scrim-dim);
+}
+.crop__slider b { color: var(--on-scrim); font-weight: 700; }
+.crop__slider input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+  background: none;
+}
+.crop__actions { padding: 0 8px; }
+
+/*
  * 수정 중에는 사진 자체가 '사진 바꾸기' 버튼이 된다.
  * 배지만 누르게 하면 손가락으로 집기엔 너무 작아, 판정은 사진 전체로 두고
  * 배지는 '여기를 눌러 바꿀 수 있다'는 표시만 맡는다.
@@ -1001,7 +1106,8 @@ a { color: inherit; }
   transition: opacity .15s;
 }
 .detail__pick:active::before { opacity: .18; }
-.detail__pick-badge {
+.detail__pick-badge,
+.detail__crop {
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -1019,8 +1125,18 @@ a { color: inherit; }
   animation: fav-in .3s cubic-bezier(.2, 1.6, .45, 1) both;
   transition: background .15s, transform .15s;
 }
-.detail__pick:hover .detail__pick-badge { background: var(--glass-hover); }
-.detail__pick:active .detail__pick-badge { transform: scale(.92); }
+.detail__pick:hover .detail__pick-badge,
+.detail__crop:hover { background: var(--glass-hover); }
+.detail__pick:active .detail__pick-badge,
+.detail__crop:active { transform: scale(.92); }
+/*
+ * 자르기는 사진 전체 버튼(=바꾸기) 위에 얹힌 형제라 z-index가 한 단 높다.
+ * 자리는 바꾸기 배지 왼쪽 — 32px 배지 + 8px 틈.
+ */
+.detail__crop {
+  right: 50px;
+  z-index: 2;
+}
 /* 변환하는 동안엔 눌러도 반응이 없으니, 배지가 깜빡여 일하고 있음을 알린다 */
 .detail__pick-badge[data-busy] { animation: pick-busy 1s ease-in-out infinite; }
 
@@ -1094,6 +1210,7 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .detail__fav,
   .detail__pick-badge,
+  .detail__crop,
   .detail__pick-badge[data-busy],
   .detail__fav[data-on='true'] svg { animation: none; }
   /* 조각은 animation만 끄면 시작 위치에 그대로 남아 보이므로 통째로 뺀다 */
@@ -1474,6 +1591,41 @@ a { color: inherit; }
   background: var(--bg-elev-2);
   flex-shrink: 0;
 }
+/*
+ * 대기 목록의 썸네일은 그 자체가 자르기 버튼이다.
+ * 배지는 자를 수 있다는 표시이자, 이미 자른 항목인지 알려주는 표시다.
+ */
+.queue__crop {
+  position: relative;
+  flex-shrink: 0;
+  line-height: 0;
+  border-radius: 8px;
+  transition: transform .15s;
+}
+.queue__crop:active { transform: scale(.96); }
+.queue__crop-badge {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-sm);
+  transition: color .15s, background .15s;
+}
+.queue__crop:hover .queue__crop-badge { color: var(--text); }
+/* 이미 자른 항목은 배지에 포인트 색을 넣어 목록에서 한눈에 구분된다 */
+.queue__crop-badge[data-on] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: transparent;
+}
+
 .queue__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .queue__body input, .queue__body select {
   width: 100%;

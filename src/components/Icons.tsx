@@ -5,6 +5,7 @@ import {
   ChevronLeft as LuChevronLeft,
   ChevronRight as LuChevronRight,
   ChartColumn,
+  Crop,
   Download,
   ArrowLeftRight,
   HardDrive,
@@ -91,6 +92,9 @@ export const DownloadIcon = ({ size = 22, className }: IconProps) => (
 )
 export const ImageIcon = ({ size = 22, className }: IconProps) => (
   <LuImage size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const CropIcon = ({ size = 22, className }: IconProps) => (
+  <Crop size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const ImageSwapIcon = ({ size = 22, className }: IconProps) => (
   <ImagePlus size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
