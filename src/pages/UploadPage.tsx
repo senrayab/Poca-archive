@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/AppShell'
-import { CloseIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
+import { CropEditor } from '@/components/CropEditor'
+import { CloseIcon, CropIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
 import type { Card, StoredImage } from '@/db/types'
@@ -22,6 +23,14 @@ interface QueueItem {
   memberId: string
   previewUrl: string
   processed: ProcessedImage
+  /*
+   * 변환 전 원본을 그대로 들고 있는다. 자르기는 여기서 다시 시작해야
+   * 화질이 온전하다 — 1000px로 줄여둔 변환본을 또 자르면 손실이 겹친다.
+   * File은 디스크를 가리키는 참조라 여러 장을 들고 있어도 메모리를 먹지 않는다.
+   */
+  file: File
+  /** 한 번이라도 잘랐는지 (표시용) */
+  cropped: boolean
 }
 
 const stripExtension = (name: string) => name.replace(/\.[^.]+$/, '')
@@ -39,6 +48,8 @@ export function UploadPage() {
   const [dragOver, setDragOver] = useState(false)
   const [linkInput, setLinkInput] = useState('')
   const [saving, setSaving] = useState(false)
+  /** 자르기 중인 항목 (한 번에 하나) */
+  const [cropKey, setCropKey] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // 멤버 목록이 로드되면 첫 멤버를 기본값으로
@@ -57,6 +68,8 @@ export function UploadPage() {
         memberId: '',
         previewUrl: URL.createObjectURL(processed.thumb.blob),
         processed,
+        file,
+        cropped: false,
       },
     ])
   }
@@ -127,6 +140,24 @@ export function UploadPage() {
     })
   }
 
+  /** 자른 결과로 대기 항목을 갈아 끼운다 (원본 File은 그대로 두어 다시 자를 수 있게). */
+  const applyCrop = (key: string, processed: ProcessedImage) => {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.key !== key) return item
+        URL.revokeObjectURL(item.previewUrl)
+        return {
+          ...item,
+          processed,
+          previewUrl: URL.createObjectURL(processed.thumb.blob),
+          cropped: true,
+        }
+      }),
+    )
+    setCropKey(null)
+    toast('잘랐습니다.')
+  }
+
   const save = async () => {
     if (!items.length) return
     if (!memberId) return toast('멤버를 먼저 선택해 주세요.')
@@ -173,6 +204,7 @@ export function UploadPage() {
     }
   }
 
+  const cropItem = items.find((i) => i.key === cropKey) ?? null
   const originalTotal = items.reduce((sum, i) => sum + i.processed.originalBytes, 0)
   const convertedTotal = items.reduce(
     (sum, i) => sum + i.processed.full.blob.size + i.processed.thumb.blob.size,
@@ -305,7 +337,18 @@ export function UploadPage() {
               <div className="queue">
                 {items.map((item) => (
                   <div className="queue__item" key={item.key}>
-                    <img className="queue__thumb" src={item.previewUrl} alt="" />
+                    {/* 썸네일이 곧 자르기 버튼이다 — 누를 수 있다는 건 모서리 배지가 알린다 */}
+                    <button
+                      className="queue__crop"
+                      onClick={() => setCropKey(item.key)}
+                      aria-label="사진 자르기"
+                      title="사진 자르기"
+                    >
+                      <img className="queue__thumb" src={item.previewUrl} alt="" />
+                      <span className="queue__crop-badge" data-on={item.cropped || undefined}>
+                        <CropIcon size={13} />
+                      </span>
+                    </button>
                     <div className="queue__body">
                       <input
                         type="text"
@@ -367,6 +410,14 @@ export function UploadPage() {
           )}
         </div>
       </div>
+
+      {cropItem && (
+        <CropEditor
+          source={cropItem.file}
+          onCancel={() => setCropKey(null)}
+          onDone={(processed) => applyCrop(cropItem.key, processed)}
+        />
+      )}
     </>
   )
 }

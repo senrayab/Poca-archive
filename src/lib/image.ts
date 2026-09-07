@@ -50,7 +50,7 @@ function fitWithin(width: number, height: number, maxEdge: number) {
   }
 }
 
-async function loadBitmap(file: File): Promise<ImageBitmap> {
+async function loadBitmap(file: Blob): Promise<ImageBitmap> {
   // EXIF 회전 정보를 반영해서 디코드한다 (아이폰 세로 사진 대응)
   try {
     return await createImageBitmap(file, { imageOrientation: 'from-image' })
@@ -59,8 +59,11 @@ async function loadBitmap(file: File): Promise<ImageBitmap> {
   }
 }
 
+/** 자른 결과는 캔버스로 나오므로, 원본 비트맵과 같은 자리에서 받아 쓴다. */
+type EncodeSource = (ImageBitmap | HTMLCanvasElement) & { width: number; height: number }
+
 function encode(
-  source: ImageBitmap,
+  source: EncodeSource,
   maxEdge: number,
   quality: number,
 ): Promise<EncodedImage> {
@@ -86,15 +89,80 @@ function encode(
   })
 }
 
-export async function processImage(file: File): Promise<ProcessedImage> {
+/** 저장해둔 본체 이미지를 다시 자를 때도 쓰므로 File이 아니라 Blob을 받는다. */
+export async function processImage(file: Blob): Promise<ProcessedImage> {
   if (!file.type.startsWith('image/')) {
-    throw new Error(`이미지 파일이 아닙니다: ${file.name}`)
+    const name = file instanceof File ? file.name : '알 수 없는 파일'
+    throw new Error(`이미지 파일이 아닙니다: ${name}`)
   }
   const bitmap = await loadBitmap(file)
   try {
     const full = await encode(bitmap, FULL_MAX_EDGE, FULL_QUALITY)
     const thumb = await encode(bitmap, THUMB_MAX_EDGE, THUMB_QUALITY)
     return { full, thumb, originalBytes: file.size }
+  } finally {
+    bitmap.close()
+  }
+}
+
+/*
+ * 크롭 화면에서 사진을 어떻게 놓았는지를 그대로 옮긴 값.
+ *
+ * 화면에서 쓴 CSS transform과 같은 순서(이동 → 회전 → 확대)로 캔버스에 다시
+ * 그리기 때문에, 틀 안에 보이던 그림이 그대로 저장된다.
+ * 좌표는 전부 '화면 픽셀'이고, 원본 픽셀로의 환산은 base가 맡는다.
+ */
+export interface CropTransform {
+  /** 화면에 그려진 틀의 크기 */
+  frame: { w: number; h: number }
+  /** scale이 1일 때 사진이 화면에서 차지하는 크기 (틀을 꽉 채우는 크기) */
+  base: { w: number; h: number }
+  scale: number
+  /** 라디안 */
+  rotation: number
+  x: number
+  y: number
+}
+
+/**
+ * 자른 조각만 남겨 카드 한 장을 만든다.
+ *
+ * 해상도는 '틀에 실제로 걸린 원본 픽셀'과 FULL_MAX_EDGE 중 작은 쪽으로 잡는다.
+ * 크게 확대해 자른 사진을 1000px로 늘려봐야 없는 화질이 생기지 않고,
+ * 용량만 커지기 때문이다.
+ */
+export async function processCroppedImage(
+  source: Blob,
+  t: CropTransform,
+): Promise<ProcessedImage> {
+  const bitmap = await loadBitmap(source)
+  try {
+    // 화면 픽셀 → 원본 픽셀 배율 (가로세로 비는 유지되므로 한 값이면 된다)
+    const perScreenPx = bitmap.width / t.base.w
+    const sourceEdge = (t.frame.h / t.scale) * perScreenPx
+    const height = Math.max(1, Math.round(Math.min(FULL_MAX_EDGE, sourceEdge)))
+    const width = Math.max(1, Math.round((height * t.frame.w) / t.frame.h))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('캔버스를 사용할 수 없습니다.')
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
+
+    // 틀 한가운데를 원점으로 두고, 화면에서 만진 순서 그대로 되짚는다
+    const f = width / t.frame.w
+    ctx.translate(width / 2, height / 2)
+    ctx.scale(f, f)
+    ctx.translate(t.x, t.y)
+    ctx.rotate(t.rotation)
+    ctx.scale(t.scale, t.scale)
+    ctx.drawImage(bitmap, -t.base.w / 2, -t.base.h / 2, t.base.w, t.base.h)
+
+    const full = await encode(canvas, FULL_MAX_EDGE, FULL_QUALITY)
+    const thumb = await encode(canvas, THUMB_MAX_EDGE, THUMB_QUALITY)
+    return { full, thumb, originalBytes: source.size }
   } finally {
     bitmap.close()
   }

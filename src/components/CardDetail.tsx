@@ -7,10 +7,12 @@ import { useCategories, useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes, formatDate } from '@/lib/format'
 import { processImage, type ProcessedImage } from '@/lib/image'
+import { CropEditor } from './CropEditor'
 import {
   ChevronLeft,
   ChevronRight,
   CloseIcon,
+  CropIcon,
   EditIcon,
   HeartIcon,
   ImageSwapIcon,
@@ -80,7 +82,13 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
    * 사진만 바뀐 채 폼을 빠져나가는 일이 없다.
    */
   const [pending, setPending] = useState<ProcessedImage | null>(null)
+  /*
+   * 새로 고른 파일의 원본. 자르기는 변환본이 아니라 이걸로 해야 화질이 온전하다.
+   * (이미 저장된 사진을 자를 때는 본체 이미지를 원본 삼는 수밖에 없다)
+   */
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
   const [swapping, setSwapping] = useState(false)
+  const [cropping, setCropping] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   // 아직 저장 전인 새 사진 — 있으면 이게 스테이지를 차지한다
   const pendingUrl = useObjectUrl(pending?.full.blob)
@@ -111,6 +119,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     setEditing(false)
     setConfirmDispose(false)
     setPending(null)
+    setPendingFile(null)
+    setCropping(false)
     setDraft({
       title: card.title,
       memberId: card.memberId,
@@ -142,6 +152,9 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     if (dx < 0 && next) onNavigate(next)
   }
 
+  // 자를 대상: 새로 고른 파일이 있으면 그 원본, 없으면 저장된 본체 이미지
+  const cropSource: Blob | null = pendingFile ?? image?.blob ?? null
+
   const member = members.find((m) => m.id === card.memberId)
   const category = categories.find((c) => c.id === card.categoryId)
   // 하트를 띄울 때만 사진 모서리를 파낸다 — 안 그러면 빈 구멍만 남는다
@@ -160,6 +173,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     setSwapping(true)
     try {
       setPending(await processImage(file))
+      setPendingFile(file)
       toast('사진을 바꿨어요. 저장을 눌러야 반영됩니다.')
     } catch (error) {
       toast(error instanceof Error ? error.message : '이미지를 처리하지 못했습니다.')
@@ -171,6 +185,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const cancelEdit = () => {
     setEditing(false)
     setPending(null)
+    setPendingFile(null)
   }
 
   const save = async () => {
@@ -194,6 +209,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
       if (pending) await db.images.put({ cardId: card.id, blob: pending.full.blob })
     })
     setPending(null)
+    setPendingFile(null)
     setEditing(false)
     toast('수정했습니다.')
   }
@@ -299,6 +315,22 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 <span className="detail__pick-badge" data-busy={swapping || undefined}>
                   <ImageSwapIcon size={16} />
                 </span>
+              </button>
+            )}
+
+            {/*
+              자르기는 '바꾸기' 버튼의 자식이 아니라 그 위에 얹은 형제다.
+              안에 넣으면 배지를 눌러도 사진 전체 버튼이 같이 열린다.
+              대상은 지금 보이는 사진 — 새로 고른 게 있으면 그것, 없으면 저장된 것.
+            */}
+            {editing && cropSource && (
+              <button
+                className="detail__crop"
+                onClick={() => setCropping(true)}
+                aria-label="사진 자르기"
+                title="사진 자르기"
+              >
+                <CropIcon size={16} />
               </button>
             )}
 
@@ -483,6 +515,18 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           </div>
         )}
       </div>
+
+      {cropping && cropSource && (
+        <CropEditor
+          source={cropSource}
+          onCancel={() => setCropping(false)}
+          onDone={(processed) => {
+            setPending(processed)
+            setCropping(false)
+            toast('잘랐어요. 저장을 눌러야 반영됩니다.')
+          }}
+        />
+      )}
 
       {confirmDispose && (
         <Modal onClose={() => setConfirmDispose(false)} label="삭제 사유">
