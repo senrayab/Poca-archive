@@ -6,12 +6,14 @@ import type { Card, CardStatus } from '@/db/types'
 import { useCategories, useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes, formatDate } from '@/lib/format'
+import { processImage, type ProcessedImage } from '@/lib/image'
 import {
   ChevronLeft,
   ChevronRight,
   CloseIcon,
   EditIcon,
   HeartIcon,
+  ImageSwapIcon,
   RestoreIcon,
   TrashIcon,
 } from './Icons'
@@ -72,6 +74,16 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
 
   const [editing, setEditing] = useState(false)
   const [confirmDispose, setConfirmDispose] = useState(false)
+  /*
+   * 새로 고른 사진은 바로 넣지 않고 여기에 들고 있는다.
+   * 제목·멤버와 같은 '저장'에 묶어야, 취소로 되돌릴 수 있고
+   * 사진만 바뀐 채 폼을 빠져나가는 일이 없다.
+   */
+  const [pending, setPending] = useState<ProcessedImage | null>(null)
+  const [swapping, setSwapping] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+  // 아직 저장 전인 새 사진 — 있으면 이게 스테이지를 차지한다
+  const pendingUrl = useObjectUrl(pending?.full.blob)
   // 찜을 켤 때마다 1씩 올려, key로 조각 애니메이션을 처음부터 다시 태운다
   const [burst, setBurst] = useState(0)
   const [draft, setDraft] = useState({
@@ -98,6 +110,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   useEffect(() => {
     setEditing(false)
     setConfirmDispose(false)
+    setPending(null)
     setDraft({
       title: card.title,
       memberId: card.memberId,
@@ -140,16 +153,47 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     await db.cards.update(card.id, { favorite: next, updatedAt: Date.now() })
   }
 
+  /** 수정 중 사진 교체 — 올릴 때와 똑같이 WebP로 줄여 두었다가 저장할 때 넣는다. */
+  const pickImage = async (file: File | undefined) => {
+    if (!file) return
+    if (!file.type.startsWith('image/')) return toast('이미지 파일만 올릴 수 있어요.')
+    setSwapping(true)
+    try {
+      setPending(await processImage(file))
+      toast('사진을 바꿨어요. 저장을 눌러야 반영됩니다.')
+    } catch (error) {
+      toast(error instanceof Error ? error.message : '이미지를 처리하지 못했습니다.')
+    } finally {
+      setSwapping(false)
+    }
+  }
+
+  const cancelEdit = () => {
+    setEditing(false)
+    setPending(null)
+  }
+
   const save = async () => {
     const title = draft.title.trim()
     if (!title) return toast('제목을 입력해 주세요.')
-    await db.cards.update(card.id, {
-      title,
-      memberId: draft.memberId,
-      categoryId: draft.categoryId || null,
-      memo: draft.memo.trim(),
-      updatedAt: Date.now(),
+    await db.transaction('rw', db.cards, db.images, async () => {
+      await db.cards.update(card.id, {
+        title,
+        memberId: draft.memberId,
+        categoryId: draft.categoryId || null,
+        memo: draft.memo.trim(),
+        updatedAt: Date.now(),
+        // 사진을 갈아 끼웠으면 썸네일과 크기·용량도 같이 새 것으로 바꾼다
+        ...(pending && {
+          thumb: pending.thumb.blob,
+          width: pending.full.width,
+          height: pending.full.height,
+          bytes: pending.full.blob.size + pending.thumb.blob.size,
+        }),
+      })
+      if (pending) await db.images.put({ cardId: card.id, blob: pending.full.blob })
     })
+    setPending(null)
     setEditing(false)
     toast('수정했습니다.')
   }
@@ -214,23 +258,49 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           <div className="detail__stage">
             {/* 사진만 이 층에서 잘린다. 하트와 조각은 밖에 있어야 구멍 밖으로 나갈 수 있다. */}
             <div className="detail__canvas" data-cut={showFav || undefined}>
-              {thumbUrl && (
-                <img className="detail__img detail__img--placeholder" src={thumbUrl} alt="" />
-              )}
-              {fullUrl && (
-                <img
-                  className="detail__img"
-                  data-loaded={fullLoaded}
-                  src={fullUrl}
-                  alt={card.title}
-                  onLoad={() => setFullLoaded(true)}
-                  ref={(el) => {
-                    // 이미 디코드가 끝난 상태로 붙으면 onLoad가 뜨지 않는다
-                    if (el?.complete) setFullLoaded(true)
-                  }}
-                />
+              {pendingUrl ? (
+                /* 새로 고른 사진은 이미 손에 있으니 흐린 밑그림 없이 바로 보여준다 */
+                <img className="detail__img" src={pendingUrl} alt="새로 고른 사진" />
+              ) : (
+                <>
+                  {thumbUrl && (
+                    <img className="detail__img detail__img--placeholder" src={thumbUrl} alt="" />
+                  )}
+                  {fullUrl && (
+                    <img
+                      className="detail__img"
+                      data-loaded={fullLoaded}
+                      src={fullUrl}
+                      alt={card.title}
+                      onLoad={() => setFullLoaded(true)}
+                      ref={(el) => {
+                        // 이미 디코드가 끝난 상태로 붙으면 onLoad가 뜨지 않는다
+                        if (el?.complete) setFullLoaded(true)
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
+
+            {/*
+              수정 중에는 사진 자체가 '사진 바꾸기' 버튼이 된다.
+              누를 수 있다는 걸 알 수 있게 오른쪽 아래에 작은 배지를 띄운다 —
+              배지만 누르게 하면 손가락으로는 너무 작아, 판정은 사진 전체로 둔다.
+            */}
+            {editing && (
+              <button
+                className="detail__pick"
+                onClick={() => fileRef.current?.click()}
+                disabled={swapping}
+                aria-label="사진 바꾸기"
+                title="사진 바꾸기"
+              >
+                <span className="detail__pick-badge" data-busy={swapping || undefined}>
+                  <ImageSwapIcon size={16} />
+                </span>
+              </button>
+            )}
 
             {/*
               찜은 메뉴에 넣지 않고 카드 오른쪽 위에 그냥 띄워둔다.
@@ -365,7 +435,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         */}
         {editing && (
           <div className="row detail__form-actions">
-            <button className="btn" onClick={() => setEditing(false)}>
+            <button className="btn" onClick={cancelEdit}>
               취소
             </button>
             <button className="btn btn--primary" onClick={save}>
@@ -373,6 +443,19 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
             </button>
           </div>
         )}
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            // 같은 파일을 다시 골라도 change가 뜨도록 값을 비운다
+            e.target.value = ''
+            void pickImage(file)
+          }}
+        />
 
 {/* 찜은 카드 위로 올라갔고, 레일에는 가끔 쓰는 수정·삭제만 남는다 */}
         {!editing && (

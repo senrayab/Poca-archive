@@ -10,6 +10,7 @@ import {
   HardDrive,
   Heart,
   Image as LuImage,
+  ImagePlus,
   LayoutGrid,
   Link2,
   Menu,
@@ -90,6 +91,9 @@ export const DownloadIcon = ({ size = 22, className }: IconProps) => (
 )
 export const ImageIcon = ({ size = 22, className }: IconProps) => (
   <LuImage size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const ImageSwapIcon = ({ size = 22, className }: IconProps) => (
+  <ImagePlus size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const ChartIcon = ({ size = 22, className }: IconProps) => (
   <ChartColumn size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
