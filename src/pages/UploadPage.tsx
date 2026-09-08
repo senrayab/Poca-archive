@@ -31,8 +31,6 @@ interface QueueItem {
   file: File
   /** 한 번이라도 잘랐는지 (표시용) */
   cropped: boolean
-  /** 변환에 걸린 시간(ms). 어디서 시간이 가는지 눈에 보이라고 남긴다. */
-  ms: number
 }
 
 const stripExtension = (name: string) => name.replace(/\.[^.]+$/, '')
@@ -61,9 +59,7 @@ export function UploadPage() {
 
   /** 파일 하나를 변환해 대기 목록에 넣는다. 파일 선택과 주소 가져오기가 공유한다. */
   const enqueue = async (file: File) => {
-    const started = performance.now()
     const processed = await processImage(file)
-    const ms = Math.round(performance.now() - started)
     setItems((prev) => [
       ...prev,
       {
@@ -74,7 +70,6 @@ export function UploadPage() {
         processed,
         file,
         cropped: false,
-        ms,
       },
     ])
   }
@@ -194,17 +189,13 @@ export function UploadPage() {
         updatedAt: now + index,
         }
       })
-      // 저장에 걸린 시간도 알려준다 — 변환이 느린지 저장이 느린지 갈라 보여야
-      // 어디를 고칠지 정할 수 있고, 보관함이 커질수록 이 값이 늘어난다
-      const started = performance.now()
       await db.transaction('rw', db.cards, db.images, async () => {
         await db.cards.bulkAdd(cards)
         await db.images.bulkAdd(images)
       })
-      const seconds = ((performance.now() - started) / 1000).toFixed(1)
       items.forEach((item) => URL.revokeObjectURL(item.previewUrl))
       setItems([])
-      toast(`${cards.length}장을 등록했습니다. (저장 ${seconds}초)`)
+      toast(`${cards.length}장을 등록했습니다.`)
       navigate('/')
     } catch (error) {
       toast(error instanceof Error ? error.message : '저장에 실패했습니다.')
@@ -391,8 +382,7 @@ export function UploadPage() {
                       <span className="queue__meta">
                         {item.processed.full.width}×{item.processed.full.height} ·{' '}
                         {formatBytes(item.processed.originalBytes)} →{' '}
-                        <b>{formatBytes(item.processed.full.blob.size)}</b> ·{' '}
-                        {(item.ms / 1000).toFixed(1)}초
+                        <b>{formatBytes(item.processed.full.blob.size)}</b>
                       </span>
                     </div>
                     <button
