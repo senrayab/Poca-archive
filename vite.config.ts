@@ -19,7 +19,9 @@ export default defineConfig(({ command }) => ({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      // 큰 아이콘은 설치할 때 운영체제가 직접 받아가므로 캐시에 담지 않는다.
+      // 작은 둘만 담아 오프라인에서도 탭 아이콘과 홈 화면 아이콘이 나오게 한다.
+      includeAssets: ['favicon-32.png', 'apple-touch-icon.png'],
       manifest: {
         name: '포토카드 아카이브',
         short_name: 'POCA',
@@ -32,8 +34,14 @@ export default defineConfig(({ command }) => ({
         // start_url/scope는 vite-plugin-pwa가 base에서 채운다.
         // 여기서 '/'로 고정하면 설치된 앱이 도메인 루트를 열어버린다.
         icons: [
-          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
-          { src: 'icon-maskable.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          /*
+           * 안드로이드 런처는 이 그림을 제 모양(원·둥근 네모 등)으로 잘라낸다.
+           * 그래서 마스커블 쪽만 그림을 안쪽 74%에 두고 둘레를 옅은 색으로 채웠다 —
+           * 어떻게 잘려도 카드와 얼굴이 잘려 나가지 않는다.
+           */
+          { src: 'icon-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
