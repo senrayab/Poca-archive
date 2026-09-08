@@ -783,6 +783,8 @@ a { color: inherit; }
   border-radius: inherit;
   overflow: hidden;
   background: var(--bg-elev-2);
+  /* 두 번 두드려 찜하는 자리다 — 브라우저가 그걸 확대로 채가지 않게 */
+  touch-action: manipulation;
 }
 /*
  * 베어낸 자국. 하트가 없는 동안(수정 중·휴지통)엔 빈 구멍만 남으니 안 판다.
@@ -859,7 +861,12 @@ a { color: inherit; }
  * 불투명한 판때기를 얹으면 사진이 가려지므로, 사진이 비쳐 보이는
  * 반투명 + blur 층으로 만들고 시트는 아래쪽만 얇게 덮는다.
  */
+/*
+ * 유리 시트는 글자만 얹혀 있고 누를 것이 없다. 손을 안 타게 해두어야
+ * 사진 아래쪽을 두드려도 그 아래 사진까지 닿는다 (두 번 두드리면 찜).
+ */
 .detail__sheet {
+  pointer-events: none;
   position: absolute;
   /* 사진 가로폭에 꽉 채우고 아래도 딱 맞춘다 */
   inset: auto 0 0 0;
