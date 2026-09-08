@@ -1457,7 +1457,23 @@ a { color: inherit; }
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -.02em;
+  line-height: 1.32;
   text-shadow: var(--on-scrim-shadow);
+  /*
+   * 사진 파일 이름이 그대로 제목이 되는 일이 흔한데, 그런 이름에는 띄어쓸 자리가
+   * 없다. 줄을 바꿀 데를 못 찾으면 한 줄로 뻗어 유리 시트 밖으로 넘쳐 나간다.
+   * 어디서든 끊을 수 있게 해준다.
+   */
+  overflow-wrap: anywhere;
+  /*
+   * 목록에서는 한 줄로 줄이니 상세에서는 더 보여주는 게 맞다. 다만 끝없이
+   * 늘어나면 사진을 덮으므로 두 줄까지만 두고 그 뒤는 말줄임한다.
+   */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 .detail__meta {
   display: flex;
