@@ -106,6 +106,59 @@ export async function processImage(file: Blob): Promise<ProcessedImage> {
 }
 
 /*
+ * 자르기 화면에 띄울 축소본.
+ *
+ * 폰 사진은 12MP(4000×3000)쯤 된다. 그걸 그대로 <img>에 물리면 화면에는
+ * 230px로 보이면서 메모리와 래스터 비용은 원본 크기로 낸다. 자르기 화면은
+ * 그 그림을 두 겹(틀 안·틀 밖)으로 깔기 때문에 값이 두 배로 든다.
+ *
+ * 화면에서 필요한 해상도는 아무리 크게 잡아도 1400px이면 남는다. 원본은
+ * 마지막에 '이대로 자르기'를 누를 때 다시 읽어 쓰므로 화질은 손해가 없다.
+ */
+export interface PreviewImage {
+  /** 화면에 붙일 축소본 주소 */
+  url: string
+  /** 원본 픽셀 크기 — 확대 상한을 정하는 데 쓴다 (축소본 크기로 재면 안 된다) */
+  naturalWidth: number
+  naturalHeight: number
+  /** 같은 축소본의 비트맵. 카드 검출에 쓰고 나면 close()로 놓아준다. */
+  bitmap: ImageBitmap
+}
+
+export async function makePreview(source: Blob, maxEdge: number): Promise<PreviewImage> {
+  const full = await loadBitmap(source)
+  const naturalWidth = full.width
+  const naturalHeight = full.height
+  const { width, height } = fitWithin(naturalWidth, naturalHeight, maxEdge)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    full.close()
+    throw new Error('캔버스를 사용할 수 없습니다.')
+  }
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(full, 0, 0, width, height)
+  // 원본 비트맵은 여기서 놓아준다 — 수십 MB가 계속 잡혀 있을 이유가 없다
+  full.close()
+
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, outputMime(), 0.9),
+  )
+  if (!blob) throw new Error('이미지 변환에 실패했습니다.')
+
+  return {
+    url: URL.createObjectURL(blob),
+    naturalWidth,
+    naturalHeight,
+    bitmap: await createImageBitmap(canvas),
+  }
+}
+
+/*
  * 크롭 화면에서 사진을 어떻게 놓았는지를 그대로 옮긴 값.
  *
  * 화면에서 쓴 CSS transform과 같은 순서(이동 → 회전 → 확대)로 캔버스에 다시

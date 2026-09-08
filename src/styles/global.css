@@ -1035,6 +1035,16 @@ a { color: inherit; }
 }
 .crop__stage:active { cursor: grabbing; }
 
+/* 축소본을 뜨는 잠깐 동안 검은 판만 보이지 않게 */
+.crop__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--on-scrim-dim);
+}
+
 /* 틀 밖으로 넘치는 부분. 바로 위에 깔리는 막이 이걸 어둡게 만든다. */
 .crop__spill {
   position: absolute;
