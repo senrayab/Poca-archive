@@ -64,11 +64,8 @@ async function loadBitmap(file: Blob): Promise<ImageBitmap> {
 /** 자른 결과는 캔버스로 나오므로, 원본 비트맵과 같은 자리에서 받아 쓴다. */
 type EncodeSource = (ImageBitmap | HTMLCanvasElement) & { width: number; height: number }
 
-function encode(
-  source: EncodeSource,
-  maxEdge: number,
-  quality: number,
-): Promise<EncodedImage> {
+/** 긴 변을 maxEdge에 맞춰 줄여 그린다. 값이 드는 건 이 그리기다. */
+function shrink(source: EncodeSource, maxEdge: number): HTMLCanvasElement {
   const { width, height } = fitWithin(source.width, source.height, maxEdge)
   const canvas = document.createElement('canvas')
   canvas.width = width
@@ -78,12 +75,15 @@ function encode(
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(source, 0, 0, width, height)
+  return canvas
+}
 
+function toEncoded(canvas: HTMLCanvasElement, quality: number): Promise<EncodedImage> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
         if (!blob) return reject(new Error('이미지 변환에 실패했습니다.'))
-        resolve({ blob, width, height })
+        resolve({ blob, width: canvas.width, height: canvas.height })
       },
       outputMime(),
       quality,
@@ -99,8 +99,19 @@ export async function processImage(file: Blob): Promise<ProcessedImage> {
   }
   const bitmap = await loadBitmap(file)
   try {
-    const full = await encode(bitmap, FULL_MAX_EDGE, FULL_QUALITY)
-    const thumb = await encode(bitmap, THUMB_MAX_EDGE, THUMB_QUALITY)
+    const shrunk = shrink(bitmap, FULL_MAX_EDGE)
+    /*
+     * 썸네일은 원본이 아니라 방금 줄여둔 것에서 뽑는다.
+     *
+     * 둘 다 원본에서 그리면 4000×3000짜리를 두 번 훑는다 — 1200만 픽셀을
+     * 읽는 일을 한 장에 두 번 하는 셈이다. 1000px로 줄여둔 것에서 뽑으면
+     * 두 번째는 75만 픽셀만 읽으므로 그 대목이 16분의 1로 준다.
+     *
+     * 화질은 그대로다. 목표가 360px인데 1000px은 이미 세 배가 넘는 밑감이라,
+     * 원본에서 바로 줄인 것과 눈으로 가릴 수 없다.
+     */
+    const full = await toEncoded(shrunk, FULL_QUALITY)
+    const thumb = await toEncoded(shrink(shrunk, THUMB_MAX_EDGE), THUMB_QUALITY)
     return { full, thumb, originalBytes: file.size }
   } finally {
     bitmap.close()
@@ -325,8 +336,9 @@ export async function processCroppedImage(
       ? drawProjected(bitmap, t, width, height)
       : drawAffine(bitmap, t, width, height)
 
-    const full = await encode(canvas, FULL_MAX_EDGE, FULL_QUALITY)
-    const thumb = await encode(canvas, THUMB_MAX_EDGE, THUMB_QUALITY)
+    // 자른 판은 이미 목표 크기라 그대로 굽고, 썸네일만 여기서 한 번 더 줄인다
+    const full = await toEncoded(canvas, FULL_QUALITY)
+    const thumb = await toEncoded(shrink(canvas, THUMB_MAX_EDGE), THUMB_QUALITY)
     return { full, thumb, originalBytes: source.size }
   } finally {
     bitmap.close()
