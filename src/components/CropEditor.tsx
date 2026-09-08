@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react'
+import type {
+  ReactNode,
+  PointerEvent as ReactPointerEvent,
+  WheelEvent as ReactWheelEvent,
+} from 'react'
 import {
   covers,
   hasTilt,
@@ -14,7 +18,14 @@ import {
   type CropTransform,
   type ProcessedImage,
 } from '@/lib/image'
-import { CloseIcon, ResetIcon } from './Icons'
+import {
+  CloseIcon,
+  ResetIcon,
+  RotateShapeIcon,
+  TiltHorizontalIcon,
+  TiltVerticalIcon,
+  ZoomIcon,
+} from './Icons'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
 
@@ -107,6 +118,58 @@ function settle(view: CropView, frame: Size, base: Size, maxScale: number): Crop
     else hi = mid
   }
   return { ...v, x: v.x * lo, y: v.y * lo }
+}
+
+/**
+ * 각도 슬라이더 한 벌.
+ *
+ * 이름을 누르면 0도로 돌아온다. 많이 돌려놓고 나면 손가락으로 정확히 0을
+ * 짚기가 어려운데, 0은 '안 건드린 상태'라 가장 자주 돌아가고 싶은 자리다.
+ */
+function AngleSlider({
+  label,
+  icon,
+  value,
+  limit,
+  disabled,
+  onChange,
+}: {
+  /** 화면에는 안 보이고, 읽어주는 이름으로만 쓴다 */
+  label: string
+  icon: ReactNode
+  /** 라디안 */
+  value: number
+  /** 슬라이더 양쪽 끝 (도) */
+  limit: number
+  disabled: boolean
+  onChange: (radians: number) => void
+}) {
+  const degrees = Math.round(deg(value))
+  return (
+    <div className="crop__slider">
+      <button
+        type="button"
+        className="crop__zero"
+        onClick={() => onChange(0)}
+        disabled={disabled || degrees === 0}
+        aria-label={`${label} 0도로 되돌리기`}
+        title={`${label} — 눌러서 0도로`}
+      >
+        {icon}
+        <b>{signed(degrees)}°</b>
+      </button>
+      <input
+        type="range"
+        aria-label={label}
+        min={-limit}
+        max={limit}
+        step={0.5}
+        value={deg(value)}
+        onChange={(e) => onChange(rad(Number(e.target.value)))}
+        disabled={disabled}
+      />
+    </div>
+  )
 }
 
 export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
@@ -306,6 +369,10 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
         {/*
           틀 밖도 어둡게 남겨둔다. 잘려나갈 부분이 아예 안 보이면
           지금 사진의 어디쯤을 보고 있는지 가늠할 수가 없다.
+
+          손가락으로 확대하려고 짚고 있으면 폰이 '이미지 저장·복사' 메뉴를 띄운다.
+          사진에서 손을 떼어(pointer-events) 누를 대상이 이미지가 아니게 하고,
+          그래도 새어 나오는 경우를 대비해 메뉴 자체도 막는다.
         */}
         <div
           className="crop__stage"
@@ -314,6 +381,7 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           onWheel={onWheel}
+          onContextMenu={(e) => e.preventDefault()}
         >
           {!ready && <span className="crop__loading">사진 여는 중…</span>}
           {ready && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
@@ -328,12 +396,21 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
         </div>
 
         <div className="crop__controls">
-          <label className="crop__slider">
-            <span>
-              확대 <b>{Math.round((view.scale / Math.max(minScale, 0.001)) * 100)}%</b>
-            </span>
+          <div className="crop__slider">
+            <button
+              type="button"
+              className="crop__zero"
+              onClick={() => apply({ ...view, scale: minScale })}
+              disabled={!ready || view.scale <= minScale + 0.001}
+              aria-label="확대 되돌리기"
+              title="확대 — 눌러서 딱 맞는 크기로"
+            >
+              <ZoomIcon size={15} />
+              <b>{Math.round((view.scale / Math.max(minScale, 0.001)) * 100)}%</b>
+            </button>
             <input
               type="range"
+              aria-label="확대"
               min={0}
               max={1000}
               value={clamp(
@@ -349,54 +426,36 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
               }
               disabled={!ready}
             />
-          </label>
-          <label className="crop__slider">
-            <span>
-              돌리기 <b>{signed(Math.round(deg(view.rotation)))}°</b>
-            </span>
-            <input
-              type="range"
-              min={-MAX_ROTATION}
-              max={MAX_ROTATION}
-              step={0.5}
-              value={deg(view.rotation)}
-              onChange={(e) => apply({ ...view, rotation: rad(Number(e.target.value)) })}
-              disabled={!ready}
-            />
-          </label>
+          </div>
+          <AngleSlider
+            label="돌리기"
+            icon={<RotateShapeIcon size={15} />}
+            value={view.rotation}
+            limit={MAX_ROTATION}
+            disabled={!ready}
+            onChange={(rotation) => apply({ ...view, rotation })}
+          />
 
           {/*
             원근 두 개. 비스듬히 찍혀 사다리꼴이 된 카드를 반듯하게 편다.
             위아래는 윗변을 눕히거나 세우고, 좌우는 옆면을 앞뒤로 돌린다.
           */}
-          <label className="crop__slider">
-            <span>
-              위아래 세우기 <b>{signed(Math.round(deg(view.tiltX)))}°</b>
-            </span>
-            <input
-              type="range"
-              min={-MAX_TILT}
-              max={MAX_TILT}
-              step={0.5}
-              value={deg(view.tiltX)}
-              onChange={(e) => apply({ ...view, tiltX: rad(Number(e.target.value)) })}
-              disabled={!ready}
-            />
-          </label>
-          <label className="crop__slider">
-            <span>
-              좌우 세우기 <b>{signed(Math.round(deg(view.tiltY)))}°</b>
-            </span>
-            <input
-              type="range"
-              min={-MAX_TILT}
-              max={MAX_TILT}
-              step={0.5}
-              value={deg(view.tiltY)}
-              onChange={(e) => apply({ ...view, tiltY: rad(Number(e.target.value)) })}
-              disabled={!ready}
-            />
-          </label>
+          <AngleSlider
+            label="위아래 세우기"
+            icon={<TiltVerticalIcon size={15} />}
+            value={view.tiltX}
+            limit={MAX_TILT}
+            disabled={!ready}
+            onChange={(tiltX) => apply({ ...view, tiltX })}
+          />
+          <AngleSlider
+            label="좌우 세우기"
+            icon={<TiltHorizontalIcon size={15} />}
+            value={view.tiltY}
+            limit={MAX_TILT}
+            disabled={!ready}
+            onChange={(tiltY) => apply({ ...view, tiltY })}
+          />
         </div>
 
         <div className="row crop__actions">

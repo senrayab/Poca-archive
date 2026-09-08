@@ -1032,6 +1032,8 @@ a { color: inherit; }
   touch-action: none;
   cursor: grab;
   user-select: none;
+  /* 확대하려고 짚고 있으면 폰이 '이미지 저장·복사' 메뉴를 띄운다 */
+  -webkit-touch-callout: none;
 }
 .crop__stage:active { cursor: grabbing; }
 
@@ -1051,6 +1053,12 @@ a { color: inherit; }
   left: 50%;
   top: 50%;
   max-width: none;
+  /*
+   * 손짓은 전부 무대가 받으므로 사진은 아예 손을 안 타게 둔다.
+   * 길게 누를 대상이 '이미지'가 아니게 되어 저장 메뉴가 뜰 일이 없다.
+   */
+  pointer-events: none;
+  -webkit-touch-callout: none;
 }
 
 .crop__frame {
@@ -1081,6 +1089,8 @@ a { color: inherit; }
   left: 50%;
   top: 50%;
   max-width: none;
+  pointer-events: none;
+  -webkit-touch-callout: none;
 }
 /* 삼분할 선 — 인물을 어디에 둘지 가늠하는 데만 쓰고, 흐릿하게 둔다 */
 .crop__grid {
@@ -1104,14 +1114,33 @@ a { color: inherit; }
 }
 .crop__slider {
   display: grid;
-  /* '위아래 세우기 +12°'가 한 줄에 들어갈 만큼 */
-  grid-template-columns: 92px 1fr;
+  /* 아이콘 + '+12°' 한 줄 */
+  grid-template-columns: 62px 1fr;
   align-items: center;
   gap: 10px;
   font-size: 11px;
   color: var(--on-scrim-dim);
 }
-.crop__slider b { color: var(--on-scrim); font-weight: 700; }
+.crop__slider b { color: var(--on-scrim); font-weight: 700; font-variant-numeric: tabular-nums; }
+/*
+ * 값을 누르면 0도(확대는 딱 맞는 크기)로 돌아온다. 많이 돌려놓고 나면
+ * 손가락으로 0을 정확히 짚기가 어려운데, 0은 가장 자주 돌아가고 싶은 자리다.
+ * 0일 때는 눌러도 갈 곳이 없어 비활성이고, 그때만 흐리게 둔다.
+ */
+.crop__zero {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  margin-left: -6px;
+  border-radius: var(--pill);
+  color: inherit;
+  font-size: inherit;
+  transition: background .15s, opacity .15s;
+}
+.crop__zero:not(:disabled):hover { background: var(--glass); }
+.crop__zero:not(:disabled):active { background: var(--glass-hover); }
+.crop__zero:disabled { cursor: default; opacity: .55; }
 .crop__slider input[type='range'] {
   width: 100%;
   accent-color: var(--accent);

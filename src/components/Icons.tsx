@@ -31,6 +31,7 @@ import {
   Upload,
   Users,
   X,
+  ZoomIn,
 } from 'lucide-react'
 
 /*
@@ -93,6 +94,46 @@ export const DownloadIcon = ({ size = 22, className }: IconProps) => (
 export const ImageIcon = ({ size = 22, className }: IconProps) => (
   <LuImage size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
+export const ZoomIcon = ({ size = 22, className }: IconProps) => (
+  <ZoomIn size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+
+/*
+ * 자르기 화면의 각도 셋. 라이브러리에 마땅한 게 없어 직접 그렸다.
+ * 셋 다 '이 손잡이를 돌리면 카드가 어떤 모양이 되는지'를 그대로 보여준다 —
+ * 기울어진 사각형, 위가 좁은 사다리꼴, 왼쪽이 좁은 사다리꼴.
+ * 글자보다 이쪽이 빠르게 읽히고, 좁은 폰 화면에서 자리도 덜 먹는다.
+ */
+const Shape = ({ d, size, className }: IconProps & { d: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={STROKE}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d={d} />
+  </svg>
+)
+
+/** 화면 안에서 돌리기 — 살짝 기울어진 사각형 */
+export const RotateShapeIcon = ({ size = 22, className }: IconProps) => (
+  <Shape size={size} className={className} d="M4.1 8.6 17.8 5.7 19.9 15.4 6.2 18.3Z" />
+)
+/** 위아래 세우기 — 윗변이 뒤로 넘어가 좁아진 모양 */
+export const TiltVerticalIcon = ({ size = 22, className }: IconProps) => (
+  <Shape size={size} className={className} d="M7.8 5.5H16.2L20 18.5H4Z" />
+)
+/** 좌우 세우기 — 왼쪽 변이 뒤로 넘어가 좁아진 모양 */
+export const TiltHorizontalIcon = ({ size = 22, className }: IconProps) => (
+  <Shape size={size} className={className} d="M5.5 7.8V16.2L18.5 20V4Z" />
+)
+
 export const CropIcon = ({ size = 22, className }: IconProps) => (
   <Crop size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
