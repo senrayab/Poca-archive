@@ -21,7 +21,6 @@ import {
   RotateShapeIcon,
   TiltHorizontalIcon,
   TiltVerticalIcon,
-  ZoomIcon,
 } from './Icons'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
@@ -199,8 +198,6 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     return clamp((frame.h * (natural.h / base.h)) / MIN_OUTPUT_EDGE, 1.6, 8)
   }, [natural, base, frame])
 
-  const minScale = minScaleFor(view.rotation, frame, base)
-  const zoomMax = Math.max(maxScale, minScale)
   const ready = Boolean(url && natural && frame.w && base.w)
 
   /*
@@ -299,22 +296,6 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
 
   const knobs: DialKnob[] = [
     {
-      key: 'zoom',
-      label: '확대',
-      icon: <ZoomIcon size={19} />,
-      // 확대만 단위가 배율이 아니라 퍼센트다 — 눈금자에 얹기 좋고 읽기도 쉽다
-      value: (view.scale / Math.max(minScale, 0.001)) * 100,
-      min: 100,
-      max: (zoomMax / Math.max(minScale, 0.001)) * 100,
-      rest: 100,
-      // 눈금은 10%마다, 구간 표시는 50%마다. 예민도는 pxPerUnit이 정하므로 그대로다.
-      tick: 10,
-      majorEvery: 5,
-      pxPerUnit: 1.1,
-      format: (v) => `${Math.round(v)}%`,
-      onChange: (v) => apply({ ...view, scale: (v / 100) * minScale }),
-    },
-    {
       key: 'rotation',
       label: '돌리기',
       icon: <RotateShapeIcon size={19} />,
@@ -385,7 +366,7 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     <Modal onClose={requestClose} panel={false} label="사진 자르기">
       <div className="crop">
         <div className="crop__top">
-          <span className="crop__hint">끌어서 맞추세요 · 틀 밖은 저장되지 않아요</span>
+          <span className="crop__hint">두 손가락으로 크기 조절 · 틀 밖은 저장되지 않아요</span>
           <button className="detail__close" onClick={requestClose} aria-label="닫기">
             <CloseIcon size={20} />
           </button>
@@ -421,8 +402,11 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
         </div>
 
         {/*
-          손잡이 넷을 눈금자 하나로 돌려 쓴다. 슬라이더를 넷 세우면 그만큼
-          사진이 작아지는데, 어차피 한 번에 하나만 만진다.
+          손잡이 셋을 눈금자 하나로 돌려 쓴다. 어차피 한 번에 하나만 만진다.
+
+          확대는 여기 없다. 손가락 두 개(데스크톱은 휠)로 하는 편이 빠르고,
+          다이얼에 얹으면 0을 가운데 두는 다른 셋과 달리 100%가 왼쪽 끝에
+          붙어 혼자 어색했다.
         */}
         <CropDial disabled={!ready} knobs={knobs} />
         <div className="row crop__actions">
