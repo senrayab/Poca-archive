@@ -168,7 +168,11 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const showFav = !editing && card.deleted !== 1
 
   /*
-   * 사진을 두 번 두드리면 찜한다 — 오른쪽 위 하트를 누른 것과 같다.
+   * 사진을 두 번 두드리면 찜한다.
+   *
+   * 찜을 '푸는' 일은 하지 않는다. 두드리기는 사진을 보다가 무심코 하는 손짓이라
+   * 하트를 누르는 것만큼 뜻이 분명하지 않은데, 풀어버리면 되돌릴 방법이
+   * 눈에 띄지 않는다. 푸는 건 하트 버튼 몫으로 남긴다.
    *
    * 브라우저에는 터치용 더블탭 이벤트가 없어 직접 잰다. 두 번째 탭이 앞의 것과
    * 시간·거리 안에 들어와야 한 쌍으로 친다. 거리를 보는 덕에 좌우로 넘기는
@@ -181,7 +185,10 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     const prev = lastTap.current
     if (prev && now - prev.at < 320 && Math.hypot(e.clientX - prev.x, e.clientY - prev.y) < 32) {
       lastTap.current = null
-      void toggleFavorite()
+      // 이미 찜한 카드는 그대로 두고 한 번 더 터뜨리기만 한다 — 두드림이
+      // 먹히지 않은 게 아니라 '이미 찜해둔 카드'라는 답이 된다
+      if (card.favorite === 1) setBurst((n) => n + 1)
+      else void toggleFavorite()
       return
     }
     lastTap.current = { at: now, x: e.clientX, y: e.clientY }
