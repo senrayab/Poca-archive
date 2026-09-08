@@ -1026,7 +1026,6 @@ a { color: inherit; }
   left: 50%;
   top: 50%;
   max-width: none;
-  will-change: transform;
 }
 
 .crop__frame {
@@ -1046,7 +1045,6 @@ a { color: inherit; }
   left: 50%;
   top: 50%;
   max-width: none;
-  will-change: transform;
 }
 /* 삼분할 선 — 인물을 어디에 둘지 가늠하는 데만 쓰고, 흐릿하게 둔다 */
 .crop__grid {

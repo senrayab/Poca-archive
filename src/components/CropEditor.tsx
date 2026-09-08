@@ -26,7 +26,12 @@ interface CropEditorProps {
  */
 /** 잘라낸 조각이 이 높이(원본 픽셀)는 남도록 확대 상한을 정한다 */
 const MIN_OUTPUT_EDGE = 480
-const MAX_ROTATION = 15
+/*
+ * 기울기 한계. 15도로는 모자란다는 얘기가 있어 30도까지 열었다.
+ * 많이 돌릴수록 틀을 채우려 더 확대해야 해서 잘리는 부분이 늘지만,
+ * 그 판단은 화면을 보는 사람이 하면 된다.
+ */
+const MAX_ROTATION = 30
 
 interface View {
   scale: number
@@ -107,8 +112,14 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   useEffect(() => {
     const objectUrl = URL.createObjectURL(source)
     setUrl(objectUrl)
+    /*
+     * 개발 모드(StrictMode)는 효과를 붙였다 떼고 다시 붙인다. 그 사이 주소가
+     * 풀리면서 첫 번째 이미지가 실패로 끝나는데, 그건 알릴 일이 아니다.
+     */
+    let alive = true
     const img = new Image()
     img.onload = () => {
+      if (!alive) return
       setNatural({ w: img.naturalWidth, h: img.naturalHeight })
       // 검출은 어디까지나 거들기다. 터지든 못 찾든 자르기 자체는 그대로 된다.
       try {
@@ -117,16 +128,27 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
         setDetected(null)
       }
     }
-    img.onerror = () => toast('사진을 열지 못했습니다.')
+    img.onerror = () => {
+      if (alive) toast('사진을 열지 못했습니다.')
+    }
     img.src = objectUrl
-    return () => URL.revokeObjectURL(objectUrl)
+    return () => {
+      alive = false
+      URL.revokeObjectURL(objectUrl)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source])
 
   useEffect(() => {
     const el = frameRef.current
     if (!el) return
-    const measure = () => setFrame({ w: el.clientWidth, h: el.clientHeight })
+    // 크기가 그대로면 상태를 건드리지 않는다 — 매번 새 객체를 넣으면 공연히 다시 그린다
+    const measure = () =>
+      setFrame((prev) =>
+        prev.w === el.clientWidth && prev.h === el.clientHeight
+          ? prev
+          : { w: el.clientWidth, h: el.clientHeight },
+      )
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(el)
@@ -312,9 +334,14 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           onPointerCancel={onPointerUp}
           onWheel={onWheel}
         >
-          {url && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
+          {/*
+            사진 크기를 알기 전에 그리면 원본 크기(수천 px) 그대로 한 번 깔렸다가
+            줄어든다. 큰 사진일수록 그 한 번이 눈에 확 띄고, 브라우저가 그 큰 층을
+            만들었다 버리기를 반복하면 화면이 깜빡인다. 다 정해진 뒤에 그린다.
+          */}
+          {ready && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
           <div className="crop__frame" ref={frameRef}>
-            {url && (
+            {ready && (
               <img className="crop__img" src={url} alt="자를 사진" draggable={false} style={style} />
             )}
             {/* 삼분할 선 — 카드 안 인물을 어디에 둘지 가늠하는 데 쓴다 */}
