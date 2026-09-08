@@ -89,6 +89,12 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const [swapping, setSwapping] = useState(false)
   const [cropping, setCropping] = useState(false)
+  /*
+   * 고친 걸 버리고 나가려 할 때 한 번 붙잡는다.
+   * 'edit'는 수정만 그만두는 길, 'popup'은 팝업까지 닫는 길이다 —
+   * 물어보는 창은 같고 예 다음에 갈 곳만 다르다.
+   */
+  const [askSave, setAskSave] = useState<'edit' | 'popup' | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   // 아직 저장 전인 새 사진 — 있으면 이게 스테이지를 차지한다
   const pendingUrl = useObjectUrl(pending?.full.blob)
@@ -121,6 +127,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     setPending(null)
     setPendingFile(null)
     setCropping(false)
+    setAskSave(null)
     setDraft({
       title: card.title,
       memberId: card.memberId,
@@ -188,9 +195,32 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     setPendingFile(null)
   }
 
+  /** 저장을 눌러야 반영되는 것들 중 하나라도 손댔는가 */
+  const dirty =
+    draft.title !== card.title ||
+    draft.memberId !== card.memberId ||
+    (draft.categoryId || null) !== (card.categoryId ?? null) ||
+    draft.memo !== card.memo ||
+    pending !== null
+
+  /** 수정만 그만둘 때 (취소 버튼) */
+  const requestCancel = () => {
+    if (dirty) setAskSave('edit')
+    else cancelEdit()
+  }
+
+  /** 팝업 자체를 닫을 때 (닫기 버튼·바깥 누르기·ESC) */
+  const requestClose = () => {
+    if (editing && dirty) setAskSave('popup')
+    else onClose()
+  }
+
   const save = async () => {
     const title = draft.title.trim()
-    if (!title) return toast('제목을 입력해 주세요.')
+    if (!title) {
+      toast('제목을 입력해 주세요.')
+      return false
+    }
     await db.transaction('rw', db.cards, db.images, async () => {
       await db.cards.update(card.id, {
         title,
@@ -212,6 +242,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     setPendingFile(null)
     setEditing(false)
     toast('수정했습니다.')
+    return true
   }
 
   /** 실제 삭제가 아니라 휴지통으로 보낸다 — 잘못 지웠을 때 되돌릴 수 있게. */
@@ -241,7 +272,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   }
 
   return (
-    <Modal onClose={onClose} panel={false} label={card.title}>
+    <Modal onClose={requestClose} panel={false} label={card.title}>
       {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
       <div
         className="detail"
@@ -250,7 +281,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         onTouchEnd={onTouchEnd}
       >
         <div className="detail__top">
-          <button className="detail__close" onClick={onClose} aria-label="닫기">
+          <button className="detail__close" onClick={requestClose} aria-label="닫기">
             <CloseIcon size={20} />
           </button>
         </div>
@@ -467,7 +498,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         */}
         {editing && (
           <div className="row detail__form-actions">
-            <button className="btn" onClick={cancelEdit}>
+            <button className="btn" onClick={requestCancel}>
               취소
             </button>
             <button className="btn btn--primary" onClick={save}>
@@ -515,6 +546,45 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           </div>
         )}
       </div>
+
+      {askSave && (
+        <Modal onClose={() => setAskSave(null)} label="변경사항">
+          <h2 className="modal__title">변경사항을 저장할까요?</h2>
+          <p className="modal__note">저장하지 않으면 고친 내용이 사라집니다.</p>
+          <button
+            className="btn btn--primary btn--block"
+            onClick={() => {
+              const exit = askSave === 'popup'
+              void save().then((saved) => {
+                if (!saved) return
+                setAskSave(null)
+                if (exit) onClose()
+              })
+            }}
+          >
+            저장
+          </button>
+          <button
+            className="btn btn--block"
+            style={{ marginTop: 8 }}
+            onClick={() => {
+              const exit = askSave === 'popup'
+              setAskSave(null)
+              cancelEdit()
+              if (exit) onClose()
+            }}
+          >
+            저장 안 함
+          </button>
+          <button
+            className="btn btn--block btn--ghost"
+            style={{ marginTop: 8 }}
+            onClick={() => setAskSave(null)}
+          >
+            취소
+          </button>
+        </Modal>
+      )}
 
       {cropping && cropSource && (
         <CropEditor
