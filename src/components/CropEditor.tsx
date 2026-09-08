@@ -42,8 +42,14 @@ interface CropEditorProps {
 /** 잘라낸 조각이 이 높이(원본 픽셀)는 남도록 확대 상한을 정한다 */
 const MIN_OUTPUT_EDGE = 480
 const MAX_ROTATION = 30
-/* 원근은 각도가 커질수록 반대편이 급하게 눌린다. 20도면 실제 사진을 세우기에 넉넉하다. */
-const MAX_TILT = 20
+/*
+ * 원근 한계. 돌리기와 같은 30도까지 연다.
+ *
+ * 기울일수록 반대편이 눌려 사진이 틀보다 작아지므로, 덮으려면 그만큼 더
+ * 확대해야 한다 — 두 축을 함께 30도로 놓으면 1.56배(20도는 1.27배)까지 든다.
+ * 그만큼 카드가 더 잘려나가지만, 그 값을 치를지는 화면을 보는 사람이 정한다.
+ */
+const MAX_TILT = 30
 /* 화면에 띄울 축소본의 긴 변. 원본은 마지막에 자를 때만 다시 읽는다. */
 const PREVIEW_MAX_EDGE = 1400
 
@@ -209,9 +215,16 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     const lo = minScaleFor(next.rotation, frame, base)
     const hi = Math.max(lo, maxScale)
     const scaled: CropView = { ...next, scale: clamp(next.scale, lo, hi) }
-    // 기울임이 없으면 닫힌 식이 정확하고 빠르다. 있을 때만 더듬어 찾는다.
+    /*
+     * 기울임이 없으면 닫힌 식이 정확하고 빠르다. 있을 때만 더듬어 찾는다.
+     *
+     * 빈 곳을 막느라 키우는 배율에는 화질 상한을 물리지 않는다. 그 상한은
+     * '사람이 당겨서 화질을 버리는 것'을 막자는 것인데, 여기서 키우는 건
+     * 배경이 딸려 들어오는 걸 막자는 것이라 성격이 다르다. 저장 해상도는
+     * 어차피 실제로 걸린 픽셀만큼만 잡으므로 없는 화질을 늘려 담지도 않는다.
+     */
     const settled = hasTilt(scaled)
-      ? settle(scaled, frame, base, hi)
+      ? settle(scaled, frame, base, Math.max(lo, maxScale * 1.8))
       : clampOffset(scaled, frame, base)
     viewRef.current = settled
     setView(settled)
