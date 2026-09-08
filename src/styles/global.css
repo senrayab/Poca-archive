@@ -993,7 +993,19 @@ a { color: inherit; }
   color: var(--on-scrim);
   color-scheme: var(--scrim-scheme);
   animation: rise .18s ease-out both;
-  --crop-h: min(46dvh, 380px);
+  /*
+   * 다른 팝업들처럼 화면 높이를 넘지 않게 못 박는다. 이걸 빼먹으면 폰에서
+   * 내용이 화면보다 커지고, 그 순간 주소창이 접혔다 펴지며 dvh가 바뀌고,
+   * 바뀐 높이가 다시 내용 높이를 바꾸는 되먹임이 생겨 화면이 흔들린다.
+   *
+   * 단위도 dvh가 아니라 svh다. dvh는 주소창이 움직일 때마다 값이 변해서
+   * 틀 크기가 매 프레임 달라지는데, svh는 주소창이 나와 있을 때의 높이로
+   * 고정이라 어느 상태에서도 흔들리지 않는다.
+   */
+  max-height: calc(100vh - 32px);
+  max-height: calc(100svh - 32px);
+  --crop-h: min(42vh, 360px);
+  --crop-h: min(42svh, 360px);
 }
 .crop__top {
   display: flex;
@@ -1013,6 +1025,9 @@ a { color: inherit; }
   justify-content: center;
   border-radius: var(--radius-sm);
   background: #000;
+  /* 자리가 모자라면 사진 쪽이 줄어든다 (슬라이더와 버튼은 그대로 둔다) */
+  min-height: 0;
+  flex-shrink: 1;
   /* 브라우저가 끌기를 스크롤로 가로채지 않게 */
   touch-action: none;
   cursor: grab;
@@ -1020,7 +1035,7 @@ a { color: inherit; }
 }
 .crop__stage:active { cursor: grabbing; }
 
-/* 틀 밖으로 넘치는 부분. 틀의 그림자가 이 위를 덮어 어둡게 만든다. */
+/* 틀 밖으로 넘치는 부분. 바로 위에 깔리는 막이 이걸 어둡게 만든다. */
 .crop__spill {
   position: absolute;
   left: 50%;
@@ -1030,15 +1045,26 @@ a { color: inherit; }
 
 .crop__frame {
   position: relative;
-  height: calc(var(--crop-h) - 34px);
+  height: calc(100% - 34px);
   aspect-ratio: var(--card-ratio);
   overflow: hidden;
   border-radius: 10px;
-  /*
-   * 안쪽 흰 선이 틀의 경계, 바깥으로 한없이 퍼지는 그림자가 잘려나갈 부분을 덮는 막이다.
-   * 막을 따로 그리면 틀과 1px씩 어긋나는데, 그림자로 두면 어긋날 자리가 없다.
-   */
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, .9), 0 0 0 100vmax rgba(0, 0, 0, .58);
+  /* 틀의 경계선. 잘려나갈 부분을 덮는 막은 아래 crop__scrim이 맡는다. */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .9);
+}
+/*
+ * 잘려나갈 부분을 덮는 막.
+ *
+ * 처음엔 틀에 100vmax짜리 퍼지는 그림자를 물려 한 번에 해결했는데, 그러면
+ * 폰에서 2000px이 넘는 칠할 영역이 생긴다. 그게 모달의 backdrop-filter 바로
+ * 밑에 깔리면서 폰 GPU가 감당을 못 했다. 무대만 덮는 판때기 하나면 그림은
+ * 똑같고(사진은 이 위에 다시 그려진다) 값은 거의 들지 않는다.
+ */
+.crop__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .58);
+  pointer-events: none;
 }
 .crop__img {
   position: absolute;
@@ -1064,6 +1090,7 @@ a { color: inherit; }
   flex-direction: column;
   gap: 8px;
   padding: 0 8px;
+  flex-shrink: 0;
 }
 .crop__slider {
   display: grid;
@@ -1079,7 +1106,8 @@ a { color: inherit; }
   accent-color: var(--accent);
   background: none;
 }
-.crop__actions { padding: 0 8px; }
+.crop__actions { padding: 0 8px; flex-shrink: 0; }
+.crop__top { flex-shrink: 0; }
 
 /*
  * 수정 중에는 사진 자체가 '사진 바꾸기' 버튼이 된다.
@@ -1596,10 +1624,16 @@ a { color: inherit; }
 .queue__crop {
   position: relative;
   flex-shrink: 0;
-  line-height: 0;
+  /*
+   * 버튼은 기본 여백과 인라인 배치를 달고 온다. 썸네일을 그대로 감싸기만 할 뿐이니
+   * 그 둘을 지워, 감싸기 전과 자리 차지가 한 치도 달라지지 않게 한다.
+   */
+  display: block;
+  padding: 0;
   border-radius: 8px;
   transition: transform .15s;
 }
+.queue__crop .queue__thumb { display: block; }
 .queue__crop:active { transform: scale(.96); }
 .queue__crop-badge {
   position: absolute;

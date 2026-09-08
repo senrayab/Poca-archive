@@ -340,6 +340,7 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
             만들었다 버리기를 반복하면 화면이 깜빡인다. 다 정해진 뒤에 그린다.
           */}
           {ready && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
+          <span className="crop__scrim" aria-hidden="true" />
           <div className="crop__frame" ref={frameRef}>
             {ready && (
               <img className="crop__img" src={url} alt="자를 사진" draggable={false} style={style} />
