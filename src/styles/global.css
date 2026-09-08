@@ -1189,60 +1189,33 @@ a { color: inherit; }
   cursor: ew-resize;
   user-select: none;
   -webkit-touch-callout: none;
-  /* 양끝은 흐려서 눈금이 갑자기 잘리지 않게 */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
 }
 .dial__ruler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.dial__ticks {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  /* 눈금자가 끝까지 밀려도 빈 곳이 안 보일 만큼 넉넉히 (보이는 데만 그려진다) */
-  width: 4000px;
-  margin-left: -2000px;
-}
-.dial__minor,
-.dial__major {
+/* 눈금은 캔버스가 그린다 — 끝을 둥글게 하고 가장자리에서 사그라들게 하려면 필요하다 */
+.dial__canvas {
   position: absolute;
   inset: 0;
-  background-repeat: repeat-x;
-  /* 눈금을 타일 한가운데 두어야 0이 바늘에 정확히 맞는다 */
-  background-position: center center;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
-.dial__minor {
-  background-image: linear-gradient(
-    to right,
-    transparent calc(50% - .5px),
-    var(--on-scrim-dim) calc(50% - .5px) calc(50% + .5px),
-    transparent calc(50% + .5px)
-  );
-  background-size: var(--minor) 42%;
-  opacity: .45;
-}
-.dial__major {
-  background-image: linear-gradient(
-    to right,
-    transparent calc(50% - .5px),
-    var(--on-scrim) calc(50% - .5px) calc(50% + .5px),
-    transparent calc(50% + .5px)
-  );
-  background-size: var(--major) 74%;
-  opacity: .8;
-}
+/*
+ * 바늘. 눈금은 흐르고 이것만 붙박이라, 값이 어디에 걸렸는지는 늘 여기서 읽는다.
+ * 눈금과 같은 흰색이면 묻히므로 포인트 색을 쓰고, 옅게 번지게 해 한 겹 띄운다.
+ */
 .dial__needle {
   position: absolute;
   left: 50%;
-  top: 4%;
-  bottom: 4%;
-  width: 2px;
-  margin-left: -1px;
-  border-radius: 1px;
+  top: 12%;
+  bottom: 12%;
+  width: 2.5px;
+  margin-left: -1.25px;
+  border-radius: 2px;
   background: var(--accent);
-  transition: transform .15s;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: transform .18s var(--ease);
 }
-.dial__ruler[data-dragging] .dial__needle { transform: scaleY(1.12); }
+.dial__ruler[data-dragging] .dial__needle { transform: scaleY(1.18); }
 
 .crop__actions { padding: 0 8px; flex-shrink: 0; }
 .crop__top { flex-shrink: 0; }

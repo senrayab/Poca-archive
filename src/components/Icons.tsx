@@ -7,6 +7,8 @@ import {
   ChartColumn,
   Crop,
   Download,
+  FlipHorizontal,
+  FlipVertical,
   ArrowLeftRight,
   HardDrive,
   Heart,
@@ -21,6 +23,7 @@ import {
   Plus,
   RefreshCw,
   RotateCcw,
+  RotateCw,
   Search,
   Settings,
   Smartphone,
@@ -99,45 +102,21 @@ export const ZoomIcon = ({ size = 22, className }: IconProps) => (
 )
 
 /*
- * 자르기 화면의 손잡이 아이콘들. 라이브러리에 마땅한 게 없어 직접 그렸다.
+ * 자르기 화면의 손잡이들.
  *
- * 셋 다 두 겹으로 읽힌다. 바깥 모양은 '이 손잡이를 돌리면 카드가 어떤 모양이
- * 되는지'(기울어진 사각형, 위가 좁은 사다리꼴, 왼쪽이 좁은 사다리꼴)이고,
- * 안에 그은 선은 '무엇을 축으로 도는지'다 — 위아래 세우기는 가로선,
- * 좌우 세우기는 세로선. 사진 편집기들이 쓰는 어법을 그대로 따랐다.
+ * 원근 둘은 Lucide의 flip 아이콘을 쓴다. 이름은 '뒤집기'지만 그림은
+ * 네모를 점선 중심축이 가르는 모양이고, 그 축이 바로 이 손잡이가 무엇을
+ * 중심으로 카드를 눕히는지다 — 위아래 세우기는 가로축(FlipVertical),
+ * 좌우 세우기는 세로축(FlipHorizontal). 축을 보여주는 그림이라 짝이 맞는다.
  */
-const Shape = ({ d, size, className }: IconProps & { d: string }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={STROKE}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
-    <path d={d} />
-  </svg>
-)
-
-/** 돌리기 — 기울어진 사각형을 가로 수평선이 가로지른다 */
 export const RotateShapeIcon = ({ size = 22, className }: IconProps) => (
-  <Shape
-    size={size}
-    className={className}
-    d="M4.1 8.6 17.8 5.7 19.9 15.4 6.2 18.3ZM2.4 12.6 21.6 11.4"
-  />
+  <RotateCw size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
-/** 위아래 세우기 — 윗변이 뒤로 넘어가 좁아진 모양, 가로축을 그어둔다 */
 export const TiltVerticalIcon = ({ size = 22, className }: IconProps) => (
-  <Shape size={size} className={className} d="M7.8 5.5H16.2L19.5 18.5H4.5ZM6.2 12H17.9" />
+  <FlipVertical size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
-/** 좌우 세우기 — 왼쪽 변이 뒤로 넘어가 좁아진 모양, 세로축을 그어둔다 */
 export const TiltHorizontalIcon = ({ size = 22, className }: IconProps) => (
-  <Shape size={size} className={className} d="M5.5 7.8V16.2L18.5 19.5V4.5ZM12 6.2V17.9" />
+  <FlipHorizontal size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 
 export const CropIcon = ({ size = 22, className }: IconProps) => (

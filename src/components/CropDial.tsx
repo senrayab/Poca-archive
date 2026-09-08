@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, ReactNode, CSSProperties } from 'react'
 
 /**
@@ -36,6 +36,77 @@ const SNAP = 0.7
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 
+/*
+ * 눈금은 캔버스에 그린다.
+ *
+ * 되풀이되는 배경 그림으로 깔면 눈금이 죄다 똑같은 막대가 된다 — 끝을 둥글게
+ * 할 수도, 가운데로 갈수록 또렷하게 할 수도, 끝값에서 눈금을 멈출 수도 없다.
+ * 한 칸씩 직접 그리면 그 셋이 다 되고, 값이 바뀔 때마다 다시 그려도
+ * 백여 개 선이라 폰에서도 가볍다.
+ */
+interface RulerLook {
+  /** 세로 길이 (칸 높이에 대한 비율) */
+  length: number
+  width: number
+  alpha: number
+}
+
+const MINOR: RulerLook = { length: 0.3, width: 1.4, alpha: 0.34 }
+const MAJOR: RulerLook = { length: 0.52, width: 1.7, alpha: 0.62 }
+const SUPER: RulerLook = { length: 0.76, width: 2.1, alpha: 0.95 }
+
+function drawRuler(
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+  knob: DialKnob,
+) {
+  const ratio = Math.min(3, window.devicePixelRatio || 1)
+  if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+    canvas.width = Math.round(width * ratio)
+    canvas.height = Math.round(height * ratio)
+  }
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
+  ctx.clearRect(0, 0, width, height)
+  ctx.lineCap = 'round'
+
+  const center = width / 2
+  const middle = height / 2
+  const reach = center / knob.pxPerUnit
+  const steps = Math.round(knob.value / knob.tick)
+
+  for (let i = steps - Math.ceil(reach / knob.tick) - 1; ; i++) {
+    const value = i * knob.tick
+    const x = center + (value - knob.value) * knob.pxPerUnit
+    if (x > width + 2) break
+    if (x < -2) continue
+    // 끝값 너머로는 눈금을 긋지 않는다 — 더 갈 곳이 없다는 게 눈에 보인다
+    if (value < knob.min - 1e-9 || value > knob.max + 1e-9) continue
+
+    const look =
+      i % (knob.majorEvery * 2) === 0 ? SUPER : i % knob.majorEvery === 0 ? MAJOR : MINOR
+
+    /*
+     * 가운데에서 멀수록 옅고 짧아진다. 눈금자가 둥근 통에 감겨 돌아가는 것처럼
+     * 보이고, 양끝이 잘리지 않고 사그라든다.
+     */
+    const away = Math.min(1, Math.abs(x - center) / center)
+    const fade = 1 - Math.pow(away, 1.7) * 0.92
+    // 바늘 밑을 지나는 칸만 살짝 도드라진다
+    const focus = 1 + 0.16 * Math.max(0, 1 - Math.abs(x - center) / 22)
+    const half = (height * look.length * fade * focus) / 2
+
+    ctx.strokeStyle = `rgba(255, 255, 255, ${look.alpha * fade})`
+    ctx.lineWidth = look.width
+    ctx.beginPath()
+    ctx.moveTo(x, middle - half)
+    ctx.lineTo(x, middle + half)
+    ctx.stroke()
+  }
+}
+
 /**
  * 손잡이 여러 개를 눈금자 하나로 돌려 쓴다.
  *
@@ -48,6 +119,31 @@ export function CropDial({ knobs, disabled }: { knobs: DialKnob[]; disabled: boo
   const [dragging, setDragging] = useState(false)
   const active = knobs.find((k) => k.key === activeKey) ?? knobs[0]
   const drag = useRef<{ x: number; value: number } | null>(null)
+  const rulerRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [size, setSize] = useState({ w: 0, h: 0 })
+
+  // 눈금자 크기는 화면 폭을 따라가므로 붙은 뒤에 재고, 바뀌면 다시 잰다
+  useLayoutEffect(() => {
+    const el = rulerRef.current
+    if (!el) return
+    const measure = () =>
+      setSize((prev) =>
+        prev.w === el.clientWidth && prev.h === el.clientHeight
+          ? prev
+          : { w: el.clientWidth, h: el.clientHeight },
+      )
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  // 값이 바뀔 때마다 다시 그린다 (백여 개 선이라 손가락을 따라올 만큼 가볍다)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (canvas && active && size.w) drawRuler(canvas, size.w, size.h, active)
+  })
 
   if (!active) return null
 
@@ -91,8 +187,6 @@ export function CropDial({ knobs, disabled }: { knobs: DialKnob[]; disabled: boo
     } as CSSProperties
   }
 
-  const offset = -(active.value - active.rest) * active.pxPerUnit
-
   return (
     <div className="dial">
       <div className="dial__knobs">
@@ -128,6 +222,7 @@ export function CropDial({ knobs, disabled }: { knobs: DialKnob[]; disabled: boo
 
       <div
         className="dial__ruler"
+        ref={rulerRef}
         role="slider"
         tabIndex={disabled ? -1 : 0}
         aria-label={active.label}
@@ -150,20 +245,7 @@ export function CropDial({ knobs, disabled }: { knobs: DialKnob[]; disabled: boo
           e.preventDefault()
         }}
       >
-        <div
-          className="dial__ticks"
-          style={
-            {
-              transform: `translateX(${offset}px)`,
-              '--minor': `${active.tick * active.pxPerUnit}px`,
-              '--major': `${active.tick * active.majorEvery * active.pxPerUnit}px`,
-            } as CSSProperties
-          }
-          aria-hidden="true"
-        >
-          <span className="dial__minor" />
-          <span className="dial__major" />
-        </div>
+        <canvas className="dial__canvas" ref={canvasRef} aria-hidden="true" />
         <span className="dial__needle" aria-hidden="true" />
       </div>
     </div>
