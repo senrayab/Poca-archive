@@ -39,21 +39,17 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 /*
  * 눈금은 캔버스에 그린다.
  *
- * 되풀이되는 배경 그림으로 깔면 눈금이 죄다 똑같은 막대가 된다 — 끝을 둥글게
- * 할 수도, 가운데로 갈수록 또렷하게 할 수도, 끝값에서 눈금을 멈출 수도 없다.
- * 한 칸씩 직접 그리면 그 셋이 다 되고, 값이 바뀔 때마다 다시 그려도
- * 백여 개 선이라 폰에서도 가볍다.
+ * 되풀이되는 배경 그림으로 깔면 칸마다 다르게 그릴 수가 없다 — 구간 눈금만
+ * 밝게 하거나, 끝값에서 눈금을 멈추거나, 끝을 둥글게 하는 게 모두 안 된다.
+ * 한 칸씩 직접 그리면 그게 다 되고, 보이는 범위만 도므로 한 번에 수십 개다.
  */
-interface RulerLook {
-  /** 세로 길이 (칸 높이에 대한 비율) */
-  length: number
-  width: number
-  alpha: number
-}
-
-const MINOR: RulerLook = { length: 0.3, width: 1.4, alpha: 0.34 }
-const MAJOR: RulerLook = { length: 0.52, width: 1.7, alpha: 0.62 }
-const SUPER: RulerLook = { length: 0.76, width: 2.1, alpha: 0.95 }
+/** 눈금은 길이가 모두 같다. 구간은 길이가 아니라 밝기로 나눈다. */
+const TICK_LENGTH = 0.38
+const TICK_WIDTH = 2
+const TICK_DIM = 'rgba(255, 255, 255, .34)'
+const TICK_MARK = 'rgba(255, 255, 255, .92)'
+/** 이 지점부터 양끝까지만 흐려진다 — 눈금이 툭 나타났다 사라지지 않게 */
+const EDGE = 0.86
 
 function drawRuler(
   canvas: HTMLCanvasElement,
@@ -71,9 +67,11 @@ function drawRuler(
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
   ctx.clearRect(0, 0, width, height)
   ctx.lineCap = 'round'
+  ctx.lineWidth = TICK_WIDTH
 
   const center = width / 2
   const middle = height / 2
+  const half = (height * TICK_LENGTH) / 2
   const reach = center / knob.pxPerUnit
   const steps = Math.round(knob.value / knob.tick)
 
@@ -82,29 +80,22 @@ function drawRuler(
     const x = center + (value - knob.value) * knob.pxPerUnit
     if (x > width + 2) break
     if (x < -2) continue
-    // 끝값 너머로는 눈금을 긋지 않는다 — 더 갈 곳이 없다는 게 눈에 보인다
+    // 끝값 너머로는 긋지 않는다 — 더 갈 곳이 없다는 게 눈에 보인다
     if (value < knob.min - 1e-9 || value > knob.max + 1e-9) continue
+    // 바늘이 서 있는 자리는 비워둔다 (바늘이 그 칸을 대신한다)
+    if (Math.abs(x - center) < TICK_WIDTH) continue
 
-    const look =
-      i % (knob.majorEvery * 2) === 0 ? SUPER : i % knob.majorEvery === 0 ? MAJOR : MINOR
-
-    /*
-     * 가운데에서 멀수록 옅고 짧아진다. 눈금자가 둥근 통에 감겨 돌아가는 것처럼
-     * 보이고, 양끝이 잘리지 않고 사그라든다.
-     */
     const away = Math.min(1, Math.abs(x - center) / center)
-    const fade = 1 - Math.pow(away, 1.7) * 0.92
-    // 바늘 밑을 지나는 칸만 살짝 도드라진다
-    const focus = 1 + 0.16 * Math.max(0, 1 - Math.abs(x - center) / 22)
-    const half = (height * look.length * fade * focus) / 2
+    const fade = away > EDGE ? Math.max(0, 1 - (away - EDGE) / (1 - EDGE)) : 1
 
-    ctx.strokeStyle = `rgba(255, 255, 255, ${look.alpha * fade})`
-    ctx.lineWidth = look.width
+    ctx.globalAlpha = fade
+    ctx.strokeStyle = i % knob.majorEvery === 0 ? TICK_MARK : TICK_DIM
     ctx.beginPath()
     ctx.moveTo(x, middle - half)
     ctx.lineTo(x, middle + half)
     ctx.stroke()
   }
+  ctx.globalAlpha = 1
 }
 
 /**
