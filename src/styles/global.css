@@ -1200,22 +1200,21 @@ a { color: inherit; }
   display: block;
 }
 /*
- * 바늘. 눈금은 흐르고 이것만 붙박이라, 값이 어디에 걸렸는지는 늘 여기서 읽는다.
- * 눈금과 같은 흰색이면 묻히므로 포인트 색을 쓰고, 옅게 번지게 해 한 겹 띄운다.
+ * 바늘. 눈금과 굵기는 같고 길이만 두 배다 — 눈금 하나가 포인트 색으로
+ * 길게 자란 것처럼 보이게 해서, 지금 걸린 칸이 어디인지 한눈에 읽힌다.
  */
 .dial__needle {
   position: absolute;
   left: 50%;
-  top: 12%;
-  bottom: 12%;
-  width: 2.5px;
-  margin-left: -1.25px;
-  border-radius: 2px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 76%;
+  border-radius: 1px;
   background: var(--accent);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
-  transition: transform .18s var(--ease);
+  transition: height .18s var(--ease);
 }
-.dial__ruler[data-dragging] .dial__needle { transform: scaleY(1.18); }
+.dial__ruler[data-dragging] .dial__needle { height: 84%; }
 
 .crop__actions { padding: 0 8px; flex-shrink: 0; }
 .crop__top { flex-shrink: 0; }
