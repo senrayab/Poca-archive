@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react'
+import { detectCard, type DetectedCard } from '@/lib/detectCard'
 import { processCroppedImage, type CropTransform, type ProcessedImage } from '@/lib/image'
 import { CloseIcon, ResetIcon } from './Icons'
 import { Modal } from './Modal'
@@ -94,6 +95,9 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   const toast = useToast()
   const [natural, setNatural] = useState<Size | null>(null)
   const [url, setUrl] = useState<string>()
+  /** 사진에서 찾아낸 카드 자리 (못 찾으면 null — 그때는 사진 전체에서 시작한다) */
+  const [detected, setDetected] = useState<DetectedCard | null>(null)
+  const [suggested, setSuggested] = useState(false)
   const [view, setView] = useState<View>(IDENTITY)
   const [working, setWorking] = useState(false)
   /** 실제로 그려진 틀의 크기 — 화면 폭에 따라 달라지므로 붙은 뒤에 잰다 */
@@ -104,7 +108,15 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     const objectUrl = URL.createObjectURL(source)
     setUrl(objectUrl)
     const img = new Image()
-    img.onload = () => setNatural({ w: img.naturalWidth, h: img.naturalHeight })
+    img.onload = () => {
+      setNatural({ w: img.naturalWidth, h: img.naturalHeight })
+      // 검출은 어디까지나 거들기다. 터지든 못 찾든 자르기 자체는 그대로 된다.
+      try {
+        setDetected(detectCard(img, img.naturalWidth, img.naturalHeight))
+      } catch {
+        setDetected(null)
+      }
+    }
     img.onerror = () => toast('사진을 열지 못했습니다.')
     img.src = objectUrl
     return () => URL.revokeObjectURL(objectUrl)
@@ -165,7 +177,38 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   const reset = () => {
     viewRef.current = IDENTITY
     setView(IDENTITY)
+    setSuggested(false)
   }
+
+  /*
+   * 찾아낸 카드에 틀을 맞춰둔다. 사진과 틀 크기가 다 정해진 뒤 딱 한 번만 —
+   * 그 뒤로는 사람이 만진 자리를 기계가 도로 밀어내면 안 된다.
+   */
+  const applied = useRef(false)
+  useEffect(() => {
+    if (applied.current || !detected || !natural || !base.w || !frame.w) return
+    applied.current = true
+
+    const perPx = base.w / natural.w
+    const lo = minScaleFor(detected.rotation, frame, base)
+    // 틀이 카드 안에 들어가도록 큰 쪽에 맞춘다 — 배경이 딸려 들어오느니 카드가 조금 잘리는 게 낫다
+    const wanted = Math.max(frame.w / (detected.w * perPx), frame.h / (detected.h * perPx))
+    const scale = clamp(wanted, lo, Math.max(lo, maxScale))
+
+    // 카드 중심이 틀 한가운데로 오도록 (화면에서 쓰는 변환을 그대로 뒤집는다)
+    const px = (detected.cx - natural.w / 2) * perPx
+    const py = (detected.cy - natural.h / 2) * perPx
+    const cos = Math.cos(detected.rotation)
+    const sin = Math.sin(detected.rotation)
+    apply({
+      scale,
+      rotation: detected.rotation,
+      x: -scale * (cos * px - sin * py),
+      y: -scale * (sin * px + cos * py),
+    })
+    setSuggested(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detected, natural, base, frame, maxScale])
 
   /*
    * 손가락 하나면 끌기, 둘이면 확대. 포인터 이벤트 하나로 마우스·터치를 같이 받는다.
@@ -247,7 +290,11 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     <Modal onClose={onCancel} panel={false} label="사진 자르기">
       <div className="crop">
         <div className="crop__top">
-          <span className="crop__hint">끌어서 맞추세요 · 틀 밖은 저장되지 않아요</span>
+          <span className="crop__hint" data-found={suggested || undefined}>
+            {suggested
+              ? '카드를 찾아 맞춰뒀어요 · 되돌리기를 누르면 사진 전체'
+              : '끌어서 맞추세요 · 틀 밖은 저장되지 않아요'}
+          </span>
           <button className="detail__close" onClick={onCancel} aria-label="닫기">
             <CloseIcon size={20} />
           </button>
