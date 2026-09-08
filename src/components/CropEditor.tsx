@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react'
 import { detectCard, type DetectedCard } from '@/lib/detectCard'
-import { processCroppedImage, type CropTransform, type ProcessedImage } from '@/lib/image'
+import {
+  makePreview,
+  processCroppedImage,
+  type CropTransform,
+  type ProcessedImage,
+} from '@/lib/image'
 import { CloseIcon, ResetIcon } from './Icons'
 import { Modal } from './Modal'
 import { useToast } from './Toast'
@@ -32,6 +37,8 @@ const MIN_OUTPUT_EDGE = 480
  * 그 판단은 화면을 보는 사람이 하면 된다.
  */
 const MAX_ROTATION = 30
+/* 화면에 띄울 축소본의 긴 변. 원본은 마지막에 자를 때만 다시 읽는다. */
+const PREVIEW_MAX_EDGE = 1400
 
 interface View {
   scale: number
@@ -109,32 +116,59 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   const [frame, setFrame] = useState<Size>({ w: 0, h: 0 })
   const frameRef = useRef<HTMLDivElement>(null)
 
+  /*
+   * 사진을 화면에 올리는 일.
+   *
+   * 원본을 그대로 <img>에 물리면 폰에서 화면이 끊긴다 — 12MP짜리를 두 겹으로
+   * 깔면서 그 비용을 두 번 내기 때문이다. 축소본을 한 장 떠서 그걸 쓴다.
+   *
+   * 검출은 사진이 화면에 뜬 다음으로 미룬다. 순서를 지키지 않으면 폰이
+   * 수십만 픽셀을 훑는 동안 화면이 멈춰 서서, 열자마자 굳은 것처럼 보인다.
+   */
   useEffect(() => {
-    const objectUrl = URL.createObjectURL(source)
-    setUrl(objectUrl)
-    /*
-     * 개발 모드(StrictMode)는 효과를 붙였다 떼고 다시 붙인다. 그 사이 주소가
-     * 풀리면서 첫 번째 이미지가 실패로 끝나는데, 그건 알릴 일이 아니다.
-     */
     let alive = true
-    const img = new Image()
-    img.onload = () => {
-      if (!alive) return
-      setNatural({ w: img.naturalWidth, h: img.naturalHeight })
-      // 검출은 어디까지나 거들기다. 터지든 못 찾든 자르기 자체는 그대로 된다.
+    let objectUrl: string | undefined
+
+    void (async () => {
+      let preview
       try {
-        setDetected(detectCard(img, img.naturalWidth, img.naturalHeight))
-      } catch {
-        setDetected(null)
+        preview = await makePreview(source, PREVIEW_MAX_EDGE)
+      } catch (error) {
+        if (alive) toast(error instanceof Error ? error.message : '사진을 열지 못했습니다.')
+        return
       }
-    }
-    img.onerror = () => {
-      if (alive) toast('사진을 열지 못했습니다.')
-    }
-    img.src = objectUrl
+      if (!alive) {
+        URL.revokeObjectURL(preview.url)
+        preview.bitmap.close()
+        return
+      }
+      objectUrl = preview.url
+      // 확대 상한은 원본 픽셀 기준이라, 축소본이 아니라 원본 크기를 물려준다
+      setNatural({ w: preview.naturalWidth, h: preview.naturalHeight })
+      setUrl(preview.url)
+
+      // 두 번 기다려 사진이 실제로 칠해진 뒤에 훑기 시작한다
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          try {
+            // 검출은 거들기일 뿐이다. 터지든 못 찾든 자르기 자체는 그대로 된다.
+            if (alive) {
+              setDetected(
+                detectCard(preview.bitmap, preview.naturalWidth, preview.naturalHeight),
+              )
+            }
+          } catch {
+            if (alive) setDetected(null)
+          } finally {
+            preview.bitmap.close()
+          }
+        }),
+      )
+    })()
+
     return () => {
       alive = false
-      URL.revokeObjectURL(objectUrl)
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source])
@@ -339,6 +373,7 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
             줄어든다. 큰 사진일수록 그 한 번이 눈에 확 띄고, 브라우저가 그 큰 층을
             만들었다 버리기를 반복하면 화면이 깜빡인다. 다 정해진 뒤에 그린다.
           */}
+          {!ready && <span className="crop__loading">사진 여는 중…</span>}
           {ready && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
           <span className="crop__scrim" aria-hidden="true" />
           <div className="crop__frame" ref={frameRef}>

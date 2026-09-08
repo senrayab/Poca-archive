@@ -110,26 +110,25 @@ function otsuThreshold(hist: Int32Array, total: number) {
   return best
 }
 
-/** 위아래 좌우 한 칸씩 부풀리거나 깎는다. 붙여서 쓰면(부풀린 뒤 깎기) 끊어진 테두리가 이어진다. */
+/**
+ * 위아래 좌우 한 칸씩 부풀리거나 깎는다. 붙여서 쓰면(부풀린 뒤 깎기) 끊어진 테두리가 이어진다.
+ *
+ * 이웃 좌표를 배열로 만들어 돌면 픽셀마다 배열이 새로 생긴다 — 5만 픽셀 두 번이면
+ * 수십만 개다. 폰에서는 그 쓰레기를 치우느라 화면이 끊긴다. 네 방향을 그냥 펼쳐 쓴다.
+ */
 function morph(mask: Uint8Array, w: number, h: number, grow: boolean) {
   const out = new Uint8Array(mask.length)
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       const p = y * w + x
-      let value = mask[p]
-      for (const [dx, dy] of [
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
-      ]) {
-        const nx = x + dx
-        const ny = y + dy
-        // 바깥은 배경으로 친다 (깎을 때 테두리가 스스로 벗겨지도록)
-        const n = nx < 0 || ny < 0 || nx >= w || ny >= h ? 0 : mask[ny * w + nx]
-        value = grow ? Math.max(value, n) : Math.min(value, n)
-      }
-      out[p] = value
+      // 바깥은 배경으로 친다 (깎을 때 테두리가 스스로 벗겨지도록)
+      const left = x > 0 ? mask[p - 1] : 0
+      const right = x < w - 1 ? mask[p + 1] : 0
+      const up = y > 0 ? mask[p - w] : 0
+      const down = y < h - 1 ? mask[p + w] : 0
+      out[p] = grow
+        ? mask[p] | left | right | up | down
+        : mask[p] & left & right & up & down
     }
   }
   return out
