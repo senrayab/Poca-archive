@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Header, useShell } from '@/components/AppShell'
 import { CardDetail } from '@/components/CardDetail'
 import { CardGrid } from '@/components/CardGrid'
@@ -14,7 +14,7 @@ import { Modal } from '@/components/Modal'
 import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
-import { useCategories, useCards, lastQuery } from '@/hooks/useData'
+import { useCategories, useCards } from '@/hooks/useData'
 import { useAppName } from '@/lib/appName'
 
 export type ArchiveMode = 'all' | 'favorites' | 'trash'
@@ -65,23 +65,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
     setSelected(new Set())
   }, [mode, memberId, categoryId])
 
-  /*
-   * 여러 장을 한꺼번에 처리할 때 실제로 얼마나 걸리는지 잰다.
-   *
-   * 저장소에 쓰는 값 자체보다, 쓰고 나서 목록을 통째로 다시 읽는 값이 큰지
-   * 아닌지를 갈라 봐야 어디를 고칠지 정해진다. 목록이 실제로 바뀐 시점까지
-   * 재야 사람이 느끼는 시간과 같다.
-   */
-  const pendingBulk = useRef<{ at: number; label: string } | null>(null)
-  useEffect(() => {
-    const pending = pendingBulk.current
-    if (!pending) return
-    pendingBulk.current = null
-    const total = ((performance.now() - pending.at) / 1000).toFixed(1)
-    toast(
-      `${pending.label} (전체 ${total}초 · 목록 ${lastQuery.rows}장 다시 읽는 데 ${lastQuery.ms}ms)`,
-    )
-  }, [list, toast])
 
   const toggleSelect = (card: Card) => {
     setSelected((prev) => {
@@ -95,14 +78,13 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   const bulk = async (action: 'trash' | 'restore' | 'purge') => {
     const ids = [...selected]
     if (!ids.length) return
-    const startedAt = performance.now()
     if (action === 'purge' && !confirm(`${ids.length}장을 완전히 삭제할까요? 되돌릴 수 없습니다.`)) {
       return
     }
 
     if (action === 'purge') {
       await purgeCards(ids)
-      pendingBulk.current = { at: startedAt, label: `${ids.length}장을 완전히 삭제했습니다.` }
+      toast(`${ids.length}장을 완전히 삭제했습니다.`)
     } else {
       const patch =
         action === 'trash'
@@ -111,13 +93,11 @@ export function ArchivePage({ mode }: ArchivePageProps) {
       await db.transaction('rw', db.cards, async () => {
         for (const id of ids) await db.cards.update(id, patch)
       })
-      pendingBulk.current = {
-        at: startedAt,
-        label:
-          action === 'trash'
-            ? `${ids.length}장을 휴지통으로 옮겼습니다.`
-            : `${ids.length}장을 되돌렸습니다.`,
-      }
+      toast(
+        action === 'trash'
+          ? `${ids.length}장을 휴지통으로 옮겼습니다.`
+          : `${ids.length}장을 되돌렸습니다.`,
+      )
     }
     setSelected(new Set())
   }

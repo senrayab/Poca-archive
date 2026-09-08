@@ -1,13 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 
-/*
- * 보관함 조회에 걸린 시간을 마지막 한 번만 기록해 둔다.
- *
- * 이 앱은 저장소에 쓰기가 한 번 생기면 목록 조회를 통째로 다시 돌린다.
- * 그 값이 얼마인지가 '등록·삭제가 왜 느린가'의 답이라, 짐작 대신 재서 보여준다.
- */
-export const lastQuery = { ms: 0, rows: 0 }
 
 export const useMembers = () =>
   useLiveQuery(() => db.members.orderBy('order').toArray(), [], [])
@@ -28,13 +21,9 @@ export function useCards(filter: CardFilter) {
 
   return useLiveQuery(
     async () => {
-      const started = performance.now()
       const rows = memberId
         ? await db.cards.where('[memberId+deleted]').equals([memberId, deleted]).toArray()
         : await db.cards.where('deleted').equals(deleted).toArray()
-
-      lastQuery.ms = Math.round(performance.now() - started)
-      lastQuery.rows = rows.length
 
       const q = query.trim().toLowerCase()
       return rows
