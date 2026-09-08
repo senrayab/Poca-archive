@@ -30,8 +30,8 @@ const WORK_EDGE = 256
 /* 실물 카드는 86/54 = 1.593. 원근 때문에 조금씩 어긋나니 폭을 준다. */
 const MIN_RATIO = 1.3
 const MAX_RATIO = 1.95
-/* 크롭 화면의 기울기 슬라이더가 ±15도라, 그 밖은 표현할 방법이 없다 */
-const MAX_TILT = (15 * Math.PI) / 180
+/* 크롭 화면의 기울기 슬라이더와 같은 범위. 그 밖은 표현할 방법이 없다. */
+const MAX_TILT = (30 * Math.PI) / 180
 /* 너무 작으면 카드가 아니라 무늬고, 96%를 넘으면 이미 카드 사진이라 자를 게 없다 */
 const MIN_AREA = 0.05
 const MAX_AREA = 0.96
