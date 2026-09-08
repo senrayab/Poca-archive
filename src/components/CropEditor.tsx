@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react'
-import { detectCard, type DetectedCard } from '@/lib/detectCard'
+import {
+  covers,
+  hasTilt,
+  toCssTransform,
+  IDENTITY_VIEW,
+  type CropView,
+  type Size,
+} from '@/lib/cropGeometry'
 import {
   makePreview,
   processCroppedImage,
@@ -24,45 +31,23 @@ interface CropEditorProps {
  * 반대로(사진을 고정하고 크롭 상자의 모서리를 끄는 방식) 만들면 손잡이를 손가락으로
  * 집어야 하는데, 이 앱은 폰에서 주로 쓴다. 틀을 고정하면 잡을 곳이 사진 전체라
  * 손가락으로도 정확하다.
- *
- * 비율은 고르게 하지 않는다. 목록·상세·기록 화면이 전부 54:86 틀에 cover로 그리므로
- * 자유 비율로 잘라봐야 화면에서 또 잘린다. 대신 자르기 자체가 선택이라,
- * 규격이 다른 카드는 자르지 않고 통째로 올리면 원본이 그대로 남는다.
  */
 /** 잘라낸 조각이 이 높이(원본 픽셀)는 남도록 확대 상한을 정한다 */
 const MIN_OUTPUT_EDGE = 480
-/*
- * 기울기 한계. 15도로는 모자란다는 얘기가 있어 30도까지 열었다.
- * 많이 돌릴수록 틀을 채우려 더 확대해야 해서 잘리는 부분이 늘지만,
- * 그 판단은 화면을 보는 사람이 하면 된다.
- */
 const MAX_ROTATION = 30
+/* 원근은 각도가 커질수록 반대편이 급하게 눌린다. 20도면 실제 사진을 세우기에 넉넉하다. */
+const MAX_TILT = 20
 /* 화면에 띄울 축소본의 긴 변. 원본은 마지막에 자를 때만 다시 읽는다. */
 const PREVIEW_MAX_EDGE = 1400
 
-interface View {
-  scale: number
-  /** 라디안 */
-  rotation: number
-  x: number
-  y: number
-}
-
-interface Size {
-  w: number
-  h: number
-}
-
-const IDENTITY: View = { scale: 1, rotation: 0, x: 0, y: 0 }
-
-const rad = (deg: number) => (deg * Math.PI) / 180
+const rad = (d: number) => (d * Math.PI) / 180
+const deg = (r: number) => (r * 180) / Math.PI
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
+const signed = (n: number) => (n > 0 ? `+${n}` : `${n}`)
 
 /**
- * 회전한 사진이 틀을 여전히 덮으려면 얼마나 커야 하는지.
- *
- * 틀을 사진 쪽 좌표로 -θ만큼 돌려 외접 사각형을 재면 나온다.
- * 이 값보다 작게 두면 틀 모서리에 빈 곳이 생긴다.
+ * 기울임 없이 회전만 걸렸을 때, 사진이 틀을 덮으려면 얼마나 커야 하는지.
+ * 틀을 사진 쪽 좌표로 -θ만큼 돌려 외접 사각형을 재면 닫힌 식으로 나온다.
  */
 function minScaleFor(rotation: number, frame: Size, base: Size) {
   if (!base.w || !base.h) return 1
@@ -71,16 +56,10 @@ function minScaleFor(rotation: number, frame: Size, base: Size) {
   return Math.max((frame.w * c + frame.h * s) / base.w, (frame.w * s + frame.h * c) / base.h)
 }
 
-/**
- * 사진이 밀려나 틀에 빈 곳이 생기지 않게 이동량을 가둔다.
- *
- * 회전이 걸리면 화면 좌표로는 가둘 수 없다. 이동량을 사진 쪽 좌표로 돌려
- * 거기서 자른 뒤 화면 좌표로 되돌린다.
- */
-function clampOffset(view: View, frame: Size, base: Size): View {
+/** 기울임 없을 때의 이동 제한. 사진 쪽 좌표로 돌려 자른 뒤 되돌린다. */
+function clampOffset(view: CropView, frame: Size, base: Size): CropView {
   const cos = Math.cos(view.rotation)
   const sin = Math.sin(view.rotation)
-  // 사진 쪽 좌표 = R(-θ)·이동량
   const localX = view.x * cos + view.y * sin
   const localY = -view.x * sin + view.y * cos
 
@@ -94,23 +73,47 @@ function clampOffset(view: View, frame: Size, base: Size): View {
   return { ...view, x: nx * cos - ny * sin, y: nx * sin + ny * cos }
 }
 
-/*
- * 사진은 틀 한가운데에 놓고 그 자리에서 옮기고 돌린다.
- * 앞의 -50%는 요소를 제 중심에 앉히는 몫이라(왼쪽 위 50%와 짝) 나머지 변환의
- * 기준점은 건드리지 않는다 — 캔버스에서 다시 그릴 때와 순서가 같아야 한다.
+/**
+ * 기울임이 걸렸을 때의 이동·확대 제한.
+ *
+ * 사진이 사다리꼴이 되면 위의 닫힌 식이 성립하지 않는다. 대신 틀의 네 귀퉁이가
+ * 사진 안에 들어왔는지 직접 물어보고 답에 맞춰 되짚는다.
+ *
+ * 순서가 중요하다. 배율부터 올리면 가장자리를 밀 때마다 사진이 야금야금 커지고,
+ * 손을 떼도 돌아오지 않아 밀수록 확대되는 꼴이 된다. 그래서 배율은 '가운데
+ * 놓아도 모자랄 때'만 올리고, 그 밖에는 이동만 되돌린다 — 기울임이 없을 때
+ * 가장자리에서 딱 멈추는 것과 같은 손맛이 된다.
  */
-const toCss = (view: View) =>
-  `translate(-50%, -50%) translate(${view.x}px, ${view.y}px) ` +
-  `rotate(${view.rotation}rad) scale(${view.scale})`
+function settle(view: CropView, frame: Size, base: Size, maxScale: number): CropView {
+  if (covers(view, frame, base)) return view
+  let v = view
+
+  // 가운데 놓아도 못 덮으면 사진 자체가 틀보다 작다는 뜻이라, 그때만 키운다
+  if (!covers({ ...v, x: 0, y: 0 }, frame, base)) {
+    for (let i = 0; i < 48; i++) {
+      const next = Math.min(v.scale * 1.04, maxScale)
+      v = { ...v, scale: next }
+      if (next >= maxScale || covers({ ...v, x: 0, y: 0 }, frame, base)) break
+    }
+    if (covers(v, frame, base)) return v
+  }
+
+  // 그 배율에서 이동을 살릴 수 있는 데까지 살린다 (이분 탐색)
+  let lo = 0
+  let hi = 1
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2
+    if (covers({ ...v, x: v.x * mid, y: v.y * mid }, frame, base)) lo = mid
+    else hi = mid
+  }
+  return { ...v, x: v.x * lo, y: v.y * lo }
+}
 
 export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   const toast = useToast()
   const [natural, setNatural] = useState<Size | null>(null)
   const [url, setUrl] = useState<string>()
-  /** 사진에서 찾아낸 카드 자리 (못 찾으면 null — 그때는 사진 전체에서 시작한다) */
-  const [detected, setDetected] = useState<DetectedCard | null>(null)
-  const [suggested, setSuggested] = useState(false)
-  const [view, setView] = useState<View>(IDENTITY)
+  const [view, setView] = useState<CropView>(IDENTITY_VIEW)
   const [working, setWorking] = useState(false)
   /** 실제로 그려진 틀의 크기 — 화면 폭에 따라 달라지므로 붙은 뒤에 잰다 */
   const [frame, setFrame] = useState<Size>({ w: 0, h: 0 })
@@ -121,49 +124,27 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
    *
    * 원본을 그대로 <img>에 물리면 폰에서 화면이 끊긴다 — 12MP짜리를 두 겹으로
    * 깔면서 그 비용을 두 번 내기 때문이다. 축소본을 한 장 떠서 그걸 쓴다.
-   *
-   * 검출은 사진이 화면에 뜬 다음으로 미룬다. 순서를 지키지 않으면 폰이
-   * 수십만 픽셀을 훑는 동안 화면이 멈춰 서서, 열자마자 굳은 것처럼 보인다.
+   * 원본은 '이대로 자르기'를 누를 때 다시 읽으므로 화질은 손해가 없다.
    */
   useEffect(() => {
     let alive = true
     let objectUrl: string | undefined
 
     void (async () => {
-      let preview
       try {
-        preview = await makePreview(source, PREVIEW_MAX_EDGE)
+        const preview = await makePreview(source, PREVIEW_MAX_EDGE)
+        preview.bitmap.close()
+        if (!alive) {
+          URL.revokeObjectURL(preview.url)
+          return
+        }
+        objectUrl = preview.url
+        // 확대 상한은 원본 픽셀 기준이라, 축소본이 아니라 원본 크기를 물려준다
+        setNatural({ w: preview.naturalWidth, h: preview.naturalHeight })
+        setUrl(preview.url)
       } catch (error) {
         if (alive) toast(error instanceof Error ? error.message : '사진을 열지 못했습니다.')
-        return
       }
-      if (!alive) {
-        URL.revokeObjectURL(preview.url)
-        preview.bitmap.close()
-        return
-      }
-      objectUrl = preview.url
-      // 확대 상한은 원본 픽셀 기준이라, 축소본이 아니라 원본 크기를 물려준다
-      setNatural({ w: preview.naturalWidth, h: preview.naturalHeight })
-      setUrl(preview.url)
-
-      // 두 번 기다려 사진이 실제로 칠해진 뒤에 훑기 시작한다
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          try {
-            // 검출은 거들기일 뿐이다. 터지든 못 찾든 자르기 자체는 그대로 된다.
-            if (alive) {
-              setDetected(
-                detectCard(preview.bitmap, preview.naturalWidth, preview.naturalHeight),
-              )
-            }
-          } catch {
-            if (alive) setDetected(null)
-          } finally {
-            preview.bitmap.close()
-          }
-        }),
-      )
     })()
 
     return () => {
@@ -202,7 +183,6 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   /*
    * 너무 당겨 자르면 남는 원본 픽셀이 얼마 없어, 늘려 저장해도 뿌옇다.
    * 상한을 걸어 애초에 그 지점을 못 넘게 한다 — 다 자른 뒤 경고하는 것보다 조용하다.
-   * (원본이 작으면 상한이 1 밑으로 내려갈 수 있으니 최소 1.6은 남긴다)
    */
   const maxScale = useMemo(() => {
     if (!natural || !base.h) return 3
@@ -216,59 +196,27 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   /*
    * 손가락은 렌더보다 빠르다. 한 프레임 안에 move가 여러 번 들어오면 state는
    * 아직 옛 값이라, 그걸 기준으로 더하면 앞선 움직임이 통째로 지워진다.
-   * 최신 값을 ref로 따로 들고 다닌다.
    */
   const viewRef = useRef(view)
-  const apply = (next: View) => {
+  const apply = (next: CropView) => {
     const lo = minScaleFor(next.rotation, frame, base)
-    const clamped = clampOffset(
-      { ...next, scale: clamp(next.scale, lo, Math.max(lo, maxScale)) },
-      frame,
-      base,
-    )
-    viewRef.current = clamped
-    setView(clamped)
+    const hi = Math.max(lo, maxScale)
+    const scaled: CropView = { ...next, scale: clamp(next.scale, lo, hi) }
+    // 기울임이 없으면 닫힌 식이 정확하고 빠르다. 있을 때만 더듬어 찾는다.
+    const settled = hasTilt(scaled)
+      ? settle(scaled, frame, base, hi)
+      : clampOffset(scaled, frame, base)
+    viewRef.current = settled
+    setView(settled)
   }
 
   const reset = () => {
-    viewRef.current = IDENTITY
-    setView(IDENTITY)
-    setSuggested(false)
+    viewRef.current = IDENTITY_VIEW
+    setView(IDENTITY_VIEW)
   }
 
   /*
-   * 찾아낸 카드에 틀을 맞춰둔다. 사진과 틀 크기가 다 정해진 뒤 딱 한 번만 —
-   * 그 뒤로는 사람이 만진 자리를 기계가 도로 밀어내면 안 된다.
-   */
-  const applied = useRef(false)
-  useEffect(() => {
-    if (applied.current || !detected || !natural || !base.w || !frame.w) return
-    applied.current = true
-
-    const perPx = base.w / natural.w
-    const lo = minScaleFor(detected.rotation, frame, base)
-    // 틀이 카드 안에 들어가도록 큰 쪽에 맞춘다 — 배경이 딸려 들어오느니 카드가 조금 잘리는 게 낫다
-    const wanted = Math.max(frame.w / (detected.w * perPx), frame.h / (detected.h * perPx))
-    const scale = clamp(wanted, lo, Math.max(lo, maxScale))
-
-    // 카드 중심이 틀 한가운데로 오도록 (화면에서 쓰는 변환을 그대로 뒤집는다)
-    const px = (detected.cx - natural.w / 2) * perPx
-    const py = (detected.cy - natural.h / 2) * perPx
-    const cos = Math.cos(detected.rotation)
-    const sin = Math.sin(detected.rotation)
-    apply({
-      scale,
-      rotation: detected.rotation,
-      x: -scale * (cos * px - sin * py),
-      y: -scale * (sin * px + cos * py),
-    })
-    setSuggested(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [detected, natural, base, frame, maxScale])
-
-  /*
    * 손가락 하나면 끌기, 둘이면 확대. 포인터 이벤트 하나로 마우스·터치를 같이 받는다.
-   * 확대 기준은 두 손가락의 한가운데라, 보고 있던 자리가 손에서 달아나지 않는다.
    */
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinch = useRef<{ dist: number; scale: number; x: number; y: number } | null>(null)
@@ -331,7 +279,7 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     if (!ready) return
     setWorking(true)
     try {
-      const transform: CropTransform = { frame, base, ...view }
+      const transform: CropTransform = { frame, base, view }
       onDone(await processCroppedImage(source, transform))
     } catch (error) {
       toast(error instanceof Error ? error.message : '자르기에 실패했습니다.')
@@ -339,25 +287,24 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     }
   }
 
-  const degrees = Math.round((view.rotation * 180) / Math.PI)
-  const style = { width: base.w || undefined, height: base.h || undefined, transform: toCss(view) }
+  const style = {
+    width: base.w || undefined,
+    height: base.h || undefined,
+    transform: toCssTransform(view, frame),
+  }
 
   return (
     <Modal onClose={onCancel} panel={false} label="사진 자르기">
       <div className="crop">
         <div className="crop__top">
-          <span className="crop__hint" data-found={suggested || undefined}>
-            {suggested
-              ? '카드를 찾아 맞춰뒀어요 · 되돌리기를 누르면 사진 전체'
-              : '끌어서 맞추세요 · 틀 밖은 저장되지 않아요'}
-          </span>
+          <span className="crop__hint">끌어서 맞추세요 · 틀 밖은 저장되지 않아요</span>
           <button className="detail__close" onClick={onCancel} aria-label="닫기">
             <CloseIcon size={20} />
           </button>
         </div>
 
         {/*
-          틀 밖도 흐리게 남겨둔다. 잘려나갈 부분이 아예 안 보이면
+          틀 밖도 어둡게 남겨둔다. 잘려나갈 부분이 아예 안 보이면
           지금 사진의 어디쯤을 보고 있는지 가늠할 수가 없다.
         */}
         <div
@@ -368,11 +315,6 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           onPointerCancel={onPointerUp}
           onWheel={onWheel}
         >
-          {/*
-            사진 크기를 알기 전에 그리면 원본 크기(수천 px) 그대로 한 번 깔렸다가
-            줄어든다. 큰 사진일수록 그 한 번이 눈에 확 띄고, 브라우저가 그 큰 층을
-            만들었다 버리기를 반복하면 화면이 깜빡인다. 다 정해진 뒤에 그린다.
-          */}
           {!ready && <span className="crop__loading">사진 여는 중…</span>}
           {ready && <img className="crop__spill" src={url} alt="" draggable={false} style={style} />}
           <span className="crop__scrim" aria-hidden="true" />
@@ -410,15 +352,48 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           </label>
           <label className="crop__slider">
             <span>
-              기울기 <b>{degrees > 0 ? `+${degrees}` : degrees}°</b>
+              돌리기 <b>{signed(Math.round(deg(view.rotation)))}°</b>
             </span>
             <input
               type="range"
               min={-MAX_ROTATION}
               max={MAX_ROTATION}
               step={0.5}
-              value={(view.rotation * 180) / Math.PI}
+              value={deg(view.rotation)}
               onChange={(e) => apply({ ...view, rotation: rad(Number(e.target.value)) })}
+              disabled={!ready}
+            />
+          </label>
+
+          {/*
+            원근 두 개. 비스듬히 찍혀 사다리꼴이 된 카드를 반듯하게 편다.
+            위아래는 윗변을 눕히거나 세우고, 좌우는 옆면을 앞뒤로 돌린다.
+          */}
+          <label className="crop__slider">
+            <span>
+              위아래 세우기 <b>{signed(Math.round(deg(view.tiltX)))}°</b>
+            </span>
+            <input
+              type="range"
+              min={-MAX_TILT}
+              max={MAX_TILT}
+              step={0.5}
+              value={deg(view.tiltX)}
+              onChange={(e) => apply({ ...view, tiltX: rad(Number(e.target.value)) })}
+              disabled={!ready}
+            />
+          </label>
+          <label className="crop__slider">
+            <span>
+              좌우 세우기 <b>{signed(Math.round(deg(view.tiltY)))}°</b>
+            </span>
+            <input
+              type="range"
+              min={-MAX_TILT}
+              max={MAX_TILT}
+              step={0.5}
+              value={deg(view.tiltY)}
+              onChange={(e) => apply({ ...view, tiltY: rad(Number(e.target.value)) })}
               disabled={!ready}
             />
           </label>
