@@ -1,3 +1,5 @@
+import { hasTilt, homographyOf, invert, type CropView } from './cropGeometry'
+
 /**
  * 업로드된 이미지를 WebP로 변환한다.
  * - 원본 그대로 두면 카드 한 장에 수 MB가 잡히므로 긴 변을 기준으로 리사이즈한다.
@@ -160,9 +162,6 @@ export async function makePreview(source: Blob, maxEdge: number): Promise<Previe
 
 /*
  * 크롭 화면에서 사진을 어떻게 놓았는지를 그대로 옮긴 값.
- *
- * 화면에서 쓴 CSS transform과 같은 순서(이동 → 회전 → 확대)로 캔버스에 다시
- * 그리기 때문에, 틀 안에 보이던 그림이 그대로 저장된다.
  * 좌표는 전부 '화면 픽셀'이고, 원본 픽셀로의 환산은 base가 맡는다.
  */
 export interface CropTransform {
@@ -170,11 +169,142 @@ export interface CropTransform {
   frame: { w: number; h: number }
   /** scale이 1일 때 사진이 화면에서 차지하는 크기 (틀을 꽉 채우는 크기) */
   base: { w: number; h: number }
-  scale: number
-  /** 라디안 */
-  rotation: number
-  x: number
-  y: number
+  view: CropView
+}
+
+/** 틀에 실제로 걸린 원본 픽셀 — 저장 해상도를 여기에 맞춘다 */
+function croppedSourceEdge(t: CropTransform, naturalWidth: number) {
+  return (t.frame.h / t.view.scale) * (naturalWidth / t.base.w)
+}
+
+function outputSize(t: CropTransform, naturalWidth: number) {
+  const height = Math.max(
+    1,
+    Math.round(Math.min(FULL_MAX_EDGE, croppedSourceEdge(t, naturalWidth))),
+  )
+  return { width: Math.max(1, Math.round((height * t.frame.w) / t.frame.h)), height }
+}
+
+/**
+ * 기울임이 없을 때. 화면에서 쓴 변환을 캔버스에 같은 순서로 되짚기만 하면 된다.
+ * 브라우저가 직접 그리므로 축소 품질도 가장 좋다.
+ */
+function drawAffine(
+  bitmap: ImageBitmap,
+  t: CropTransform,
+  width: number,
+  height: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('캔버스를 사용할 수 없습니다.')
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+
+  const f = width / t.frame.w
+  ctx.translate(width / 2, height / 2)
+  ctx.scale(f, f)
+  ctx.translate(t.view.x, t.view.y)
+  ctx.scale(t.view.scale, t.view.scale)
+  ctx.rotate(t.view.rotation)
+  ctx.drawImage(bitmap, -t.base.w / 2, -t.base.h / 2, t.base.w, t.base.h)
+  return canvas
+}
+
+/*
+ * 기울임이 있을 때.
+ *
+ * 캔버스 2D는 사다리꼴을 그릴 수 없다 — drawImage에 걸 수 있는 변환이
+ * 평행선을 평행하게 유지하는 것까지라, 원근은 원리적으로 표현이 안 된다.
+ * 그래서 반대로 간다: 결과의 픽셀마다 '이 자리는 원본의 어디에서 왔나'를
+ * 역행렬로 되짚어 색을 떠 온다. 네 점을 섞어(이중선형) 뜨므로 계단이 지지 않는다.
+ *
+ * 원본을 통째로 펼치면 폰에서 수십 MB가 잡히므로, 결과에 필요한 만큼만
+ * 미리 줄여 놓고 훑는다. 줄이는 일은 브라우저가 하니 그 단계의 품질은 좋다.
+ */
+function drawProjected(
+  bitmap: ImageBitmap,
+  t: CropTransform,
+  width: number,
+  height: number,
+): HTMLCanvasElement {
+  const h = invert(homographyOf(t.view, t.frame))
+  if (!h) throw new Error('이 각도로는 자를 수 없습니다.')
+
+  // 잘라낼 부분이 결과 크기와 얼추 1:1이 되게 원본을 줄여 둔다 (여유 1.4배)
+  const edge = croppedSourceEdge(t, bitmap.width)
+  const shrink = Math.min(1, edge ? (height * 1.4) / edge : 1)
+  const workW = Math.max(2, Math.round(bitmap.width * shrink))
+  const workH = Math.max(2, Math.round(bitmap.height * shrink))
+
+  const work = document.createElement('canvas')
+  work.width = workW
+  work.height = workH
+  const workCtx = work.getContext('2d', { willReadFrequently: true })
+  if (!workCtx) throw new Error('캔버스를 사용할 수 없습니다.')
+  workCtx.imageSmoothingEnabled = true
+  workCtx.imageSmoothingQuality = 'high'
+  workCtx.drawImage(bitmap, 0, 0, workW, workH)
+  const src = workCtx.getImageData(0, 0, workW, workH).data
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('캔버스를 사용할 수 없습니다.')
+  const out = ctx.createImageData(width, height)
+  const dst = out.data
+
+  // 화면 좌표 → 원본 픽셀로 옮기는 데 쓰는 상수들
+  const perX = workW / t.base.w
+  const perY = workH / t.base.h
+  const halfW = t.base.w / 2
+  const halfH = t.base.h / 2
+
+  for (let oy = 0; oy < height; oy++) {
+    const fy = ((oy + 0.5) / height) * t.frame.h - t.frame.h / 2
+    for (let ox = 0; ox < width; ox++) {
+      const fx = ((ox + 0.5) / width) * t.frame.w - t.frame.w / 2
+
+      const w = h[6] * fx + h[7] * fy + h[8]
+      const px = (h[0] * fx + h[1] * fy + h[2]) / w
+      const py = (h[3] * fx + h[4] * fy + h[5]) / w
+
+      // 원본 픽셀 좌표 (가장자리 밖은 가장자리 색으로 — 덮개 검사 덕에 거의 안 걸린다)
+      let sx = (px + halfW) * perX - 0.5
+      let sy = (py + halfH) * perY - 0.5
+      sx = sx < 0 ? 0 : sx > workW - 1 ? workW - 1 : sx
+      sy = sy < 0 ? 0 : sy > workH - 1 ? workH - 1 : sy
+
+      const x0 = sx | 0
+      const y0 = sy | 0
+      const x1 = x0 + 1 < workW ? x0 + 1 : x0
+      const y1 = y0 + 1 < workH ? y0 + 1 : y0
+      const tx = sx - x0
+      const ty = sy - y0
+
+      const i00 = (y0 * workW + x0) * 4
+      const i10 = (y0 * workW + x1) * 4
+      const i01 = (y1 * workW + x0) * 4
+      const i11 = (y1 * workW + x1) * 4
+      const w00 = (1 - tx) * (1 - ty)
+      const w10 = tx * (1 - ty)
+      const w01 = (1 - tx) * ty
+      const w11 = tx * ty
+
+      const o = (oy * width + ox) * 4
+      for (let c = 0; c < 3; c++) {
+        dst[o + c] =
+          src[i00 + c] * w00 + src[i10 + c] * w10 + src[i01 + c] * w01 + src[i11 + c] * w11
+      }
+      dst[o + 3] = 255
+    }
+  }
+
+  ctx.putImageData(out, 0, 0)
+  return canvas
 }
 
 /**
@@ -190,28 +320,10 @@ export async function processCroppedImage(
 ): Promise<ProcessedImage> {
   const bitmap = await loadBitmap(source)
   try {
-    // 화면 픽셀 → 원본 픽셀 배율 (가로세로 비는 유지되므로 한 값이면 된다)
-    const perScreenPx = bitmap.width / t.base.w
-    const sourceEdge = (t.frame.h / t.scale) * perScreenPx
-    const height = Math.max(1, Math.round(Math.min(FULL_MAX_EDGE, sourceEdge)))
-    const width = Math.max(1, Math.round((height * t.frame.w) / t.frame.h))
-
-    const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('캔버스를 사용할 수 없습니다.')
-    ctx.imageSmoothingEnabled = true
-    ctx.imageSmoothingQuality = 'high'
-
-    // 틀 한가운데를 원점으로 두고, 화면에서 만진 순서 그대로 되짚는다
-    const f = width / t.frame.w
-    ctx.translate(width / 2, height / 2)
-    ctx.scale(f, f)
-    ctx.translate(t.x, t.y)
-    ctx.rotate(t.rotation)
-    ctx.scale(t.scale, t.scale)
-    ctx.drawImage(bitmap, -t.base.w / 2, -t.base.h / 2, t.base.w, t.base.h)
+    const { width, height } = outputSize(t, bitmap.width)
+    const canvas = hasTilt(t.view)
+      ? drawProjected(bitmap, t, width, height)
+      : drawAffine(bitmap, t, width, height)
 
     const full = await encode(canvas, FULL_MAX_EDGE, FULL_QUALITY)
     const thumb = await encode(canvas, THUMB_MAX_EDGE, THUMB_QUALITY)

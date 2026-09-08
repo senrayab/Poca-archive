@@ -1104,7 +1104,8 @@ a { color: inherit; }
 }
 .crop__slider {
   display: grid;
-  grid-template-columns: 74px 1fr;
+  /* '위아래 세우기 +12°'가 한 줄에 들어갈 만큼 */
+  grid-template-columns: 92px 1fr;
   align-items: center;
   gap: 10px;
   font-size: 11px;
