@@ -34,7 +34,6 @@ import {
   Upload,
   Users,
   X,
-  ZoomIn,
 } from 'lucide-react'
 
 /*
@@ -97,10 +96,6 @@ export const DownloadIcon = ({ size = 22, className }: IconProps) => (
 export const ImageIcon = ({ size = 22, className }: IconProps) => (
   <LuImage size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
-export const ZoomIcon = ({ size = 22, className }: IconProps) => (
-  <ZoomIn size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
-)
-
 /*
  * 자르기 화면의 손잡이들.
  *

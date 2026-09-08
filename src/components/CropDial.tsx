@@ -48,8 +48,12 @@ const TICK_LENGTH = 0.38
 const TICK_WIDTH = 2
 const TICK_DIM = 'rgba(255, 255, 255, .34)'
 const TICK_MARK = 'rgba(255, 255, 255, .92)'
-/** 이 지점부터 양끝까지만 흐려진다 — 눈금이 툭 나타났다 사라지지 않게 */
-const EDGE = 0.86
+/*
+ * 가운데에서 이만큼 벗어난 자리부터 양끝까지 사그라든다.
+ * 눈금이 툭 나타났다 사라지지 않고, 눈금자가 통에 감겨 돌아가는 것처럼 보인다.
+ * 가운데 절반은 손대지 않아 또렷한 채로 남는다.
+ */
+const EDGE = 0.55
 
 function drawRuler(
   canvas: HTMLCanvasElement,
@@ -86,7 +90,9 @@ function drawRuler(
     if (Math.abs(x - center) < TICK_WIDTH) continue
 
     const away = Math.min(1, Math.abs(x - center) / center)
-    const fade = away > EDGE ? Math.max(0, 1 - (away - EDGE) / (1 - EDGE)) : 1
+    // 코사인으로 떨어뜨리면 시작과 끝의 기울기가 0이라 경계가 눈에 안 걸린다
+    const fade =
+      away > EDGE ? Math.cos((((away - EDGE) / (1 - EDGE)) * Math.PI) / 2) : 1
 
     ctx.globalAlpha = fade
     ctx.strokeStyle = i % knob.majorEvery === 0 ? TICK_MARK : TICK_DIM
