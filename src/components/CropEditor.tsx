@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type {
-  ReactNode,
-  PointerEvent as ReactPointerEvent,
-  WheelEvent as ReactWheelEvent,
-} from 'react'
+import type { PointerEvent as ReactPointerEvent, WheelEvent as ReactWheelEvent } from 'react'
 import {
   covers,
   hasTilt,
@@ -18,6 +14,7 @@ import {
   type CropTransform,
   type ProcessedImage,
 } from '@/lib/image'
+import { CropDial, type DialKnob } from './CropDial'
 import {
   CloseIcon,
   ResetIcon,
@@ -120,64 +117,14 @@ function settle(view: CropView, frame: Size, base: Size, maxScale: number): Crop
   return { ...v, x: v.x * lo, y: v.y * lo }
 }
 
-/**
- * 각도 슬라이더 한 벌.
- *
- * 이름을 누르면 0도로 돌아온다. 많이 돌려놓고 나면 손가락으로 정확히 0을
- * 짚기가 어려운데, 0은 '안 건드린 상태'라 가장 자주 돌아가고 싶은 자리다.
- */
-function AngleSlider({
-  label,
-  icon,
-  value,
-  limit,
-  disabled,
-  onChange,
-}: {
-  /** 화면에는 안 보이고, 읽어주는 이름으로만 쓴다 */
-  label: string
-  icon: ReactNode
-  /** 라디안 */
-  value: number
-  /** 슬라이더 양쪽 끝 (도) */
-  limit: number
-  disabled: boolean
-  onChange: (radians: number) => void
-}) {
-  const degrees = Math.round(deg(value))
-  return (
-    <div className="crop__slider">
-      <button
-        type="button"
-        className="crop__zero"
-        onClick={() => onChange(0)}
-        disabled={disabled || degrees === 0}
-        aria-label={`${label} 0도로 되돌리기`}
-        title={`${label} — 눌러서 0도로`}
-      >
-        {icon}
-        <b>{signed(degrees)}°</b>
-      </button>
-      <input
-        type="range"
-        aria-label={label}
-        min={-limit}
-        max={limit}
-        step={0.5}
-        value={deg(value)}
-        onChange={(e) => onChange(rad(Number(e.target.value)))}
-        disabled={disabled}
-      />
-    </div>
-  )
-}
-
 export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   const toast = useToast()
   const [natural, setNatural] = useState<Size | null>(null)
   const [url, setUrl] = useState<string>()
   const [view, setView] = useState<CropView>(IDENTITY_VIEW)
   const [working, setWorking] = useState(false)
+  /** 손댄 걸 버리고 나가려 할 때 한 번 붙잡는다 */
+  const [askSave, setAskSave] = useState(false)
   /** 실제로 그려진 틀의 크기 — 화면 폭에 따라 달라지므로 붙은 뒤에 잰다 */
   const [frame, setFrame] = useState<Size>({ w: 0, h: 0 })
   const frameRef = useRef<HTMLDivElement>(null)
@@ -350,6 +297,83 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
     }
   }
 
+  const knobs: DialKnob[] = [
+    {
+      key: 'zoom',
+      label: '확대',
+      icon: <ZoomIcon size={19} />,
+      // 확대만 단위가 배율이 아니라 퍼센트다 — 눈금자에 얹기 좋고 읽기도 쉽다
+      value: (view.scale / Math.max(minScale, 0.001)) * 100,
+      min: 100,
+      max: (zoomMax / Math.max(minScale, 0.001)) * 100,
+      rest: 100,
+      tick: 5,
+      majorEvery: 5,
+      pxPerUnit: 1.1,
+      format: (v) => `${Math.round(v)}%`,
+      onChange: (v) => apply({ ...view, scale: (v / 100) * minScale }),
+    },
+    {
+      key: 'rotation',
+      label: '돌리기',
+      icon: <RotateShapeIcon size={19} />,
+      value: deg(view.rotation),
+      min: -MAX_ROTATION,
+      max: MAX_ROTATION,
+      rest: 0,
+      tick: 1,
+      majorEvery: 5,
+      pxPerUnit: 5,
+      format: (v) => `${signed(Math.round(v))}°`,
+      onChange: (v) => apply({ ...view, rotation: rad(v) }),
+    },
+    {
+      key: 'tiltX',
+      label: '위아래 세우기',
+      icon: <TiltVerticalIcon size={19} />,
+      value: deg(view.tiltX),
+      min: -MAX_TILT,
+      max: MAX_TILT,
+      rest: 0,
+      tick: 1,
+      majorEvery: 5,
+      pxPerUnit: 6,
+      format: (v) => `${signed(Math.round(v))}°`,
+      onChange: (v) => apply({ ...view, tiltX: rad(v) }),
+    },
+    {
+      key: 'tiltY',
+      label: '좌우 세우기',
+      icon: <TiltHorizontalIcon size={19} />,
+      value: deg(view.tiltY),
+      min: -MAX_TILT,
+      max: MAX_TILT,
+      rest: 0,
+      tick: 1,
+      majorEvery: 5,
+      pxPerUnit: 6,
+      format: (v) => `${signed(Math.round(v))}°`,
+      onChange: (v) => apply({ ...view, tiltY: rad(v) }),
+    },
+  ]
+
+  /*
+   * 닫기는 곧바로 나가지 않는다. 맞춰놓은 걸 잘못 눌러 날리면 처음부터
+   * 다시 해야 하는데, 물어보는 값은 한 번의 탭이 전부다.
+   */
+  const touched =
+    view.scale !== 1 ||
+    view.rotation !== 0 ||
+    view.tiltX !== 0 ||
+    view.tiltY !== 0 ||
+    view.x !== 0 ||
+    view.y !== 0
+
+  const requestClose = () => {
+    if (touched && !working) setAskSave(true)
+    else onCancel()
+  }
+
   const style = {
     width: base.w || undefined,
     height: base.h || undefined,
@@ -357,11 +381,11 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   }
 
   return (
-    <Modal onClose={onCancel} panel={false} label="사진 자르기">
+    <Modal onClose={requestClose} panel={false} label="사진 자르기">
       <div className="crop">
         <div className="crop__top">
           <span className="crop__hint">끌어서 맞추세요 · 틀 밖은 저장되지 않아요</span>
-          <button className="detail__close" onClick={onCancel} aria-label="닫기">
+          <button className="detail__close" onClick={requestClose} aria-label="닫기">
             <CloseIcon size={20} />
           </button>
         </div>
@@ -395,69 +419,11 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           </div>
         </div>
 
-        <div className="crop__controls">
-          <div className="crop__slider">
-            <button
-              type="button"
-              className="crop__zero"
-              onClick={() => apply({ ...view, scale: minScale })}
-              disabled={!ready || view.scale <= minScale + 0.001}
-              aria-label="확대 되돌리기"
-              title="확대 — 눌러서 딱 맞는 크기로"
-            >
-              <ZoomIcon size={15} />
-              <b>{Math.round((view.scale / Math.max(minScale, 0.001)) * 100)}%</b>
-            </button>
-            <input
-              type="range"
-              aria-label="확대"
-              min={0}
-              max={1000}
-              value={clamp(
-                ((view.scale - minScale) / Math.max(zoomMax - minScale, 0.001)) * 1000,
-                0,
-                1000,
-              )}
-              onChange={(e) =>
-                apply({
-                  ...view,
-                  scale: minScale + (Number(e.target.value) / 1000) * (zoomMax - minScale),
-                })
-              }
-              disabled={!ready}
-            />
-          </div>
-          <AngleSlider
-            label="돌리기"
-            icon={<RotateShapeIcon size={15} />}
-            value={view.rotation}
-            limit={MAX_ROTATION}
-            disabled={!ready}
-            onChange={(rotation) => apply({ ...view, rotation })}
-          />
-
-          {/*
-            원근 두 개. 비스듬히 찍혀 사다리꼴이 된 카드를 반듯하게 편다.
-            위아래는 윗변을 눕히거나 세우고, 좌우는 옆면을 앞뒤로 돌린다.
-          */}
-          <AngleSlider
-            label="위아래 세우기"
-            icon={<TiltVerticalIcon size={15} />}
-            value={view.tiltX}
-            limit={MAX_TILT}
-            disabled={!ready}
-            onChange={(tiltX) => apply({ ...view, tiltX })}
-          />
-          <AngleSlider
-            label="좌우 세우기"
-            icon={<TiltHorizontalIcon size={15} />}
-            value={view.tiltY}
-            limit={MAX_TILT}
-            disabled={!ready}
-            onChange={(tiltY) => apply({ ...view, tiltY })}
-          />
-        </div>
-
+        {/*
+          손잡이 넷을 눈금자 하나로 돌려 쓴다. 슬라이더를 넷 세우면 그만큼
+          사진이 작아지는데, 어차피 한 번에 하나만 만진다.
+        */}
+        <CropDial disabled={!ready} knobs={knobs} />
         <div className="row crop__actions">
           <button className="btn" onClick={reset} disabled={!ready}>
             <ResetIcon size={17} />
@@ -468,6 +434,39 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
           </button>
         </div>
       </div>
+
+      {askSave && (
+        <Modal onClose={() => setAskSave(false)} label="변경사항">
+          <h2 className="modal__title">맞춰놓은 대로 자를까요?</h2>
+          <p className="modal__note">저장하지 않으면 지금 맞춘 위치와 각도는 사라집니다.</p>
+          <button
+            className="btn btn--primary btn--block"
+            onClick={() => {
+              setAskSave(false)
+              void confirm()
+            }}
+          >
+            이대로 자르기
+          </button>
+          <button
+            className="btn btn--block"
+            style={{ marginTop: 8 }}
+            onClick={() => {
+              setAskSave(false)
+              onCancel()
+            }}
+          >
+            자르지 않기
+          </button>
+          <button
+            className="btn btn--block btn--ghost"
+            style={{ marginTop: 8 }}
+            onClick={() => setAskSave(false)}
+          >
+            취소
+          </button>
+        </Modal>
+      )}
     </Modal>
   )
 }

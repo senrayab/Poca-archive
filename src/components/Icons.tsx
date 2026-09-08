@@ -99,10 +99,12 @@ export const ZoomIcon = ({ size = 22, className }: IconProps) => (
 )
 
 /*
- * 자르기 화면의 각도 셋. 라이브러리에 마땅한 게 없어 직접 그렸다.
- * 셋 다 '이 손잡이를 돌리면 카드가 어떤 모양이 되는지'를 그대로 보여준다 —
- * 기울어진 사각형, 위가 좁은 사다리꼴, 왼쪽이 좁은 사다리꼴.
- * 글자보다 이쪽이 빠르게 읽히고, 좁은 폰 화면에서 자리도 덜 먹는다.
+ * 자르기 화면의 손잡이 아이콘들. 라이브러리에 마땅한 게 없어 직접 그렸다.
+ *
+ * 셋 다 두 겹으로 읽힌다. 바깥 모양은 '이 손잡이를 돌리면 카드가 어떤 모양이
+ * 되는지'(기울어진 사각형, 위가 좁은 사다리꼴, 왼쪽이 좁은 사다리꼴)이고,
+ * 안에 그은 선은 '무엇을 축으로 도는지'다 — 위아래 세우기는 가로선,
+ * 좌우 세우기는 세로선. 사진 편집기들이 쓰는 어법을 그대로 따랐다.
  */
 const Shape = ({ d, size, className }: IconProps & { d: string }) => (
   <svg
@@ -121,17 +123,21 @@ const Shape = ({ d, size, className }: IconProps & { d: string }) => (
   </svg>
 )
 
-/** 화면 안에서 돌리기 — 살짝 기울어진 사각형 */
+/** 돌리기 — 기울어진 사각형을 가로 수평선이 가로지른다 */
 export const RotateShapeIcon = ({ size = 22, className }: IconProps) => (
-  <Shape size={size} className={className} d="M4.1 8.6 17.8 5.7 19.9 15.4 6.2 18.3Z" />
+  <Shape
+    size={size}
+    className={className}
+    d="M4.1 8.6 17.8 5.7 19.9 15.4 6.2 18.3ZM2.4 12.6 21.6 11.4"
+  />
 )
-/** 위아래 세우기 — 윗변이 뒤로 넘어가 좁아진 모양 */
+/** 위아래 세우기 — 윗변이 뒤로 넘어가 좁아진 모양, 가로축을 그어둔다 */
 export const TiltVerticalIcon = ({ size = 22, className }: IconProps) => (
-  <Shape size={size} className={className} d="M7.8 5.5H16.2L20 18.5H4Z" />
+  <Shape size={size} className={className} d="M7.8 5.5H16.2L19.5 18.5H4.5ZM6.2 12H17.9" />
 )
-/** 좌우 세우기 — 왼쪽 변이 뒤로 넘어가 좁아진 모양 */
+/** 좌우 세우기 — 왼쪽 변이 뒤로 넘어가 좁아진 모양, 세로축을 그어둔다 */
 export const TiltHorizontalIcon = ({ size = 22, className }: IconProps) => (
-  <Shape size={size} className={className} d="M5.5 7.8V16.2L18.5 20V4Z" />
+  <Shape size={size} className={className} d="M5.5 7.8V16.2L18.5 19.5V4.5ZM12 6.2V17.9" />
 )
 
 export const CropIcon = ({ size = 22, className }: IconProps) => (

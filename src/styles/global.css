@@ -711,6 +711,14 @@ a { color: inherit; }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
 
+/* 확인 창에서 제목 아래 붙는 한 줄 설명 */
+.modal__note {
+  margin: -8px 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
 .modal__title {
   margin: 0 0 16px;
   font-size: 17px;
@@ -1105,47 +1113,137 @@ a { color: inherit; }
     linear-gradient(to bottom, transparent 66.6%, #fff 66.6%, #fff calc(66.6% + 1px), transparent calc(66.6% + 1px));
 }
 
-.crop__controls {
+/*
+ * 조작부 = 동그란 손잡이 넷 + 눈금자 하나.
+ *
+ * 손잡이마다 슬라이더를 세우면 줄이 넷이 되고, 폰에서 그 높이는 곧 사진이
+ * 작아지는 값이다. 어차피 한 번에 하나만 만지므로 고른 것 하나만 하얗게
+ * 켜고 눈금자를 돌려 쓴다.
+ */
+.dial {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 8px;
-  flex-shrink: 0;
-}
-.crop__slider {
-  display: grid;
-  /* 아이콘 + '+12°' 한 줄 */
-  grid-template-columns: 62px 1fr;
-  align-items: center;
   gap: 10px;
-  font-size: 11px;
-  color: var(--on-scrim-dim);
+  flex-shrink: 0;
+  padding: 0 8px;
 }
-.crop__slider b { color: var(--on-scrim); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dial__knobs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.dial__knob {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--on-scrim);
+  background: var(--glass);
+  transition: background .18s, color .18s, transform .15s;
+}
 /*
- * 값을 누르면 0도(확대는 딱 맞는 크기)로 돌아온다. 많이 돌려놓고 나면
- * 손가락으로 0을 정확히 짚기가 어려운데, 0은 가장 자주 돌아가고 싶은 자리다.
- * 0일 때는 눌러도 갈 곳이 없어 비활성이고, 그때만 흐리게 둔다.
+ * 값만큼 차오르는 부채꼴. 눈금자를 안 봐도 어느 손잡이를 얼마나 건드려
+ * 놓았는지 알 수 있다. 색을 currentColor로 두면 흰 원 위에서는 어둡게,
+ * 어두운 원 위에서는 밝게 — 한 줄로 양쪽이 다 맞는다.
  */
-.crop__zero {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 6px;
-  margin-left: -6px;
-  border-radius: var(--pill);
-  color: inherit;
-  font-size: inherit;
-  transition: background .15s, opacity .15s;
+.dial__knob::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from calc(var(--from, 0) * 1turn),
+    currentColor 0 calc(var(--len, 0) * 1turn),
+    transparent 0
+  );
+  opacity: .22;
 }
-.crop__zero:not(:disabled):hover { background: var(--glass); }
-.crop__zero:not(:disabled):active { background: var(--glass-hover); }
-.crop__zero:disabled { cursor: default; opacity: .55; }
-.crop__slider input[type='range'] {
-  width: 100%;
-  accent-color: var(--accent);
-  background: none;
+.dial__knob svg,
+.dial__reading { position: relative; }
+/* 고른 손잡이는 하얗게 켠다 — 딤 위라 테마와 무관하게 이 짝이 유지된다 */
+.dial__knob[data-on] {
+  background: var(--on-scrim);
+  color: #17161d;
 }
+.dial__knob:disabled { opacity: .4; }
+.dial__knob:not(:disabled):active { transform: scale(.93); }
+/* 만지는 동안에는 아이콘 자리에 값이 들어간다 */
+.dial__reading {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * 눈금자. 눈금이 손을 따라 흐르고 바늘은 가운데 붙박이다.
+ * 눈금은 그림 하나를 되풀이해 깔았을 뿐이라, 몇 개가 지나가든 값이 같다.
+ */
+.dial__ruler {
+  position: relative;
+  height: 34px;
+  overflow: hidden;
+  touch-action: none;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* 양끝은 흐려서 눈금이 갑자기 잘리지 않게 */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+.dial__ruler:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dial__ticks {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  /* 눈금자가 끝까지 밀려도 빈 곳이 안 보일 만큼 넉넉히 (보이는 데만 그려진다) */
+  width: 4000px;
+  margin-left: -2000px;
+}
+.dial__minor,
+.dial__major {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  /* 눈금을 타일 한가운데 두어야 0이 바늘에 정확히 맞는다 */
+  background-position: center center;
+}
+.dial__minor {
+  background-image: linear-gradient(
+    to right,
+    transparent calc(50% - .5px),
+    var(--on-scrim-dim) calc(50% - .5px) calc(50% + .5px),
+    transparent calc(50% + .5px)
+  );
+  background-size: var(--minor) 42%;
+  opacity: .45;
+}
+.dial__major {
+  background-image: linear-gradient(
+    to right,
+    transparent calc(50% - .5px),
+    var(--on-scrim) calc(50% - .5px) calc(50% + .5px),
+    transparent calc(50% + .5px)
+  );
+  background-size: var(--major) 74%;
+  opacity: .8;
+}
+.dial__needle {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  bottom: 4%;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--accent);
+  transition: transform .15s;
+}
+.dial__ruler[data-dragging] .dial__needle { transform: scaleY(1.12); }
+
 .crop__actions { padding: 0 8px; flex-shrink: 0; }
 .crop__top { flex-shrink: 0; }
 
