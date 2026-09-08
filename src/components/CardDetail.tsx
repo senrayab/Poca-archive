@@ -167,6 +167,26 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   // 하트를 띄울 때만 사진 모서리를 파낸다 — 안 그러면 빈 구멍만 남는다
   const showFav = !editing && card.deleted !== 1
 
+  /*
+   * 사진을 두 번 두드리면 찜한다 — 오른쪽 위 하트를 누른 것과 같다.
+   *
+   * 브라우저에는 터치용 더블탭 이벤트가 없어 직접 잰다. 두 번째 탭이 앞의 것과
+   * 시간·거리 안에 들어와야 한 쌍으로 친다. 거리를 보는 덕에 좌우로 넘기는
+   * 손짓은 걸리지 않는다 (그건 60px 넘게 움직여야 한다).
+   */
+  const lastTap = useRef<{ at: number; x: number; y: number } | null>(null)
+  const onPhotoTap = (e: React.PointerEvent) => {
+    if (!showFav) return
+    const now = Date.now()
+    const prev = lastTap.current
+    if (prev && now - prev.at < 320 && Math.hypot(e.clientX - prev.x, e.clientY - prev.y) < 32) {
+      lastTap.current = null
+      void toggleFavorite()
+      return
+    }
+    lastTap.current = { at: now, x: e.clientX, y: e.clientY }
+  }
+
   const toggleFavorite = async () => {
     const next = card.favorite === 1 ? 0 : 1
     if (next === 1) setBurst((n) => n + 1)
@@ -304,7 +324,11 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               원본이 디코드될 때까지는 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다. */}
           <div className="detail__stage">
             {/* 사진만 이 층에서 잘린다. 하트와 조각은 밖에 있어야 구멍 밖으로 나갈 수 있다. */}
-            <div className="detail__canvas" data-cut={showFav || undefined}>
+            <div
+              className="detail__canvas"
+              data-cut={showFav || undefined}
+              onPointerUp={onPhotoTap}
+            >
               {pendingUrl ? (
                 /* 새로 고른 사진은 이미 손에 있으니 흐린 밑그림 없이 바로 보여준다 */
                 <img className="detail__img" src={pendingUrl} alt="새로 고른 사진" />
