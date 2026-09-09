@@ -64,8 +64,8 @@ interface CardGridProps {
   selectedIds?: Set<string>
   onOpen: (card: Card) => void
   onToggleSelect?: (card: Card) => void
-  /** 쓸어 지나간 카드를 고른다 (뒤집지 않고 고르기만 한다) */
-  onSelect?: (ids: string[]) => void
+  /** 쓸어 지나간 카드를 한꺼번에 고르거나 푼다 */
+  onSweep?: (ids: string[], selected: boolean) => void
 }
 
 /** 이만큼 누르고 있으면 고르기가 시작된다 */
@@ -83,7 +83,7 @@ export function CardGrid({
   selectedIds,
   onOpen,
   onToggleSelect,
-  onSelect,
+  onSweep,
 }: CardGridProps) {
   const gridRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -91,13 +91,23 @@ export function CardGrid({
   /*
    * 길게 눌러 고르기 시작하고, 누른 채로 쓸면 지나간 카드가 다 골라진다.
    *
+   * 고를지 풀지는 '시작한 칸'이 정하고, 그 쓸기가 끝날 때까지 바뀌지 않는다.
+   * 안 골라진 칸에서 시작했으면 지나가는 것마다 고르고, 이미 골라진 칸에서
+   * 시작했으면 지나가는 것마다 푼다. 칸마다 뒤집게 두면 손이 왔다 갔다 할 때
+   * 골랐다 풀렸다 해서 어디까지 했는지 알 수 없게 된다.
+   *
    * 손짓 판정은 칸 하나하나가 아니라 격자 전체가 맡는다. 칸마다 맡기면 손가락이
    * 칸을 벗어나는 순간 이벤트가 끊겨, 쓸고 지나가는 걸 이어서 볼 수가 없다.
    */
   const draggingRef = useRef(false)
   const press = useRef<{ pointerId: number; x: number; y: number; timer: number } | null>(null)
-  /** 이번에 쓸며 이미 고른 카드 — 같은 카드를 두 번 세지 않는다 */
+  /** 이번에 쓸며 이미 지나간 카드 — 같은 카드를 두 번 세지 않는다 */
   const painted = useRef(new Set<string>())
+  /** 이번 쓸기가 고르는 쪽인지 푸는 쪽인지 (시작한 칸이 정한다) */
+  const sweepTo = useRef(true)
+  /** 시작할 때의 고름 상태를 봐야 하므로 최신 값을 따로 들고 있는다 */
+  const selectedRef = useRef(selectedIds)
+  selectedRef.current = selectedIds
   const at = useRef({ x: 0, y: 0 })
   const speed = useRef(0)
   const frame = useRef(0)
@@ -112,7 +122,7 @@ export function CardGrid({
     const id = cardAt(x, y)
     if (!id || painted.current.has(id)) return
     painted.current.add(id)
-    onSelect?.([id])
+    onSweep?.([id], sweepTo.current)
   }
 
   /** 화면 끝에 손가락이 닿아 있으면 목록을 굴려 준다 — 안 그러면 보이는 만큼만 고를 수 있다 */
@@ -171,7 +181,7 @@ export function CardGrid({
   }, [])
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!onSelect) return
+    if (!onSweep) return
     // 마우스는 왼쪽 단추만 (오른쪽은 종전대로 바로 고르기)
     if (e.pointerType === 'mouse' && e.button !== 0) return
     const id = cardAt(e.clientX, e.clientY)
@@ -186,7 +196,9 @@ export function CardGrid({
       timer: window.setTimeout(() => {
         press.current = null
         painted.current = new Set([id])
-        onSelect([id])
+        // 이미 골라진 칸에서 시작했으면 이번 쓸기는 푸는 쪽이다
+        sweepTo.current = !(selectedRef.current?.has(id) ?? false)
+        onSweep([id], sweepTo.current)
         draggingRef.current = true
         setDragging(true)
         gridRef.current?.setPointerCapture(pointerId)
