@@ -66,6 +66,16 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   }, [mode, memberId, categoryId])
 
 
+  /** 쓸고 지나간 카드를 고른다 — 뒤집지 않고 더하기만 한다 */
+  const selectCards = (ids: string[]) => {
+    setSelected((prev) => {
+      if (ids.every((id) => prev.has(id))) return prev
+      const next = new Set(prev)
+      for (const id of ids) next.add(id)
+      return next
+    })
+  }
+
   const toggleSelect = (card: Card) => {
     setSelected((prev) => {
       const next = new Set(prev)
@@ -224,6 +234,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
             cards={list}
             selectable={selectMode}
             selectedIds={selected}
+            onSelect={selectCards}
             onOpen={setOpenCard}
             onToggleSelect={toggleSelect}
           />

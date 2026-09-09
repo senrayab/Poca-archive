@@ -482,6 +482,8 @@ a { color: inherit; }
   gap: 4px;
   padding: 8px 10px;
 }
+/* 쓸어서 고르는 동안에는 목록이 손가락을 따라 움직이면 안 된다 */
+.grid[data-dragging] { touch-action: none; }
 @media (min-width: 560px) {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -502,7 +504,15 @@ a { color: inherit; }
   width: 100%;
   padding: 0;
   transition: transform .18s var(--ease);
+  /* 길게 누르면 폰이 사진 저장 메뉴를 띄운다 — 고르기 손짓과 부딪힌다 */
+  -webkit-touch-callout: none;
+  user-select: none;
 }
+/*
+ * 손짓 판정은 격자가 통째로 맡으므로 사진은 손을 안 타게 둔다.
+ * 손가락 밑에 무엇이 있는지 물을 때 늘 칸(버튼)이 잡혀 셈이 간단해진다.
+ */
+.thumb img { pointer-events: none; }
 .thumb:active { transform: scale(.96); }
 .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .thumb__fav {
