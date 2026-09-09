@@ -1372,9 +1372,13 @@ a { color: inherit; }
  * 이 화면들은 글씨가 흰색이라 회색 알약에 흰 글씨가 되어 읽히지 않는다.
  * 바탕을 비우고 흰 선만 남긴다 — 뒤에 사진이 비쳐 화면과도 어울린다.
  */
+/*
+ * 셋 다 '.틀 .btn' 꼴로 적는다. 클래스 하나짜리(.shot__done)로 적었더니
+ * 파일 뒤쪽의 .btn과 힘이 같아, 나중에 나온 쪽에 밀려 먹히지 않았다.
+ */
 .crop .btn,
 .search-sheet .btn,
-.shot__done {
+.shot .btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, .55);
   color: var(--on-scrim);
@@ -1382,7 +1386,7 @@ a { color: inherit; }
 }
 .crop .btn:not(:disabled):active,
 .search-sheet .btn:not(:disabled):active,
-.shot__done:active { background: rgba(255, 255, 255, .14); }
+.shot .btn:not(:disabled):active { background: rgba(255, 255, 255, .14); }
 
 /* 주된 단추는 포인트 색 그대로 — 이건 먼저 눈에 들어야 한다 */
 .crop .btn--primary {
