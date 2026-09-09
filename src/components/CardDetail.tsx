@@ -6,6 +6,7 @@ import type { Card, CardStatus } from '@/db/types'
 import { useCategories, useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes, formatDate } from '@/lib/format'
+import { fingerprintOf } from '@/lib/duplicates'
 import { processImage, type ProcessedImage } from '@/lib/image'
 import { CropEditor } from './CropEditor'
 import {
@@ -248,7 +249,10 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
       toast('제목을 입력해 주세요.')
       return false
     }
-    await db.transaction('rw', db.cards, db.images, async () => {
+    // 사진을 갈아 끼웠으면 지문도 새 그림의 것으로 바꾼다 (안 그러면 중복 검사가 엉뚱해진다)
+    const fp = pending ? await fingerprintOf(pending.thumb.blob) : null
+
+    await db.transaction('rw', db.cards, db.images, db.prints, async () => {
       await db.cards.update(card.id, {
         title,
         memberId: draft.memberId,
@@ -263,7 +267,11 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           bytes: pending.full.blob.size + pending.thumb.blob.size,
         }),
       })
-      if (pending) await db.images.put({ cardId: card.id, blob: pending.full.blob })
+      if (pending) {
+        await db.images.put({ cardId: card.id, blob: pending.full.blob })
+        if (fp) await db.prints.put({ cardId: card.id, fp })
+        else await db.prints.delete(card.id)
+      }
     })
     setPending(null)
     setPendingFile(null)

@@ -1953,6 +1953,54 @@ a { color: inherit; }
 }
 
 .queue__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* 검색 시트 아래쪽, 사진으로 찾는 자리 */
+.search-sheet__by-image {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--glass-line);
+}
+.search-sheet__by-image .search-sheet__hint { margin-top: 10px; }
+
+/*
+ * 겹쳐 보이는 카드를 나란히 놓고 보여준다.
+ * 기계가 짚어준 것이 맞는지는 눈으로 봐야 알 수 있으므로, 판단할 거리를 준다.
+ */
+.twins {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  max-height: 42vh;
+  overflow-y: auto;
+}
+.twins__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-elev-2);
+}
+.twins__thumb {
+  width: 40px;
+  aspect-ratio: var(--card-ratio);
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--bg-elev);
+  flex-shrink: 0;
+}
+/* 이미 가진 쪽은 오른쪽 끝에 두어 '올리는 것 → 가진 것' 순으로 읽히게 */
+.twins__thumb--have { margin-left: auto; }
+.twins__what { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.twins__what b {
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.twins__what span { font-size: 11px; color: var(--text-dim); }
+
 /* 멤버·분류는 나란히 둔다 — 둘 다 '위에서 고른 값'이 기본이라 한 짝으로 읽힌다 */
 .queue__pair {
   display: grid;
