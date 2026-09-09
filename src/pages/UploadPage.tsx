@@ -19,8 +19,9 @@ import { takePendingFiles } from '@/lib/pendingFiles'
 interface QueueItem {
   key: string
   title: string
-  /** 항목별로 멤버를 다르게 줄 수 있게 (기본은 상단에서 고른 값) */
+  /** 항목별로 멤버·분류를 다르게 줄 수 있게 (빈 값이면 상단에서 고른 값을 쓴다) */
   memberId: string
+  categoryId: string
   previewUrl: string
   processed: ProcessedImage
   /*
@@ -66,6 +67,7 @@ export function UploadPage() {
         key: uid(),
         title: stripExtension(file.name),
         memberId: '',
+        categoryId: '',
         previewUrl: URL.createObjectURL(processed.thumb.blob),
         processed,
         file,
@@ -174,7 +176,8 @@ export function UploadPage() {
         id,
         title: item.title.trim(),
         memberId: item.memberId || memberId,
-        categoryId: categoryId || null,
+        // 항목에서 따로 고른 게 있으면 그걸 쓰고, 없으면 위에서 고른 값
+        categoryId: item.categoryId || categoryId || null,
         memo: '',
         thumb: item.processed.thumb.blob,
         width: item.processed.full.width,
@@ -362,23 +365,42 @@ export function UploadPage() {
                           )
                         }
                       />
-                      <select
-                        value={item.memberId}
-                        onChange={(e) =>
-                          setItems((prev) =>
-                            prev.map((i) =>
-                              i.key === item.key ? { ...i, memberId: e.target.value } : i,
-                            ),
-                          )
-                        }
-                      >
-                        <option value="">위에서 고른 멤버 사용</option>
-                        {members.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="queue__pair">
+                        <select
+                          value={item.memberId}
+                          onChange={(e) =>
+                            setItems((prev) =>
+                              prev.map((i) =>
+                                i.key === item.key ? { ...i, memberId: e.target.value } : i,
+                              ),
+                            )
+                          }
+                        >
+                          <option value="">위에서 고른 멤버</option>
+                          {members.map((m) => (
+                            <option key={m.id} value={m.id}>
+                              {m.name}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          value={item.categoryId}
+                          onChange={(e) =>
+                            setItems((prev) =>
+                              prev.map((i) =>
+                                i.key === item.key ? { ...i, categoryId: e.target.value } : i,
+                              ),
+                            )
+                          }
+                        >
+                          <option value="">위에서 고른 분류</option>
+                          {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <span className="queue__meta">
                         {item.processed.full.width}×{item.processed.full.height} ·{' '}
                         {formatBytes(item.processed.originalBytes)} →{' '}
