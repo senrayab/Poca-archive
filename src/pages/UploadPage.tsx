@@ -358,24 +358,22 @@ export function UploadPage() {
             위는 앱 안에서 연달아 찍는 길, 아래는 폰 카메라 앱을 부르는 길이다.
             앱 안 카메라는 HTTPS에서만 켜지므로, 안 되는 자리에서는 아래만 남는다.
           */}
-          {inAppCamera && (
-            <button
-              className="btn btn--primary btn--block"
-              style={{ marginTop: 10 }}
-              onClick={() => setShooting(true)}
-            >
+          <div className="row" style={{ marginTop: 10 }}>
+            {/*
+              한 줄에 나란히 두되 연속 촬영을 오른쪽에 둔다 — 오른손 엄지가
+              닿기 쉬운 자리이고, 둘 중 자주 쓸 쪽이다.
+            */}
+            <button className="btn" onClick={() => cameraRef.current?.click()}>
               <CameraIcon size={18} />
-              카메라로 연속 촬영
+              {inAppCamera ? '한 장씩' : '카메라로 찍어서 등록'}
             </button>
-          )}
-          <button
-            className="btn btn--block"
-            style={{ marginTop: 8 }}
-            onClick={() => cameraRef.current?.click()}
-          >
-            <CameraIcon size={18} />
-            {inAppCamera ? '폰 카메라로 한 장씩' : '카메라로 찍어서 등록'}
-          </button>
+            {inAppCamera && (
+              <button className="btn btn--primary" onClick={() => setShooting(true)}>
+                <CameraIcon size={18} />
+                연속 촬영
+              </button>
+            )}
+          </div>
           <input
             ref={cameraRef}
             type="file"
