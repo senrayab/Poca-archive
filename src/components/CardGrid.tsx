@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Card } from '@/db/types'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
@@ -64,8 +64,8 @@ interface CardGridProps {
   selectedIds?: Set<string>
   onOpen: (card: Card) => void
   onToggleSelect?: (card: Card) => void
-  /** 쓸어 지나간 카드를 한꺼번에 고르거나 푼다 */
-  onSweep?: (ids: string[], selected: boolean) => void
+  /** 쓰는 동안 바뀐 고름 상태를 통째로 넘긴다 (되돌아온 자리까지 반영된 결과다) */
+  onSweep?: (next: Set<string>) => void
 }
 
 /** 이만큼 누르고 있으면 고르기가 시작된다 */
@@ -91,23 +91,38 @@ export function CardGrid({
   /*
    * 길게 눌러 고르기 시작하고, 누른 채로 쓸면 지나간 카드가 다 골라진다.
    *
-   * 고를지 풀지는 '시작한 칸'이 정하고, 그 쓸기가 끝날 때까지 바뀌지 않는다.
-   * 안 골라진 칸에서 시작했으면 지나가는 것마다 고르고, 이미 골라진 칸에서
-   * 시작했으면 지나가는 것마다 푼다. 칸마다 뒤집게 두면 손이 왔다 갔다 할 때
-   * 골랐다 풀렸다 해서 어디까지 했는지 알 수 없게 된다.
+   * 지나간 칸을 하나씩 칠하는 게 아니라, '시작한 칸부터 지금 칸까지'를 매번
+   * 다시 계산한다. 그래야 손가락을 되돌렸을 때 방금 고른 것이 도로 풀린다 —
+   * 칠하고 기억하는 방식으로는 지나온 자리를 되돌릴 방법이 없다.
+   *
+   * 고를지 풀지는 시작한 칸이 정한다. 안 골라진 칸에서 시작하면 고르고,
+   * 이미 골라진 칸에서 시작하면 푼다. 그 방향은 쓸기가 끝날 때까지 그대로다.
    *
    * 손짓 판정은 칸 하나하나가 아니라 격자 전체가 맡는다. 칸마다 맡기면 손가락이
    * 칸을 벗어나는 순간 이벤트가 끊겨, 쓸고 지나가는 걸 이어서 볼 수가 없다.
    */
   const draggingRef = useRef(false)
   const press = useRef<{ pointerId: number; x: number; y: number; timer: number } | null>(null)
-  /** 이번에 쓸며 이미 지나간 카드 — 같은 카드를 두 번 세지 않는다 */
-  const painted = useRef(new Set<string>())
+  /** 쓸기를 시작한 칸의 자리 */
+  const anchor = useRef(-1)
+  /** 손가락이 마지막으로 머문 칸의 자리 — 같은 칸이면 다시 셈하지 않는다 */
+  const reached = useRef(-1)
+  /** 쓸기를 시작하기 직전의 고름 상태. 되돌아온 자리는 여기로 돌아간다. */
+  const before = useRef(new Set<string>())
   /** 이번 쓸기가 고르는 쪽인지 푸는 쪽인지 (시작한 칸이 정한다) */
   const sweepTo = useRef(true)
   /** 시작할 때의 고름 상태를 봐야 하므로 최신 값을 따로 들고 있는다 */
   const selectedRef = useRef(selectedIds)
   selectedRef.current = selectedIds
+  const cardsRef = useRef(cards)
+  cardsRef.current = cards
+  const placeOf = useMemo(() => {
+    const map = new Map<string, number>()
+    cards.forEach((card, i) => map.set(card.id, i))
+    return map
+  }, [cards])
+  const placeRef = useRef(placeOf)
+  placeRef.current = placeOf
   const at = useRef({ x: 0, y: 0 })
   const speed = useRef(0)
   const frame = useRef(0)
@@ -118,11 +133,32 @@ export function CardGrid({
     return thumb instanceof HTMLElement ? (thumb.dataset.cardId ?? null) : null
   }
 
+  /**
+   * 시작한 칸부터 지금 칸까지를 한 덩어리로 보고 고름 상태를 다시 짠다.
+   *
+   * 그 바깥은 쓸기 전 상태로 되돌아간다. 손가락이 왔던 길을 되짚으면
+   * 방금 고른 것들이 차례로 풀리는 게 이 때문이다.
+   */
+  const spanTo = (place: number) => {
+    if (anchor.current < 0 || place < 0 || place === reached.current) return
+    reached.current = place
+    const from = Math.min(anchor.current, place)
+    const to = Math.max(anchor.current, place)
+    const next = new Set(before.current)
+    for (let i = from; i <= to; i++) {
+      const card = cardsRef.current[i]
+      if (!card) continue
+      if (sweepTo.current) next.add(card.id)
+      else next.delete(card.id)
+    }
+    onSweep?.(next)
+  }
+
   const paint = (x: number, y: number) => {
     const id = cardAt(x, y)
-    if (!id || painted.current.has(id)) return
-    painted.current.add(id)
-    onSweep?.([id], sweepTo.current)
+    if (!id) return
+    const place = placeRef.current.get(id)
+    if (place !== undefined) spanTo(place)
   }
 
   /** 화면 끝에 손가락이 닿아 있으면 목록을 굴려 준다 — 안 그러면 보이는 만큼만 고를 수 있다 */
@@ -161,7 +197,9 @@ export function CardGrid({
       draggingRef.current = false
       setDragging(false)
     }
-    painted.current.clear()
+    anchor.current = -1
+    reached.current = -1
+    before.current.clear()
   }
 
   useEffect(() => stop, [])
@@ -195,10 +233,12 @@ export function CardGrid({
       y: e.clientY,
       timer: window.setTimeout(() => {
         press.current = null
-        painted.current = new Set([id])
+        before.current = new Set(selectedRef.current ?? [])
         // 이미 골라진 칸에서 시작했으면 이번 쓸기는 푸는 쪽이다
-        sweepTo.current = !(selectedRef.current?.has(id) ?? false)
-        onSweep([id], sweepTo.current)
+        sweepTo.current = !before.current.has(id)
+        anchor.current = placeRef.current.get(id) ?? -1
+        reached.current = -1
+        spanTo(anchor.current)
         draggingRef.current = true
         setDragging(true)
         gridRef.current?.setPointerCapture(pointerId)
