@@ -4,6 +4,7 @@ import {
   Check,
   ChevronLeft as LuChevronLeft,
   ChevronRight as LuChevronRight,
+  Camera,
   ChartColumn,
   Crop,
   Download,
@@ -114,6 +115,9 @@ export const TiltHorizontalIcon = ({ size = 22, className }: IconProps) => (
   <FlipHorizontal size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 
+export const CameraIcon = ({ size = 22, className }: IconProps) => (
+  <Camera size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
 export const CropIcon = ({ size = 22, className }: IconProps) => (
   <Crop size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
