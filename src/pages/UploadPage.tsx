@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/AppShell'
+import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { CropEditor } from '@/components/CropEditor'
 import { CameraIcon, CloseIcon, CropIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
@@ -51,6 +52,9 @@ export function UploadPage() {
   const [saving, setSaving] = useState(false)
   /** 자르기 중인 항목 (한 번에 하나) */
   const [cropKey, setCropKey] = useState<string | null>(null)
+  const [shooting, setShooting] = useState(false)
+  /* 앱 안에서 카메라를 켤 수 있는지는 한 번만 물어본다 (HTTPS가 아니면 못 켠다) */
+  const [inAppCamera] = useState(canUseCamera)
   const inputRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
 
@@ -300,13 +304,28 @@ export function UploadPage() {
             정하는 거라 앱에서 막을 수 없다. 앱 안에서 카메라를 켜야 그 둘이
             해결되는데 그건 HTTPS가 필요하다.
           */}
+          {/*
+            카메라 두 갈래.
+            위는 앱 안에서 연달아 찍는 길, 아래는 폰 카메라 앱을 부르는 길이다.
+            앱 안 카메라는 HTTPS에서만 켜지므로, 안 되는 자리에서는 아래만 남는다.
+          */}
+          {inAppCamera && (
+            <button
+              className="btn btn--primary btn--block"
+              style={{ marginTop: 10 }}
+              onClick={() => setShooting(true)}
+            >
+              <CameraIcon size={18} />
+              카메라로 연속 촬영
+            </button>
+          )}
           <button
             className="btn btn--block"
-            style={{ marginTop: 10 }}
+            style={{ marginTop: 8 }}
             onClick={() => cameraRef.current?.click()}
           >
             <CameraIcon size={18} />
-            카메라로 찍어서 등록
+            {inAppCamera ? '폰 카메라로 한 장씩' : '카메라로 찍어서 등록'}
           </button>
           <input
             ref={cameraRef}
@@ -462,6 +481,10 @@ export function UploadPage() {
           )}
         </div>
       </div>
+
+      {shooting && (
+        <CameraCapture onShot={(file) => void addFiles([file])} onClose={() => setShooting(false)} />
+      )}
 
       {cropItem && (
         <CropEditor

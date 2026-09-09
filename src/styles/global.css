@@ -1078,6 +1078,120 @@ a { color: inherit; }
 }
 .crop__stage:active { cursor: grabbing; }
 
+/*
+ * 앱 안 카메라. 화면을 통째로 덮고, 안내 틀에 맞춰 셔터만 연달아 누르면 된다.
+ */
+.shot {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+  color-scheme: dark;
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  animation: fade .15s ease-out;
+}
+.shot__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  flex-shrink: 0;
+}
+.shot__close {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+}
+.shot__count { font-size: 12px; color: rgba(255, 255, 255, .72); }
+
+.shot__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.shot__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 화면을 꽉 채운다. 찍을 때 이 잘림을 되짚어 틀 안만 잘라 온다. */
+  object-fit: cover;
+}
+/*
+ * 안내 틀. 실물 카드 비율이라 여기 맞춰 찍으면 자르기를 건너뛸 수 있다.
+ *
+ * 틀 밖을 어둡게 덮지 않는다. 살아 있는 영상 위에 막이나 흐림을 얹으면
+ * 매 프레임 다시 계산되어 폰에서 값이 크다. 선 하나로도 어디에 맞출지는
+ * 충분히 보인다 — 어차피 이 화면에서는 그것만 하면 된다.
+ */
+.shot__frame {
+  position: relative;
+  height: min(62vh, 460px);
+  aspect-ratio: var(--card-ratio);
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, .95),
+    0 0 0 3px rgba(0, 0, 0, .35);
+  pointer-events: none;
+}
+.shot__error {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  color: rgba(255, 255, 255, .82);
+}
+.shot__flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  pointer-events: none;
+  animation: shot-flash .22s ease-out both;
+}
+@keyframes shot-flash {
+  from { opacity: .85; }
+  to { opacity: 0; }
+}
+
+.shot__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px 16px 18px;
+  flex-shrink: 0;
+}
+.shot__shutter {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, .28);
+  transition: transform .12s;
+}
+.shot__shutter:active { transform: scale(.9); }
+.shot__shutter:disabled { opacity: .4; }
+.shot__done { position: absolute; right: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .shot__flash { animation: none; opacity: 0; }
+}
+
 /* 축소본을 뜨는 잠깐 동안 검은 판만 보이지 않게 */
 .crop__loading {
   position: absolute;
