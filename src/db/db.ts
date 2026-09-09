@@ -1,11 +1,12 @@
 import Dexie, { type Table } from 'dexie'
-import type { Card, Category, Member, StoredImage } from './types'
+import type { Card, Category, Member, StoredImage, StoredPrint } from './types'
 
 export class PocaDB extends Dexie {
   members!: Table<Member, string>
   categories!: Table<Category, string>
   cards!: Table<Card, string>
   images!: Table<StoredImage, string>
+  prints!: Table<StoredPrint, string>
 
   constructor() {
     super('poca-archive')
@@ -41,6 +42,23 @@ export class PocaDB extends Dexie {
           await cards.put(row)
         }
       })
+
+    /*
+     * v3: 사진 지문을 담을 표를 더한다.
+     *
+     * 기존 카드의 지문은 여기서 만들지 않는다. 지문을 뽑으려면 사진을 그려봐야
+     * 하는데, 그 일을 마이그레이션 안에서 하면 트랜잭션이 먼저 닫혀 버린다.
+     * 앱이 뜬 뒤 없는 것만 채운다 (lib/duplicates.ts).
+     */
+    this.version(3).stores({
+      members: 'id, name, order',
+      categories: 'id, name, order',
+      cards:
+        'id, memberId, categoryId, createdAt, deleted, favorite, ' +
+        '[deleted+createdAt], [memberId+deleted], [deleted+favorite]',
+      images: 'cardId',
+      prints: 'cardId',
+    })
   }
 }
 
@@ -49,11 +67,12 @@ export const db = new PocaDB()
 export const uid = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 
-/** 카드와 본체 이미지를 함께 지운다. 완전 삭제는 반드시 이걸 거쳐야 한다. */
+/** 카드와 딸린 것들을 함께 지운다. 완전 삭제는 반드시 이걸 거쳐야 한다. */
 export async function purgeCards(ids: string[]) {
   if (!ids.length) return
-  await db.transaction('rw', db.cards, db.images, async () => {
+  await db.transaction('rw', db.cards, db.images, db.prints, async () => {
     await db.cards.bulkDelete(ids)
     await db.images.bulkDelete(ids)
+    await db.prints.bulkDelete(ids)
   })
 }

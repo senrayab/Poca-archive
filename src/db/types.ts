@@ -19,6 +19,19 @@ export interface Category {
 
 export type CardStatus = 'own' | 'traded' | 'sold'
 
+/**
+ * 사진 지문. 같은 그림인지 견주는 데 쓴다.
+ *
+ * 카드 행에 붙이지 않고 따로 둔 건, 중복을 찾을 때 카드를 전부 읽으면
+ * 행마다 딸린 썸네일까지 끌려오기 때문이다. 여기는 한 줄에 열여섯 글자뿐이라
+ * 수천 장이어도 통째로 읽는 값이 없다시피 하다.
+ */
+export interface StoredPrint {
+  cardId: string
+  /** 64비트를 16진수 열여섯 자리로 */
+  fp: string
+}
+
 /** 상세 팝업에서만 읽어오는 본체 이미지. */
 export interface StoredImage {
   cardId: string

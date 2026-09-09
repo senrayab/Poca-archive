@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/AppShell'
 import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { CropEditor } from '@/components/CropEditor'
+import { Modal } from '@/components/Modal'
 import { CameraIcon, CloseIcon, CropIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
-import type { Card, StoredImage } from '@/db/types'
+import type { Card, StoredImage, StoredPrint } from '@/db/types'
 import { useCategories, useMembers } from '@/hooks/useData'
+import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes } from '@/lib/format'
 import {
   canEncodeWebp,
@@ -16,6 +18,7 @@ import {
   type ProcessedImage,
 } from '@/lib/image'
 import { takePendingFiles } from '@/lib/pendingFiles'
+import { backfillPrints, findOverlaps, fingerprintOf, type Overlap } from '@/lib/duplicates'
 
 interface QueueItem {
   key: string
@@ -33,9 +36,17 @@ interface QueueItem {
   file: File
   /** 한 번이라도 잘랐는지 (표시용) */
   cropped: boolean
+  /** 사진 지문 — 이미 가진 카드와 겹치는지 견주는 데 쓴다 (못 뽑으면 null) */
+  fp: string | null
 }
 
 const stripExtension = (name: string) => name.replace(/\.[^.]+$/, '')
+
+/** 겹친다고 짚어준 보관함 카드의 썸네일 (나란히 놓고 눈으로 견주라고) */
+function TwinThumb({ card }: { card: Card }) {
+  const url = useObjectUrl(card.thumb, card.id)
+  return <img className="twins__thumb twins__thumb--have" src={url} alt="" />
+}
 
 export function UploadPage() {
   const navigate = useNavigate()
@@ -53,6 +64,9 @@ export function UploadPage() {
   /** 자르기 중인 항목 (한 번에 하나) */
   const [cropKey, setCropKey] = useState<string | null>(null)
   const [shooting, setShooting] = useState(false)
+  /** 등록 직전에 찾아낸 겹치는 것들 (사람이 정할 때까지 붙잡아 둔다) */
+  const [overlaps, setOverlaps] = useState<Array<Overlap<QueueItem>> | null>(null)
+  const [twins, setTwins] = useState<Map<string, Card>>(new Map())
   /* 앱 안에서 카메라를 켤 수 있는지는 한 번만 물어본다 (HTTPS가 아니면 못 켠다) */
   const [inAppCamera] = useState(canUseCamera)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -66,6 +80,7 @@ export function UploadPage() {
   /** 파일 하나를 변환해 대기 목록에 넣는다. 파일 선택과 주소 가져오기가 공유한다. */
   const enqueue = async (file: File) => {
     const processed = await processImage(file)
+    const fp = await fingerprintOf(processed.thumb.blob)
     setItems((prev) => [
       ...prev,
       {
@@ -77,6 +92,7 @@ export function UploadPage() {
         processed,
         file,
         cropped: false,
+        fp,
       },
     ])
   }
@@ -129,6 +145,14 @@ export function UploadPage() {
     if (pending.length) void addFiles(pending)
   }, [])
 
+  /*
+   * 아직 지문이 없는 카드의 것을 미리 채워 둔다. 등록을 누를 때 겹치는지
+   * 견주려면 지문이 있어야 하는데, 그때 가서 만들면 기다리게 된다.
+   */
+  useEffect(() => {
+    void backfillPrints()
+  }, [])
+
   // 언마운트 시점에는 setState 업데이터가 돌지 않으므로 ref로 현재 큐를 들고 있는다.
   const itemsRef = useRef(items)
   itemsRef.current = items
@@ -148,7 +172,9 @@ export function UploadPage() {
   }
 
   /** 자른 결과로 대기 항목을 갈아 끼운다 (원본 File은 그대로 두어 다시 자를 수 있게). */
-  const applyCrop = (key: string, processed: ProcessedImage) => {
+  const applyCrop = async (key: string, processed: ProcessedImage) => {
+    // 그림이 달라졌으니 지문도 다시 뽑는다
+    const fp = await fingerprintOf(processed.thumb.blob)
     setItems((prev) =>
       prev.map((item) => {
         if (item.key !== key) return item
@@ -158,6 +184,7 @@ export function UploadPage() {
           processed,
           previewUrl: URL.createObjectURL(processed.thumb.blob),
           cropped: true,
+          fp,
         }
       }),
     )
@@ -165,18 +192,38 @@ export function UploadPage() {
     toast('잘랐습니다.')
   }
 
-  const save = async () => {
-    if (!items.length) return
+  /*
+   * 등록. 이미 가진 카드와 겹치는 게 있으면 한 번 붙잡고 물어본다.
+   * skip에 담긴 것은 빼고 넣는다 (겹치는 것만 골라 버릴 때 쓴다).
+   */
+  const save = async (skip?: Set<string>) => {
+    const going = skip ? items.filter((i) => !skip.has(i.key)) : items
+    if (!going.length) return
     if (!memberId) return toast('멤버를 먼저 선택해 주세요.')
-    if (items.some((i) => !i.title.trim())) return toast('제목이 비어 있는 카드가 있어요.')
+    if (going.some((i) => !i.title.trim())) return toast('제목이 비어 있는 카드가 있어요.')
+
+    // 아직 물어보지 않았다면 먼저 견줘 본다
+    if (!skip) {
+      const found = await findOverlaps(going.map((item) => ({ item, fp: item.fp })))
+      if (found.length) {
+        const ids = found.map((f) => f.cardId).filter((id): id is string => Boolean(id))
+        const rows = ids.length ? await db.cards.bulkGet(ids) : []
+        setTwins(new Map(rows.filter(Boolean).map((c) => [c!.id, c!])))
+        setOverlaps(found)
+        return
+      }
+    }
+    setOverlaps(null)
 
     setSaving(true)
     try {
       const now = Date.now()
       const images: StoredImage[] = []
-      const cards: Card[] = items.map((item, index) => {
+      const prints: StoredPrint[] = []
+      const cards: Card[] = going.map((item, index) => {
         const id = uid()
         images.push({ cardId: id, blob: item.processed.full.blob })
+        if (item.fp) prints.push({ cardId: id, fp: item.fp })
         return {
         id,
         title: item.title.trim(),
@@ -197,12 +244,14 @@ export function UploadPage() {
         updatedAt: now + index,
         }
       })
-      await db.transaction('rw', db.cards, db.images, async () => {
+      await db.transaction('rw', db.cards, db.images, db.prints, async () => {
         await db.cards.bulkAdd(cards)
         await db.images.bulkAdd(images)
+        if (prints.length) await db.prints.bulkAdd(prints)
       })
-      items.forEach((item) => URL.revokeObjectURL(item.previewUrl))
-      setItems([])
+      going.forEach((item) => URL.revokeObjectURL(item.previewUrl))
+      // 뺀 것이 있으면 목록에 남겨 둔다 — 사람이 다시 보고 정할 수 있게
+      setItems(skip ? items.filter((i) => skip.has(i.key)) : [])
       toast(`${cards.length}장을 등록했습니다.`)
       navigate('/')
     } catch (error) {
@@ -470,7 +519,7 @@ export function UploadPage() {
               <div className="sticky-actions">
                 <button
                   className="btn btn--primary btn--block"
-                  onClick={save}
+                  onClick={() => void save()}
                   disabled={saving || busy > 0}
                 >
                   <PlusIcon size={18} />
@@ -481,6 +530,68 @@ export function UploadPage() {
           )}
         </div>
       </div>
+
+      {/*
+        이미 가진 카드와 겹쳐 보이는 것들.
+        막지 않고 보여준 뒤 사람이 정하게 한다 — 같은 카드를 일부러 두 장
+        넣는 경우도 있고, 지문이 틀릴 여지도 있다.
+      */}
+      {overlaps && (
+        <Modal onClose={() => setOverlaps(null)} label="겹치는 카드">
+          <h2 className="modal__title">이미 가진 카드와 같아 보여요</h2>
+          <p className="modal__note">
+            {overlaps.length}장이 겹칩니다. 그대로 넣어도 되고, 겹치는 것만 빼고 넣어도 됩니다.
+          </p>
+
+          <div className="twins">
+            {overlaps.map((found) => {
+              const twin = found.cardId ? twins.get(found.cardId) : undefined
+              return (
+                <div className="twins__row" key={found.item.key}>
+                  <img className="twins__thumb" src={found.item.previewUrl} alt="" />
+                  <div className="twins__what">
+                    <b>{found.item.title || '(제목 없음)'}</b>
+                    <span>
+                      {twin
+                        ? `보관함의 '${twin.title}'과 같아 보입니다`
+                        : `이번에 올리는 ${(found.earlier ?? 0) + 1}번째와 같아 보입니다`}
+                    </span>
+                  </div>
+                  {twin && <TwinThumb card={twin} />}
+                </div>
+              )
+            })}
+          </div>
+
+          <button
+            className="btn btn--primary btn--block"
+            onClick={() => {
+              const skip = new Set(overlaps.map((o) => o.item.key))
+              setOverlaps(null)
+              void save(skip)
+            }}
+          >
+            겹치는 {overlaps.length}장 빼고 등록
+          </button>
+          <button
+            className="btn btn--block"
+            style={{ marginTop: 8 }}
+            onClick={() => {
+              setOverlaps(null)
+              void save(new Set())
+            }}
+          >
+            그대로 다 등록
+          </button>
+          <button
+            className="btn btn--block btn--ghost"
+            style={{ marginTop: 8 }}
+            onClick={() => setOverlaps(null)}
+          >
+            취소
+          </button>
+        </Modal>
+      )}
 
       {shooting && (
         <CameraCapture onShot={(file) => void addFiles([file])} onClose={() => setShooting(false)} />
