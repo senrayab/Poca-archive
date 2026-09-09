@@ -358,7 +358,7 @@ export function UploadPage() {
             위는 앱 안에서 연달아 찍는 길, 아래는 폰 카메라 앱을 부르는 길이다.
             앱 안 카메라는 HTTPS에서만 켜지므로, 안 되는 자리에서는 아래만 남는다.
           */}
-          <div className="row" style={{ marginTop: 10 }}>
+          <div className="row upload__cams" style={{ marginTop: 10 }}>
             {/*
               한 줄에 나란히 두되 연속 촬영을 오른쪽에 둔다 — 오른손 엄지가
               닿기 쉬운 자리이고, 둘 중 자주 쓸 쪽이다.
