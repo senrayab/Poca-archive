@@ -52,7 +52,11 @@ const Thumb = memo(function Thumb({
           <HeartIcon size={15} filled />
         </span>
       )}
-      {showTitle && <span className="thumb__label">{card.title}</span>}
+      {/*
+        목록에서는 사진만 보이게 제목을 감춰 둔다.
+        되살리려면 위의 SHOW_TITLE을 true로 바꾸면 된다 — 자리도 스타일도 그대로 있다.
+      */}
+      {SHOW_TITLE && showTitle && <span className="thumb__label">{card.title}</span>}
     </button>
   )
 })
@@ -67,6 +71,16 @@ interface CardGridProps {
   /** 쓰는 동안 바뀐 고름 상태를 통째로 넘긴다 (되돌아온 자리까지 반영된 결과다) */
   onSweep?: (next: Set<string>) => void
 }
+
+/*
+ * 칸 아래 제목을 보일지.
+ *
+ * 목록에서는 사진만 보고 싶다고 해서 꺼 두었다. 지우지 않고 스위치로 둔 건
+ * 나중에 되살릴 수 있게 하려는 것이다 — 이 한 줄만 true로 바꾸면 제목이
+ * 다시 나온다. 넘겨받는 showTitle 값은 그대로 살아 있어 화면별로 다르게
+ * 두는 길도 열려 있다.
+ */
+const SHOW_TITLE = false
 
 /** 이만큼 누르고 있으면 고르기가 시작된다 */
 const LONG_PRESS = 400
