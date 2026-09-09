@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/AppShell'
 import { CropEditor } from '@/components/CropEditor'
-import { CloseIcon, CropIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
+import { CameraIcon, CloseIcon, CropIcon, ImageIcon, LinkIcon, PlusIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
 import type { Card, StoredImage } from '@/db/types'
@@ -52,6 +52,7 @@ export function UploadPage() {
   /** 자르기 중인 항목 (한 번에 하나) */
   const [cropKey, setCropKey] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
 
   // 멤버 목록이 로드되면 첫 멤버를 기본값으로
   useEffect(() => {
@@ -289,6 +290,35 @@ export function UploadPage() {
               const files = Array.from(e.target.files ?? [])
               e.target.value = ''
               void addFiles(files)
+            }}
+          />
+
+          {/*
+            카메라로 바로 찍기.
+            capture를 붙이면 파일 고르기 대신 폰 카메라가 바로 열린다.
+            다만 한 번에 한 장이고, 찍은 사진이 갤러리에 남는지는 폰 카메라 앱이
+            정하는 거라 앱에서 막을 수 없다. 앱 안에서 카메라를 켜야 그 둘이
+            해결되는데 그건 HTTPS가 필요하다.
+          */}
+          <button
+            className="btn btn--block"
+            style={{ marginTop: 10 }}
+            onClick={() => cameraRef.current?.click()}
+          >
+            <CameraIcon size={18} />
+            카메라로 찍어서 등록
+          </button>
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            hidden
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? [])
+              // 같은 장면을 다시 찍어도 change가 뜨도록 값을 비운다
+              e.target.value = ''
+              if (files.length) void addFiles(files)
             }}
           />
 
