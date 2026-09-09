@@ -1839,6 +1839,15 @@ a { color: inherit; }
 }
 
 .queue__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* 멤버·분류는 나란히 둔다 — 둘 다 '위에서 고른 값'이 기본이라 한 짝으로 읽힌다 */
+.queue__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  min-width: 0;
+}
+.queue__pair select { min-width: 0; }
+
 .queue__body input, .queue__body select {
   width: 100%;
   padding: 9px 12px;
