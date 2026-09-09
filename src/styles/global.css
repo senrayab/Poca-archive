@@ -1364,6 +1364,31 @@ a { color: inherit; }
 .dial__ruler[data-dragging] .dial__needle { height: 84%; }
 
 .crop__actions { padding: 0 8px; flex-shrink: 0; }
+
+/*
+ * 딤이나 검은 화면 위에 놓이는 단추.
+ *
+ * 기본 .btn은 옅은 회색 바탕을 깔고 온다. 밝은 테마에서 그 색은 거의 흰색인데,
+ * 이 화면들은 글씨가 흰색이라 회색 알약에 흰 글씨가 되어 읽히지 않는다.
+ * 바탕을 비우고 흰 선만 남긴다 — 뒤에 사진이 비쳐 화면과도 어울린다.
+ */
+.crop .btn,
+.shot__done {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .55);
+  color: var(--on-scrim);
+  box-shadow: none;
+}
+.crop .btn:not(:disabled):active,
+.shot__done:active { background: rgba(255, 255, 255, .14); }
+
+/* 주된 단추는 포인트 색 그대로 — 이건 먼저 눈에 들어야 한다 */
+.crop .btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+}
 .crop__top { flex-shrink: 0; }
 
 /*
