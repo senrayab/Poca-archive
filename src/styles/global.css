@@ -1373,6 +1373,7 @@ a { color: inherit; }
  * 바탕을 비우고 흰 선만 남긴다 — 뒤에 사진이 비쳐 화면과도 어울린다.
  */
 .crop .btn,
+.search-sheet .btn,
 .shot__done {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, .55);
@@ -1380,6 +1381,7 @@ a { color: inherit; }
   box-shadow: none;
 }
 .crop .btn:not(:disabled):active,
+.search-sheet .btn:not(:disabled):active,
 .shot__done:active { background: rgba(255, 255, 255, .14); }
 
 /* 주된 단추는 포인트 색 그대로 — 이건 먼저 눈에 들어야 한다 */
@@ -1985,6 +1987,7 @@ a { color: inherit; }
   border-top: 1px solid var(--glass-line);
 }
 .search-sheet__by-image .search-sheet__hint { margin-top: 10px; }
+.search-sheet__by-image .btn { padding-inline: 12px; gap: 6px; min-width: 0; }
 
 /*
  * 겹쳐 보이는 카드를 나란히 놓고 보여준다.

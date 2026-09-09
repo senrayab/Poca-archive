@@ -435,27 +435,29 @@ function SearchSheet({
           받은 사진은 지문만 뽑고 어디에도 저장하지 않는다.
         */}
         <div className="search-sheet__by-image">
-          {camera && (
+          {/* 둘은 같은 일을 하는 두 갈래라 한 줄에 나란히 둔다 */}
+          <div className="row">
+            {camera && (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setShooting(true)}
+                disabled={looking}
+              >
+                <CameraIcon size={17} />
+                찍어서 찾기
+              </button>
+            )}
             <button
               type="button"
-              className="btn btn--block"
-              onClick={() => setShooting(true)}
+              className="btn"
+              onClick={() => pickRef.current?.click()}
               disabled={looking}
             >
-              <CameraIcon size={17} />
-              카드를 찍어서 찾기
+              <ImageIcon size={17} />
+              골라서 찾기
             </button>
-          )}
-          <button
-            type="button"
-            className="btn btn--block"
-            style={{ marginTop: 8 }}
-            onClick={() => pickRef.current?.click()}
-            disabled={looking}
-          >
-            <ImageIcon size={17} />
-            사진을 골라서 찾기
-          </button>
+          </div>
           <p className="search-sheet__hint">
             같은 그림을 찾습니다. 이미 등록한 카드인지 확인할 때 쓰세요.
           </p>
