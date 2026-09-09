@@ -66,18 +66,11 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   }, [mode, memberId, categoryId])
 
 
-  /** 쓸고 지나간 카드를 한꺼번에 고르거나 푼다 (어느 쪽인지는 격자가 정해서 알려준다) */
-  const sweepCards = (ids: string[], selected: boolean) => {
-    setSelected((prev) => {
-      if (ids.every((id) => prev.has(id) === selected)) return prev
-      const next = new Set(prev)
-      for (const id of ids) {
-        if (selected) next.add(id)
-        else next.delete(id)
-      }
-      return next
-    })
-  }
+  /*
+   * 쓸고 있는 동안의 고름 상태. 격자가 '시작한 칸부터 지금 칸까지'를 매번
+   * 다시 짜서 통째로 넘겨주므로, 여기서는 그대로 받아 두기만 하면 된다.
+   */
+  const sweepCards = (next: Set<string>) => setSelected(next)
 
   const toggleSelect = (card: Card) => {
     setSelected((prev) => {
