@@ -66,12 +66,15 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   }, [mode, memberId, categoryId])
 
 
-  /** 쓸고 지나간 카드를 고른다 — 뒤집지 않고 더하기만 한다 */
-  const selectCards = (ids: string[]) => {
+  /** 쓸고 지나간 카드를 한꺼번에 고르거나 푼다 (어느 쪽인지는 격자가 정해서 알려준다) */
+  const sweepCards = (ids: string[], selected: boolean) => {
     setSelected((prev) => {
-      if (ids.every((id) => prev.has(id))) return prev
+      if (ids.every((id) => prev.has(id) === selected)) return prev
       const next = new Set(prev)
-      for (const id of ids) next.add(id)
+      for (const id of ids) {
+        if (selected) next.add(id)
+        else next.delete(id)
+      }
       return next
     })
   }
@@ -234,7 +237,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
             cards={list}
             selectable={selectMode}
             selectedIds={selected}
-            onSelect={selectCards}
+            onSweep={sweepCards}
             onOpen={setOpenCard}
             onToggleSelect={toggleSelect}
           />
