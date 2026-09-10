@@ -951,6 +951,8 @@ a { color: inherit; }
 .detail__img[data-loaded='true'] { opacity: 1; }
 /* 닫기는 레일에서 빼 오른쪽 위에 따로 띄운다 */
 .detail__top { display: flex; justify-content: flex-end; padding-inline: 2px; }
+/* 페이지에서는 나가는 길이 오른쪽 위 ×가 아니라 왼쪽 위 화살표다 */
+.detail__top[data-page] { justify-content: flex-start; }
 
 .detail__nav,
 .detail__close,
