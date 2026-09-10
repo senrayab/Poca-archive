@@ -32,14 +32,27 @@ export async function exportArchive(): Promise<Blob> {
   const manifestCards: BackupManifest['cards'] = []
 
   for (const card of cards) {
+    /*
+     * 본체가 없는 카드도 담는다.
+     *
+     * 양도·판매한 뒤 휴지통을 비우면 사진은 지우고 기록만 남는다. 예전에는
+     * 본체가 없으면 건너뛰었으므로, 그런 기록은 백업에 실리지 않아 복원하면
+     * 통째로 사라졌다. 넘긴 날짜와 상대는 사진보다 오래 남아야 할 것들이다.
+     */
     const stored = await db.images.get(card.id)
-    if (!stored) continue // 본체가 사라진 카드는 백업에서 제외
-    const imageFile = `images/${card.id}.${ext}`
     const thumbFile = `thumbs/${card.id}.${ext}`
-    files[imageFile] = await toBytes(stored.blob)
     files[thumbFile] = await toBytes(card.thumb)
+
     const meta = { ...card } as Partial<Card>
     delete meta.thumb
+
+    if (!stored) {
+      manifestCards.push({ ...(meta as Omit<Card, 'thumb'>), thumbFile })
+      continue
+    }
+
+    const imageFile = `images/${card.id}.${ext}`
+    files[imageFile] = await toBytes(stored.blob)
     manifestCards.push({
       ...(meta as Omit<Card, 'thumb'>),
       imageFile,
@@ -122,13 +135,14 @@ export async function importArchive(file: File): Promise<ImportResult> {
       result.skipped++
       continue
     }
-    const imageBytes = entries[entry.imageFile]
+    const imageBytes = entry.imageFile ? entries[entry.imageFile] : undefined
     const thumbBytes = entries[entry.thumbFile]
-    if (!imageBytes || !thumbBytes) {
+    // 썸네일은 반드시 있어야 한다. 본체는 없을 수 있다 — 사진을 지운 기록이다.
+    if (!thumbBytes || (entry.imageFile && !imageBytes)) {
       result.skipped++
       continue
     }
-    const mime = entry.imageFile.endsWith('.webp') ? 'image/webp' : 'image/jpeg'
+    const mime = entry.thumbFile.endsWith('.webp') ? 'image/webp' : 'image/jpeg'
     const rest = { ...entry } as Partial<BackupManifest['cards'][number]>
     delete rest.imageFile
     delete rest.thumbFile
@@ -136,13 +150,17 @@ export async function importArchive(file: File): Promise<ImportResult> {
       ...(rest as Omit<Card, 'thumb'>),
       memberId: memberMap.get(entry.memberId) ?? entry.memberId,
       thumb: new Blob([thumbBytes.slice()], { type: mime }),
+      // 옛 백업에는 이 값이 없다. 본체가 실렸는지로 되짚는다.
+      photoGone: imageBytes ? 0 : 1,
     }
     await db.transaction('rw', db.cards, db.images, async () => {
       await db.cards.add(card)
-      await db.images.put({
-        cardId: card.id,
-        blob: new Blob([imageBytes.slice()], { type: mime }),
-      })
+      if (imageBytes) {
+        await db.images.put({
+          cardId: card.id,
+          blob: new Blob([imageBytes.slice()], { type: mime }),
+        })
+      }
     })
     result.cards++
   }

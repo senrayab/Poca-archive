@@ -21,12 +21,19 @@ export function useCards(filter: CardFilter) {
 
   return useLiveQuery(
     async () => {
+      /*
+       * 휴지통에서는 '사진을 지우고 기록만 남긴 것'을 뺀다. 비운 것이 도로
+       * 보이면 비운 것이 아니다. 그런 카드는 양도·판매 내역에만 남는다.
+       */
       const rows = memberId
         ? await db.cards.where('[memberId+deleted]').equals([memberId, deleted]).toArray()
-        : await db.cards.where('deleted').equals(deleted).toArray()
+        : deleted === 1
+          ? await db.cards.where('[deleted+photoGone]').equals([1, 0]).toArray()
+          : await db.cards.where('deleted').equals(deleted).toArray()
 
       const q = query.trim().toLowerCase()
       return rows
+        .filter((c) => (deleted === 1 ? !c.photoGone : true))
         .filter((c) => (categoryId ? c.categoryId === categoryId : true))
         .filter((c) => (favoriteOnly ? c.favorite === 1 : true))
         .filter((c) =>
@@ -70,5 +77,9 @@ export function useCountsByMember() {
   )
 }
 
+/*
+ * 색인으로 센다. 행을 읽으면 딸린 썸네일까지 메모리에 올라오는데, 이 값은
+ * 서랍에 늘 떠 있어 카드에 쓰기가 생길 때마다 그 일이 되풀이된다.
+ */
 export const useTrashCount = () =>
-  useLiveQuery(() => db.cards.where('deleted').equals(1).count(), [], 0)
+  useLiveQuery(() => db.cards.where('[deleted+photoGone]').equals([1, 0]).count(), [], 0)

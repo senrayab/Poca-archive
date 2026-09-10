@@ -146,10 +146,12 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   }
 
   const emptyAll = async () => {
-    const count = await db.cards.where('deleted').equals(1).count()
+    // 이미 사진을 지운 기록은 휴지통에 없다 — 셀 때도 빼야 장수가 맞는다
+    const inTrash = db.cards.where('[deleted+photoGone]').equals([1, 0])
+    const count = await inTrash.count()
     if (!count) return toast('휴지통이 비어 있습니다.')
     if (!confirm(`휴지통의 ${count}장을 완전히 삭제할까요? 되돌릴 수 없습니다.`)) return
-    const ids = await db.cards.where('deleted').equals(1).primaryKeys()
+    const ids = await db.cards.where('[deleted+photoGone]').equals([1, 0]).primaryKeys()
     await purgeCards(ids)
     toast('휴지통을 비웠습니다.')
   }
