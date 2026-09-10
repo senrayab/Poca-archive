@@ -144,9 +144,9 @@ export function SettingsPage() {
   /*
    * 파일 이름이 그대로 제목이 되던 시절에 붙은 것들을 비운다.
    *
-   * 'Screenshot_20260907_…'이나 다른 앱이 붙인 긴 숫자는 이름이 아니라
-   * 파일이 들고 온 꼬리표다. 사람이 적은 제목은 건드리지 않도록, 아래
-   * 두 가지만 고른다.
+   * 'IMG_1234'나 'Screenshot_20260907_…', 다른 앱이 붙인 긴 숫자는 이름이
+   * 아니라 파일이 들고 온 꼬리표다. 사람이 적은 제목은 건드리지 않도록,
+   * 아래 두 가지만 고른다.
    *
    * 숫자는 '전부 숫자'만 보면 놓치는 게 많다. 찍은 날짜와 시각을 밑줄로
    * 이어 붙인 20260907_165454 같은 것이 흔해서다. 그래서 숫자 사이를
@@ -157,9 +157,18 @@ export function SettingsPage() {
    * 몇 번을 눌러도 결과가 같다 — 비운 것은 다음번에 걸리지 않는다.
    */
   const NUMBERS_ONLY = /^\d+(?:[_\-. ]\d+)*$/
+  /*
+   * 카메라와 화면 갈무리, 메신저가 붙이는 머리말. 뒤에 무엇이 오든 이걸로 시작하면
+   * 사람이 지은 이름이 아니다. 대소문자는 가리지 않는다 — 기기마다 IMG_,
+   * img_가 갈리는데 그건 이름의 뜻과 상관이 없다. 새 기기를 만나면 여기에
+   * 한 줄 더하면 된다.
+   */
+  const FILE_PREFIXES = ['IMG_', 'KakaoTalk_', 'Screenshot_']
   const looksLikeFileName = (title: string) => {
     const t = title.trim()
-    return t !== '' && (NUMBERS_ONLY.test(t) || t.startsWith('Screenshot_'))
+    if (t === '') return false
+    const head = t.toLowerCase()
+    return NUMBERS_ONLY.test(t) || FILE_PREFIXES.some((p) => head.startsWith(p.toLowerCase()))
   }
 
   const clearFileNameTitles = async () => {
@@ -364,7 +373,7 @@ export function SettingsPage() {
           <div className="card-panel">
             <p>
               예전에는 파일 이름이 그대로 제목이 됐습니다. 그래서{' '}
-              <b>Screenshot_으로 시작하는 이름</b>이나 <b>숫자뿐인 제목</b>(20260907_165454처럼
+              <b>IMG_ · KakaoTalk_ · Screenshot_으로 시작하는 이름</b>이나 <b>숫자뿐인 제목</b>(20260907_165454처럼
               밑줄로 이어 붙인 것도 포함)이 붙어 있을 수 있어요. 그런 것만 골라 비웁니다 — 직접
               적으신 제목은 건드리지 않습니다.
               <br />
