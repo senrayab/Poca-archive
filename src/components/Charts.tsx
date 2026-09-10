@@ -131,29 +131,29 @@ export function StackedBar({
   const total = segments.reduce((sum, s) => sum + s.value, 0)
 
   return (
-    <div className="bar">
-      <p className="bar__head">
+    <div className="stackbar">
+      <p className="stackbar__head">
         <strong>{total}</strong>
         <span>{totalLabel}</span>
       </p>
 
-      <div className="bar__track">
+      <div className="stackbar__track">
         {total > 0 &&
           segments
             .filter((s) => s.value > 0)
             .map((s) => (
               <span
                 key={s.id}
-                className="bar__fill"
+                className="stackbar__fill"
                 style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
               />
             ))}
       </div>
 
-      <ul className="bar__keys">
+      <ul className="stackbar__keys">
         {segments.map((s) => (
           <li key={s.id}>
-            <span className="bar__dot" style={{ background: s.color }} />
+            <span className="stackbar__dot" style={{ background: s.color }} />
             {s.label}
             <b>{s.value}</b>
           </li>

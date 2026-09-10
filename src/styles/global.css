@@ -676,11 +676,14 @@ a { color: inherit; }
  * 이름은 두 무게로 이뤄진다 — 앞은 가볍게, 뒤는 최대한 굵게.
  * 그 차이가 이름의 생김새라, 무게를 양 끝으로 벌려 둔다.
  */
-.brand { display: flex; align-items: baseline; gap: 4px; }
+/*
+ * 사이를 flex 간격이 아니라 진짜 띄어쓰기로 둔다. 글씨 크기를 따라 함께
+ * 벌어지고, 읽어주는 기능에도 두 낱말로 전해진다.
+ */
+.brand { display: block; }
 .brand__thin {
   font-weight: 300;
   letter-spacing: .01em;
-  color: var(--text-dim);
 }
 .brand__bold {
   font-weight: 900;
@@ -2278,38 +2281,43 @@ a { color: inherit; }
  * 가로 누적 막대. 합쳐서 전체가 되는 값들을 한 줄에 토막 내어 보여준다.
  * 숫자를 원 안에 가두지 않으니 자릿수가 늘어도 자리 걱정이 없다.
  */
-.bar { display: block; }
-.bar__head {
+/*
+ * 이름을 stackbar로 둔 건, 이 앱에 이미 .bar가 있어서다 — 설정 화면의
+ * 6px짜리 가는 막대다. 같은 이름을 쓰면 그 규칙(height: 6px, overflow: hidden)이
+ * 이 컨테이너에도 걸려, 안에 든 것이 통째로 6px 상자에 갇혀 잘린다.
+ */
+.stackbar { display: block; }
+.stackbar__head {
   margin: 0 0 10px;
   display: flex;
   align-items: baseline;
   gap: 5px;
 }
-.bar__head strong {
+.stackbar__head strong {
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
 }
-.bar__head span { font-size: 11px; color: var(--text-dim); }
+.stackbar__head span { font-size: 11px; color: var(--text-dim); }
 
-.bar__track {
+.stackbar__track {
   display: flex;
   height: 14px;
   border-radius: var(--pill);
   overflow: hidden;
   background: var(--bg-elev-2);
 }
-.bar__fill {
+.stackbar__fill {
   /* 한 장뿐인 토막도 눈에 보이게 — 비율만 따르면 실처럼 얇아져 사라진다 */
   min-width: 4px;
-  animation: bar-in .42s var(--ease) both;
+  animation: stackbar-in .42s var(--ease) both;
 }
-@keyframes bar-in {
+@keyframes stackbar-in {
   from { transform: scaleX(0); transform-origin: left; }
 }
 
-.bar__keys {
+.stackbar__keys {
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
@@ -2319,13 +2327,13 @@ a { color: inherit; }
   font-size: 12px;
   color: var(--text-dim);
 }
-.bar__keys li { display: flex; align-items: center; gap: 6px; }
-.bar__keys b {
+.stackbar__keys li { display: flex; align-items: center; gap: 6px; }
+.stackbar__keys b {
   color: var(--text);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.bar__dot {
+.stackbar__dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -2333,7 +2341,7 @@ a { color: inherit; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bar__fill { animation: none; }
+  .stackbar__fill { animation: none; }
 }
 
 .legend {
