@@ -12,8 +12,10 @@ import { SHOW_CATEGORY } from '@/lib/features'
 import { processImage, type ProcessedImage } from '@/lib/image'
 import { CropEditor } from './CropEditor'
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   CloseIcon,
   CropIcon,
   EditIcon,
@@ -98,6 +100,14 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
    * 물어보는 창은 같고 예 다음에 갈 곳만 다르다.
    */
   const [askSave, setAskSave] = useState<'edit' | 'popup' | null>(null)
+  /*
+   * 사진 위에 얹힌 메모는 한 줄로 줄여 두고, 길면 눌러서 펼친다.
+   * 길지 않은데도 펼치기 표시를 달아두면 눌러도 달라지는 게 없어 성가시므로,
+   * 실제로 잘렸는지 재어 보고 그때만 단추로 만든다.
+   */
+  const [memoOpen, setMemoOpen] = useState(false)
+  const [memoClipped, setMemoClipped] = useState(false)
+  const memoRef = useRef<HTMLSpanElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   // 아직 저장 전인 새 사진 — 있으면 이게 스테이지를 차지한다
   const pendingUrl = useObjectUrl(pending?.full.blob)
@@ -138,6 +148,17 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
       memo: card.memo,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card.id])
+
+  /* 줄인 상태에서만 잴 수 있다 — 펼쳐 놓으면 넘치는 게 없어 늘 '안 잘림'으로 나온다 */
+  useEffect(() => {
+    if (memoOpen) return
+    const el = memoRef.current
+    setMemoClipped(el ? el.scrollWidth > el.clientWidth + 1 : false)
+  }, [card.id, card.memo, editing, memoOpen])
+
+  useEffect(() => {
+    setMemoOpen(false)
   }, [card.id])
 
   useEffect(() => {
@@ -486,7 +507,23 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   {member && <b>{member.name}</b>}
                   {SHOW_CATEGORY
                     ? category && <span className="detail__cat">{category.name}</span>
-                    : card.memo && <span className="detail__cat">{card.memo}</span>}
+                    : card.memo && (
+                        <button
+                          type="button"
+                          className="detail__cat detail__memo-line"
+                          data-open={memoOpen || undefined}
+                          disabled={!memoClipped && !memoOpen}
+                          onClick={() => setMemoOpen((open) => !open)}
+                          aria-expanded={memoOpen}
+                          aria-label={memoOpen ? '메모 접기' : '메모 펼치기'}
+                        >
+                          <span className="detail__memo-text" ref={memoRef}>
+                            {card.memo}
+                          </span>
+                          {(memoClipped || memoOpen) &&
+                            (memoOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />)}
+                        </button>
+                      )}
                 </div>
                 <h2 className="detail__title">{card.title}</h2>
 
