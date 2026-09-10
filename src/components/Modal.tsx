@@ -1,6 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { useBackClose } from '@/hooks/useBackClose'
 
 interface ModalProps {
   onClose: () => void
@@ -49,11 +48,8 @@ function unlockScroll() {
   window.scrollTo(0, savedY)
 }
 
-/** 스크림 클릭·ESC·뒤로가기로 닫히는 레이어 팝업의 공통 껍데기. */
+/** 스크림 클릭·ESC로 닫히는 레이어 팝업의 공통 껍데기. */
 export function Modal({ onClose, children, panel = true, label }: ModalProps) {
-  // 폰의 뒤로가기가 앞 화면으로 넘어가지 않고 이 팝업을 닫게 한다
-  useBackClose(onClose)
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()

@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
 import type { Card, CardStatus } from '@/db/types'
 import { useCategories, useMembers } from '@/hooks/useData'
+import { useBackClose } from '@/hooks/useBackClose'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes, formatDate } from '@/lib/format'
 import { fingerprintOf } from '@/lib/duplicates'
@@ -242,6 +243,21 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     if (editing && dirty) setAskSave('popup')
     else onClose()
   }
+
+  /*
+   * 폰 뒤로가기를 이 팝업에만 붙인다.
+   *
+   * 상세보기는 사람이 보기에 한 페이지라 뒤로가기로 닫히는 게 자연스럽다.
+   * 반면 수정·자르기는 저장이나 닫기 단추로 끝내는 자리고, 확인창은 답을
+   * 골라야 하는 자리다. 그래서 이 안에서 열린 것이 있으면 그것부터 한 겹
+   * 벗기고, 남은 게 없을 때 팝업을 닫는다.
+   */
+  useBackClose(() => {
+    if (askSave) setAskSave(null)
+    else if (confirmDispose) setConfirmDispose(false)
+    else if (cropping) setCropping(false)
+    else requestClose()
+  })
 
   const save = async () => {
     const title = draft.title.trim()
