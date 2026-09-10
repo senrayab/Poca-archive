@@ -1,6 +1,5 @@
 import { useEffect, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
-import { useBackClose } from '@/hooks/useBackClose'
 import { useAppName } from '@/lib/appName'
 import { NavLink } from 'react-router-dom'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
@@ -22,9 +21,6 @@ interface DrawerProps {
 }
 
 export function Drawer({ open, onClose }: DrawerProps) {
-  // 서랍이 열려 있는 동안에는 뒤로가기가 서랍부터 닫는다
-  useBackClose(onClose, open)
-
   const appName = useAppName()
   const { total } = useCountsByMember()
   const trash = useTrashCount()
