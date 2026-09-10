@@ -102,92 +102,60 @@ export function Donut({ slices, centerLabel, keepEmpty = false }: DonutProps) {
   )
 }
 
-export interface RingSeries {
+export interface BarSegment {
   id: string
   label: string
   value: number
   color: string
 }
 
-interface RingsProps {
-  /** 바깥 고리부터 순서대로. 각 고리는 total 대비 비율만큼 채워진다. */
-  series: RingSeries[]
-  total: number
-  centerValue: string
-  centerLabel: string
-}
-
-const RING_SIZE = 140
-const RING_STROKE = 10
-/** 고리 사이 간격 */
-const RING_GAP = 4
-
 /**
- * 동심원 차트. 서로 다른 지표를 같은 기준(total)으로 겹쳐 볼 때 쓴다.
- * 도넛과 달리 각 고리가 독립적이라, 합이 100%가 아니어도 된다.
+ * 가로 누적 막대.
+ *
+ * 합쳐서 전체가 되는 값들을 보여줄 때 쓴다 — 소장 중·양도함·판매함처럼.
+ * 앞서 이 자리에는 동심원을 썼는데, 그건 서로 독립적인 지표를 같은 기준에
+ * 대고 볼 때 쓰는 형태라 '합이 곧 전체'라는 사실이 그림에서 읽히지 않았다.
+ * 한 줄을 토막 내면 그게 한눈에 보인다.
+ *
+ * 숫자를 원 안에 가두지 않는 것도 이점이다. 자릿수가 늘어도 가로로 자리가
+ * 넉넉해, 몇 장이 되든 글씨를 줄일 일이 없다.
  */
-export function Rings({ series, total, centerValue, centerLabel }: RingsProps) {
-  const center = RING_SIZE / 2
+export function StackedBar({
+  segments,
+  totalLabel,
+}: {
+  segments: BarSegment[]
+  /** 큰 숫자 옆에 붙는 설명 */
+  totalLabel: string
+}) {
+  const total = segments.reduce((sum, s) => sum + s.value, 0)
 
   return (
-    <div className="chart">
-      <div className="chart__ring">
-        <svg
-          width={RING_SIZE}
-          height={RING_SIZE}
-          viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}
-          aria-hidden="true"
-        >
-          <g transform={`rotate(-90 ${center} ${center})`}>
-            {series.map((item, index) => {
-              const radius = (RING_SIZE - RING_STROKE) / 2 - index * (RING_STROKE + RING_GAP)
-              const circumference = 2 * Math.PI * radius
-              const filled = total > 0 ? (item.value / total) * circumference : 0
+    <div className="bar">
+      <p className="bar__head">
+        <strong>{total}</strong>
+        <span>{totalLabel}</span>
+      </p>
 
-              return (
-                <g key={item.id}>
-                  {/* 고리마다 바탕을 깔아야 '얼마 중 얼마'인지 읽힌다 */}
-                  <circle
-                    cx={center}
-                    cy={center}
-                    r={radius}
-                    fill="none"
-                    style={{ stroke: 'var(--bg-elev-2)' }}
-                    strokeWidth={RING_STROKE}
-                  />
-                  {filled > 0 && (
-                    <circle
-                      cx={center}
-                      cy={center}
-                      r={radius}
-                      fill="none"
-                      style={{ stroke: item.color }}
-                      strokeWidth={RING_STROKE}
-                      strokeLinecap="round"
-                      strokeDasharray={`${filled} ${circumference - filled}`}
-                    />
-                  )}
-                </g>
-              )
-            })}
-          </g>
-        </svg>
-
-        <div className="chart__center" data-len={lengthOf(centerValue)}>
-          <strong>{centerValue}</strong>
-          <span>{centerLabel}</span>
-        </div>
+      <div className="bar__track">
+        {total > 0 &&
+          segments
+            .filter((s) => s.value > 0)
+            .map((s) => (
+              <span
+                key={s.id}
+                className="bar__fill"
+                style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
+              />
+            ))}
       </div>
 
-      <ul className="legend">
-        {series.map((item) => (
-          <li className="legend__row" key={item.id}>
-            <span className="legend__dot" style={{ background: item.color }} />
-            <span className="legend__name">{item.label}</span>
-            <span className="legend__value">
-              {item.value}
-              {total > 0 && <b>{Math.round((item.value / total) * 100)}%</b>}
-            </span>
+      <ul className="bar__keys">
+        {segments.map((s) => (
+          <li key={s.id}>
+            <span className="bar__dot" style={{ background: s.color }} />
+            {s.label}
+            <b>{s.value}</b>
           </li>
         ))}
       </ul>

@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
-import { Donut, Rings, type DonutSlice, type RingSeries } from '@/components/Charts'
+import { Donut, StackedBar, type BarSegment, type DonutSlice } from '@/components/Charts'
 import { TagIcon, UsersIcon } from '@/components/Icons'
 import { db } from '@/db/db'
 import { useCategories, useMembers } from '@/hooks/useData'
@@ -56,9 +56,11 @@ export function StatsPage() {
     color: chartColor(index),
   }))
 
-  // 지금까지 손을 거친 카드. 잘못 올려 지운 것(status: own)은 뺀다.
-  const handled = stats.owned + stats.traded + stats.sold
-  const statusRings: RingSeries[] = [
+  /*
+   * 지금까지 손을 거친 카드. 잘못 올려 지운 것(status: own)은 뺀다.
+   * 셋을 합치면 전체가 되므로 누적 막대로 보여준다.
+   */
+  const statusBar: BarSegment[] = [
     { id: 'own', label: '소장 중', value: stats.owned, color: 'var(--accent)' },
     {
       id: 'traded',
@@ -103,12 +105,7 @@ export function StatsPage() {
       <div className="content content--no-fab">
         <div className="page">
           <div className="card-panel">
-            <Rings
-              series={statusRings}
-              total={handled}
-              centerValue={String(handled)}
-              centerLabel="장 거쳐감"
-            />
+            <StackedBar segments={statusBar} totalLabel="장 거쳐갔어요" />
           </div>
 
           <div className="card-panel">
