@@ -46,8 +46,9 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 /** 눈금은 길이가 모두 같다. 구간은 길이가 아니라 밝기로 나눈다. */
 const TICK_LENGTH = 0.38
 const TICK_WIDTH = 2
-const TICK_DIM = 'rgba(255, 255, 255, .34)'
-const TICK_MARK = 'rgba(255, 255, 255, .92)'
+/* 진하기만 여기서 정한다. 색 자체는 CSS(.dial__canvas의 color)에서 읽어 온다. */
+const TICK_DIM = 0.34
+const TICK_MARK = 0.92
 /*
  * 가운데에서 이만큼 벗어난 자리부터 양끝까지 사그라든다.
  * 눈금이 툭 나타났다 사라지지 않고, 눈금자가 통에 감겨 돌아가는 것처럼 보인다.
@@ -72,6 +73,11 @@ function drawRuler(
   ctx.clearRect(0, 0, width, height)
   ctx.lineCap = 'round'
   ctx.lineWidth = TICK_WIDTH
+  /*
+   * 눈금 색을 흰색으로 박아두면 딤이 밝은 테마(모노)에서 바탕에 묻힌다.
+   * CSS가 정해준 색을 읽어 쓰고, 진하기는 globalAlpha로 따로 준다.
+   */
+  ctx.strokeStyle = getComputedStyle(canvas).color
 
   const center = width / 2
   const middle = height / 2
@@ -94,8 +100,7 @@ function drawRuler(
     const fade =
       away > EDGE ? Math.cos((((away - EDGE) / (1 - EDGE)) * Math.PI) / 2) : 1
 
-    ctx.globalAlpha = fade
-    ctx.strokeStyle = i % knob.majorEvery === 0 ? TICK_MARK : TICK_DIM
+    ctx.globalAlpha = fade * (i % knob.majorEvery === 0 ? TICK_MARK : TICK_DIM)
     ctx.beginPath()
     ctx.moveTo(x, middle - half)
     ctx.lineTo(x, middle + half)
