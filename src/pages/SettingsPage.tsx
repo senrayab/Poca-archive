@@ -6,6 +6,7 @@ import {
   CutDiscIcon,
   CutNotchIcon,
   DownloadIcon,
+  EditIcon,
   InstallIcon,
   MoonIcon,
   PaletteIcon,
@@ -138,6 +139,31 @@ export function SettingsPage() {
         ? '영구 저장이 켜졌습니다. 브라우저가 임의로 데이터를 지우지 않아요.'
         : '브라우저가 영구 저장을 허용하지 않았습니다. 홈 화면에 설치하면 가능성이 높아져요.',
     )
+  }
+
+  /*
+   * 파일 이름이 그대로 제목이 되던 시절에 붙은 것들을 비운다.
+   *
+   * 'Screenshot_20260907_…'이나 다른 앱이 붙인 긴 숫자는 이름이 아니라
+   * 파일이 들고 온 꼬리표다. 사람이 적은 제목은 건드리지 않도록, 전부
+   * 숫자이거나 Screenshot_으로 시작하는 것만 고른다.
+   *
+   * 몇 번을 눌러도 결과가 같다 — 비운 것은 다음번에 걸리지 않는다.
+   */
+  const looksLikeFileName = (title: string) => {
+    const t = title.trim()
+    return t !== '' && (/^\d+$/.test(t) || t.startsWith('Screenshot_'))
+  }
+
+  const clearFileNameTitles = async () => {
+    const rows = await db.cards.toArray()
+    const targets = rows.filter((c) => looksLikeFileName(c.title)).map((c) => c.id)
+    if (!targets.length) return toast('비울 제목이 없습니다.')
+    if (!confirm(`${targets.length}장의 제목을 비웁니다. 되돌릴 수 없어요. 계속할까요?`)) return
+
+    const now = Date.now()
+    await db.cards.where('id').anyOf(targets).modify({ title: '', updatedAt: now })
+    toast(`${targets.length}장의 제목을 비웠습니다.`)
   }
 
   const resetAll = async () => {
@@ -322,6 +348,24 @@ export function SettingsPage() {
                 if (file) void importNow(file)
               }}
             />
+          </div>
+
+          <h2>
+            <EditIcon size={15} />
+            제목 정리
+          </h2>
+          <div className="card-panel">
+            <p>
+              예전에는 파일 이름이 그대로 제목이 됐습니다. 그래서{' '}
+              <b>Screenshot_으로 시작하는 이름</b>이나 <b>숫자만 남은 제목</b>이 붙어 있을 수
+              있어요. 그런 것만 골라 비웁니다 — 직접 적으신 제목은 건드리지 않습니다.
+              <br />
+              되돌릴 수 없으니 <b>백업을 먼저 내려받아 두세요.</b>
+            </p>
+            <button className="btn btn--block" onClick={clearFileNameTitles}>
+              <EditIcon size={17} />
+              파일 이름으로 된 제목 비우기
+            </button>
           </div>
 
           <h2>
