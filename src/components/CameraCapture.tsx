@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { CloseIcon } from './Icons'
 
 interface CameraCaptureProps {
@@ -125,7 +126,15 @@ export function CameraCapture({ onShot, onClose }: CameraCaptureProps) {
     )
   }
 
-  return (
+  /*
+   * 화면 전체를 덮어야 하므로 body에 직접 붙인다.
+   *
+   * position: fixed는 보통 화면을 기준으로 삼지만, 조상 중에 transform이나
+   * filter가 걸린 것이 있으면 그 조상이 기준이 된다. 검색 시트에는 뜨는
+   * 애니메이션(transform)이 남아 있어서, 그 안에서 열면 카메라가 시트 크기에
+   * 갇혀 납작해졌다. 어디서 열리든 같게 보이도록 늘 body에 건다.
+   */
+  return createPortal(
     <div className="shot" role="dialog" aria-modal="true" aria-label="카메라로 촬영">
       <div className="shot__top">
         <button className="shot__close" onClick={onClose} aria-label="닫기">
@@ -153,6 +162,7 @@ export function CameraCapture({ onShot, onClose }: CameraCaptureProps) {
           {count > 0 ? `${count}장 넣고 닫기` : '닫기'}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
