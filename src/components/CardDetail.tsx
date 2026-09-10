@@ -396,9 +396,21 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
           걷어내면 좁은 화면에서 폼이 그만큼 넓어진다.
         */}
         {!editing && (
-          <div className="detail__top">
-            <button className="detail__close" onClick={requestClose} aria-label="닫기">
-              <CloseIcon size={20} />
+          /*
+           * 페이지로 열렸을 때는 닫기가 아니라 '뒤로'다.
+           *
+           * 폰의 뒤로가기가 있으니 없어도 되지 않느냐 물으면, 대개는
+           * 맞다. 다만 홈 화면에 얹어 앱처럼 여는 경우 iOS에는 돌아갈
+           * 단추도 손짓도 없다. 이 화면에서는 아래 탭바까지 걷어두므로,
+           * 이것마저 없으면 나갈 길이 아예 없어진다.
+           *
+           * 그래서 없애는 대신 페이지의 말로 바꾼다 — 오른쪽 위 ×가 아니라
+           * 왼쪽 위 화살표다. ×는 덮인 것을 걷는 표시이고, 화살표는 왔던
+           * 길로 돌아가는 표시다.
+           */
+          <div className="detail__top" data-page={page || undefined}>
+            <button className="detail__close" onClick={requestClose} aria-label={page ? '뒤로' : '닫기'}>
+              {page ? <ChevronLeft size={22} /> : <CloseIcon size={20} />}
             </button>
           </div>
         )}
