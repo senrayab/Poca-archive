@@ -7,6 +7,7 @@ import { CheckIcon, HeartIcon } from './Icons'
 interface ThumbProps {
   card: Card
   showTitle: boolean
+  showFav: boolean
   selectable: boolean
   selected: boolean
   onOpen: (card: Card) => void
@@ -18,6 +19,7 @@ interface ThumbProps {
 const Thumb = memo(function Thumb({
   card,
   showTitle,
+  showFav,
   selectable,
   selected,
   onOpen,
@@ -47,7 +49,7 @@ const Thumb = memo(function Thumb({
           {selected && <CheckIcon size={13} />}
         </span>
       )}
-      {card.favorite === 1 && !selectable && (
+      {card.favorite === 1 && showFav && !selectable && (
         <span className="thumb__fav">
           <HeartIcon size={15} filled />
         </span>
@@ -64,6 +66,14 @@ const Thumb = memo(function Thumb({
 interface CardGridProps {
   cards: Card[]
   showTitle?: boolean
+  /*
+   * 찜한 것만 모아 보는 화면에서는 끈다.
+   *
+   * 하트는 '이건 찜한 것'이라고 알리는 표시인데, 죄다 찜한 것뿐인 자리에서는
+   * 아무것도 가르지 못하면서 칸마다 하나씩 붙어 눈만 어지럽힌다. 모두에게
+   * 붙는 표시는 표시가 아니다.
+   */
+  showFav?: boolean
   selectable?: boolean
   selectedIds?: Set<string>
   onOpen: (card: Card) => void
@@ -93,6 +103,7 @@ const MAX_SPEED = 20
 export function CardGrid({
   cards,
   showTitle = true,
+  showFav = true,
   selectable = false,
   selectedIds,
   onOpen,
@@ -294,6 +305,7 @@ export function CardGrid({
           key={card.id}
           card={card}
           showTitle={showTitle}
+          showFav={showFav}
           selectable={selectable}
           selected={selectedIds?.has(card.id) ?? false}
           onOpen={onOpen}

@@ -276,6 +276,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
         ) : (
           <CardGrid
             cards={list}
+            showFav={mode !== 'favorites'}
             selectable={selectMode}
             selectedIds={selected}
             onSweep={sweepCards}
