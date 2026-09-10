@@ -1,17 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Header, useShell } from '@/components/AppShell'
+import { useShell } from '@/components/shell'
 import { CardDetail } from '@/components/CardDetail'
-import { CardGrid } from '@/components/CardGrid'
-import {
-  CameraIcon,
-  CheckIcon,
-  CloseIcon,
-  ImageIcon,
-  RestoreIcon,
-  SearchIcon,
-  TrashIcon,
-} from '@/components/Icons'
-import { MemberTabs } from '@/components/MemberTabs'
+import { CameraIcon, CloseIcon, ImageIcon, SearchIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
@@ -21,8 +11,10 @@ import { backfillPrints, findLike, fingerprintOf } from '@/lib/duplicates'
 import { SHOW_CATEGORY } from '@/lib/features'
 import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { useAppName } from '@/lib/appName'
+import { useLayout } from '@/skins'
+import type { ArchiveMode, ArchiveView } from '@/skins/types'
 
-export type ArchiveMode = 'all' | 'favorites' | 'trash'
+export type { ArchiveMode }
 
 /* 전체 보관함의 제목은 설정에서 바꾼 이름을 쓴다 */
 const TITLES: Record<Exclude<ArchiveMode, 'all'>, string> = {
@@ -156,150 +148,60 @@ export function ArchivePage({ mode }: ArchivePageProps) {
     toast('휴지통을 비웠습니다.')
   }
 
+  /*
+   * 여기서부터는 '무엇을 보여줄지'만 담아 넘긴다.
+   *
+   * 놓는 일은 스킨이 고른 레이아웃이 맡는다. 그래서 이 화면은 격자가 몇
+   * 열인지도, 머리가 어떻게 생겼는지도 모른다 — 대신 어떤 카드가 있고
+   * 무엇을 누르면 무슨 일이 나는지만 안다.
+   */
+  const { Archive } = useLayout()
+
+  const view: ArchiveView = {
+    mode,
+    title: selectMode
+      ? `${selected.size}장 선택`
+      : mode === 'all'
+        ? appName
+        : TITLES[mode],
+    loading,
+    cards: list,
+    empty: (
+      <EmptyState mode={mode} filtered={Boolean(query || memberId || categoryId || byImage)} />
+    ),
+
+    selected,
+    selectMode,
+    onOpen: setOpenCard,
+    onToggleSelect: toggleSelect,
+    onSweep: sweepCards,
+    onSelectAll: () => setSelected(new Set(list.map((c) => c.id))),
+    onClearSelection: () => setSelected(new Set()),
+
+    memberId,
+    onSelectMember: setMemberId,
+    onAddMember: () => openMemberEditor(),
+
+    categories,
+    categoryId,
+    onSelectCategory: setCategoryId,
+
+    query,
+    onClearQuery: () => setQuery(''),
+    byImage,
+    onClearByImage: () => setByImage(null),
+    onOpenSearch: () => setSearchOpen(true),
+
+    // 휴지통에서만 되돌리기와 완전 삭제가 있고, 나머지에는 버리기만 있다
+    onTrash: mode === 'trash' ? undefined : () => void bulk('trash'),
+    onRestore: mode === 'trash' ? () => void bulk('restore') : undefined,
+    onPurge: mode === 'trash' ? () => void bulk('purge') : undefined,
+    onEmptyTrash: mode === 'trash' ? () => void emptyAll() : undefined,
+  }
+
   return (
     <>
-      <Header
-        bare
-        title={
-          selectMode
-            ? `${selected.size}장 선택`
-            : mode === 'all'
-              ? appName
-              : TITLES[mode]
-        }
-        actions={
-          selectMode ? (
-            <>
-              {mode === 'trash' ? (
-                <>
-                  <button className="icon-btn" onClick={() => bulk('restore')} aria-label="되돌리기">
-                    <RestoreIcon />
-                  </button>
-                  <button className="icon-btn" onClick={() => bulk('purge')} aria-label="완전 삭제">
-                    <TrashIcon />
-                  </button>
-                </>
-              ) : (
-                <button className="icon-btn" onClick={() => bulk('trash')} aria-label="휴지통으로">
-                  <TrashIcon />
-                </button>
-              )}
-              <button
-                className="icon-btn"
-                onClick={() => setSelected(new Set())}
-                aria-label="선택 해제"
-              >
-                <CloseIcon />
-              </button>
-            </>
-          ) : (
-            <>
-              {mode === 'trash' && list.length > 0 && (
-                <button className="icon-btn" onClick={emptyAll} aria-label="휴지통 비우기">
-                  <TrashIcon />
-                </button>
-              )}
-              {/*
-                검색어가 걸려 있다는 건 탭 아래 칩이 이미 말해준다.
-                버튼까지 포인트색으로 켜두면, 검색 시트가 전체화면 딤으로
-                열려 있는 동안 그 색만 딤 뒤에서 떠 보인다.
-              */}
-              <button
-                className="icon-btn"
-                onClick={() => setSearchOpen(true)}
-                aria-label="검색"
-              >
-                <SearchIcon />
-              </button>
-            </>
-          )
-        }
-      />
-
-      <div className="content">
-        {/*
-          멤버 레일과 분류 텍스트를 한 덩어리로 묶어 통째로 sticky 시킨다.
-          따로 두면 스크롤할 때 둘 사이 틈으로 카드가 비쳐 지나가고,
-          레일 그림자가 아래 분류줄에 잘려 보였다.
-        */}
-        <div className="filters">
-          <MemberTabs
-            selected={memberId}
-            onSelect={setMemberId}
-            onAddMember={() => openMemberEditor()}
-          />
-
-          {SHOW_CATEGORY && categories.length > 0 && (
-            <div className="subtabs" role="tablist" aria-label="카테고리">
-              <button
-                role="tab"
-                aria-selected={categoryId === null}
-                onClick={() => setCategoryId(null)}
-              >
-                전체 분류
-              </button>
-              {categories.map((c) => (
-                <button
-                  key={c.id}
-                  role="tab"
-                  aria-selected={categoryId === c.id}
-                  onClick={() => setCategoryId(categoryId === c.id ? null : c.id)}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {(query || byImage) && (
-          <div className="active-query">
-            {query && (
-              <button className="tag" onClick={() => setQuery('')}>
-                <SearchIcon size={13} />
-                {query}
-                <CloseIcon size={13} />
-              </button>
-            )}
-            {byImage && (
-              <button className="tag" onClick={() => setByImage(null)}>
-                <CameraIcon size={13} />
-                사진으로 찾은 {byImage.length}장
-                <CloseIcon size={13} />
-              </button>
-            )}
-          </div>
-        )}
-
-        {loading ? null : list.length === 0 ? (
-          <EmptyState mode={mode} filtered={Boolean(query || memberId || categoryId || byImage)} />
-        ) : (
-          <CardGrid
-            cards={list}
-            showFav={mode !== 'favorites'}
-            selectable={selectMode}
-            selectedIds={selected}
-            onSweep={sweepCards}
-            onOpen={setOpenCard}
-            onToggleSelect={toggleSelect}
-          />
-        )}
-
-        {!selectMode && list.length > 0 && (
-          <div className="grid-foot">
-            <span>
-              총 {list.length}장 · 카드를 길게(우클릭) 누르면 여러 장 선택
-            </span>
-            <button
-              className="btn btn--sm"
-              onClick={() => setSelected(new Set(list.map((c) => c.id)))}
-            >
-              <CheckIcon size={15} />
-              전체 선택
-            </button>
-          </div>
-        )}
-      </div>
+      <Archive {...view} />
 
       {searchOpen && (
         <SearchSheet
