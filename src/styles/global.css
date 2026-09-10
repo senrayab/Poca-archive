@@ -2247,6 +2247,17 @@ a { color: inherit; }
   letter-spacing: -.03em;
   font-variant-numeric: tabular-nums;
 }
+/*
+ * 자릿수가 늘면 글씨를 줄여 고리 안에 머물게 한다.
+ *
+ * 동심원 안쪽은 지름 64px뿐이라 24px 글씨로는 네 자리에서 고리에 닿는다.
+ * 도넛(안쪽 106px)은 더 여유가 있지만, 같은 화면에 놓인 두 차트가 서로
+ * 다른 크기로 숫자를 보이면 그게 더 어색해 같은 규칙을 쓴다.
+ */
+.chart__center[data-len='4'] strong { font-size: 20px; }
+.chart__center[data-len='5'] strong { font-size: 17px; }
+.chart__center[data-len='6'] strong { font-size: 15px; }
+
 .chart__center span { font-size: 10px; color: var(--text-dim); }
 
 .legend {
