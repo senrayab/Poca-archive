@@ -33,6 +33,14 @@ interface CardDetailProps {
   siblings: Card[]
   onNavigate: (card: Card) => void
   onClose: () => void
+  /**
+   * 덮어 뜨는 층이 아니라 한 페이지로 열렸는지.
+   *
+   * 안에 놓이는 것은 똑같다 — 달라지는 건 껍데기뿐이다. 그래서 두 벌을
+   * 만들지 않고 감싸는 것만 갈아끼운다. 딤 위에 놓일 때 쓰던 색들은
+   * .detail-page가 페이지 색으로 다시 정해준다.
+   */
+  page?: boolean
 }
 
 /*
@@ -63,7 +71,7 @@ const DISPOSE_OPTIONS: Array<{ status: CardStatus; label: string; hint: string }
   { status: 'own', label: '그냥 삭제', hint: '잘못 올렸거나 중복인 카드' },
 ]
 
-export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailProps) {
+export function CardDetail({ card, siblings, onNavigate, onClose, page = false }: CardDetailProps) {
   // 본체 이미지는 팝업을 열 때 그 카드 것만 읽는다 (그리드는 썸네일만 들고 있다).
   const stored = useLiveQuery(() => db.images.get(card.id), [card.id])
   /*
@@ -294,12 +302,24 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
    * 골라야 하는 자리다. 그래서 이 안에서 열린 것이 있으면 그것부터 한 겹
    * 벗기고, 남은 게 없을 때 팝업을 닫는다.
    */
-  useBackClose(() => {
-    if (askSave) setAskSave(null)
-    else if (confirmDispose) setConfirmDispose(false)
-    else if (cropping) setCropping(false)
-    else requestClose()
-  })
+  /*
+   * 뒤로가기로 위에 얹힌 것부터 하나씩 닫는다.
+   *
+   * 페이지로 열렸을 때는 이 화면 자체를 닫는 일까지 맡기지 않는다. 주소가
+   * 있으니 브라우저의 뒤로가기가 이미 그 일을 하고, 여기서도 히스토리를
+   * 손대면 한 번 눌러 두 칸이 물러난다. 그래서 위에 얹힌 것이 있을 때만
+   * 끼어들고, 없으면 물러나 브라우저에 맡긴다.
+   */
+  const stacked = Boolean(askSave || confirmDispose || cropping)
+  useBackClose(
+    () => {
+      if (askSave) setAskSave(null)
+      else if (confirmDispose) setConfirmDispose(false)
+      else if (cropping) setCropping(false)
+      else requestClose()
+    },
+    page ? stacked : true,
+  )
 
   const save = async () => {
     // 제목은 없어도 된다. 적어둘 말이 있을 때만 적는 자리다.
@@ -361,15 +381,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     onClose()
   }
 
-  return (
-    <Modal
-      onClose={requestClose}
-      panel={false}
-      // 고치는 중에는 딤을 눌러도 아무 일이 없다 — 나갈 길은 취소와 저장이 낸다
-      closeOnScrim={!editing}
-      /* 제목이 없을 수 있으므로 읽어줄 이름은 있는 것 중에서 고른다 */
-      label={card.title || member?.name || '포토카드'}
-    >
+  const body = (
+    <>
       {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
       <div
         className="detail"
@@ -783,6 +796,25 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           </button>
         </Modal>
       )}
+    </>
+  )
+
+  if (page) {
+    return (
+      <div className="detail-page">{body}</div>
+    )
+  }
+
+  return (
+    <Modal
+      onClose={requestClose}
+      panel={false}
+      // 고치는 중에는 딤을 눌러도 아무 일이 없다 — 나갈 길은 취소와 저장이 낸다
+      closeOnScrim={!editing}
+      /* 제목이 없을 수 있으므로 읽어줄 이름은 있는 것 중에서 고른다 */
+      label={card.title || member?.name || '포토카드'}
+    >
+      {body}
     </Modal>
   )
 }

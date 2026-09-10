@@ -31,6 +31,7 @@ const FAB_ROUTES = new Set(['/', '/favorites', '/trash'])
 export function AppShell() {
   const { pathname } = useLocation()
   const { Nav } = useLayout()
+  const onCard = pathname.startsWith('/card/')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editorMember, setEditorMember] = useState<Member | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
@@ -57,7 +58,16 @@ export function AppShell() {
         차림인 FAB를 띄운다 — 아래 탭바 안에 등록 단추가 있는데 오른쪽
         아래에도 하나 더 뜨면 어느 쪽이 진짜인지 알 수 없다.
       */}
-      {Nav ? <Nav /> : FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />}
+      {/*
+        자세히보기 페이지에서는 길찾기를 걷는다. 한 장을 크게 보는 자리라
+        아래에 바가 걸치면 사진이 그만큼 눌리고, 나가는 길은 왼쪽 위
+        닫기가 이미 내주고 있다.
+      */}
+      {onCard ? null : Nav ? (
+        <Nav />
+      ) : (
+        FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />
+      )}
 
       {editorOpen && (
         <MemberEditor
