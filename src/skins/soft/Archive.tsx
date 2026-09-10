@@ -1,0 +1,269 @@
+import { memo } from 'react'
+import { useShell } from '@/components/shell'
+import {
+  CameraIcon,
+  CheckIcon,
+  CloseIcon,
+  HeartIcon,
+  MenuIcon,
+  PlusIcon,
+  RestoreIcon,
+  SearchIcon,
+  TrashIcon,
+} from '@/components/Icons'
+import type { Card } from '@/db/types'
+import { useMembers } from '@/hooks/useData'
+import { useObjectUrl } from '@/hooks/useObjectUrl'
+import type { ArchiveView } from '../types'
+
+/**
+ * 소프트의 보관함.
+ *
+ * 회색 바탕 위에 흰 판이 떠 있는 결이다. 그래서 이 레이아웃은 무엇이든
+ * '판 위에 얹는' 방식으로 놓는다 — 단추도 알약, 멤버도 알약, 카드도
+ * 흰 액자에 끼운 사진이다.
+ *
+ * 격자는 세 열이다. 넉 장씩 놓던 기본 차림보다 한 장이 커져서, 사진이
+ * 작은 무늬가 아니라 카드 한 장으로 보인다. 대신 액자 여백과 그림자가
+ * 자리를 먹으므로 더 늘리지는 않았다.
+ *
+ * 위쪽은 두 층이다. 단추만 있는 줄과, 이름이 혼자 서는 줄. 그 아래에
+ * 몇 장인지 한 줄로 붙는다 — 참고한 그림의 '큰 제목 + 회색 한 줄'이다.
+ */
+export function Archive(view: ArchiveView) {
+  const { openDrawer } = useShell()
+  const members = useMembers()
+  const {
+    mode,
+    title,
+    loading,
+    cards,
+    empty,
+    selected,
+    selectMode,
+    onOpen,
+    onToggleSelect,
+    onSelectAll,
+    onClearSelection,
+    memberId,
+    onSelectMember,
+    onAddMember,
+    query,
+    onClearQuery,
+    byImage,
+    onClearByImage,
+    onOpenSearch,
+    onTrash,
+    onRestore,
+    onPurge,
+    onEmptyTrash,
+  } = view
+
+  const filtered = Boolean(query || byImage)
+
+  return (
+    <div className="content soft">
+      <header className="softhead">
+        <div className="softhead__row">
+          {selectMode ? (
+            <button className="softbtn" onClick={onClearSelection}>
+              <CloseIcon size={17} />
+              그만 고르기
+            </button>
+          ) : (
+            <button className="softbtn softbtn--round" onClick={openDrawer} aria-label="메뉴 열기">
+              <MenuIcon size={19} />
+            </button>
+          )}
+
+          <div className="softhead__actions">
+            {selectMode ? (
+              <>
+                {mode === 'trash' ? (
+                  <>
+                    <button className="softbtn softbtn--round" onClick={onRestore} aria-label="되돌리기">
+                      <RestoreIcon size={19} />
+                    </button>
+                    <button className="softbtn softbtn--dark" onClick={onPurge}>
+                      <TrashIcon size={17} />
+                      완전 삭제
+                    </button>
+                  </>
+                ) : (
+                  <button className="softbtn softbtn--dark" onClick={onTrash}>
+                    <TrashIcon size={17} />
+                    {selected.size}장 버리기
+                  </button>
+                )}
+              </>
+            ) : (
+              mode === 'trash' &&
+              cards.length > 0 && (
+                <button className="softbtn" onClick={onEmptyTrash}>
+                  <TrashIcon size={17} />
+                  비우기
+                </button>
+              )
+            )}
+          </div>
+        </div>
+
+        <h1 className="softhead__title">{title}</h1>
+        {!selectMode && (
+          <p className="softhead__sub">
+            {loading
+              ? '\u00a0'
+              : cards.length === 0
+                ? filtered
+                  ? '조건에 맞는 카드가 없어요'
+                  : '아직 비어 있어요'
+                : `${cards.length}장을 모았어요`}
+          </p>
+        )}
+      </header>
+
+      {/*
+        검색은 늘 보이는 알약 하나로 둔다. 기본 차림은 머리의 돋보기
+        아이콘이었는데, 이 레이아웃에서는 위층이 이미 알약으로 차 있어서
+        아이콘 하나를 더 얹으면 어느 것이 검색인지 눈에 띄지 않는다.
+        걸린 검색어가 있으면 그 알약이 바로 걸린 말을 보여준다.
+      */}
+      <div className="softfind">
+        {query || byImage ? (
+          <div className="softfind__on">
+            {query && (
+              <button className="softchip softchip--on" onClick={onClearQuery}>
+                <SearchIcon size={14} />
+                {query}
+                <CloseIcon size={14} />
+              </button>
+            )}
+            {byImage && (
+              <button className="softchip softchip--on" onClick={onClearByImage}>
+                <CameraIcon size={14} />
+                닮은 카드 {byImage.length}장
+                <CloseIcon size={14} />
+              </button>
+            )}
+          </div>
+        ) : (
+          <button className="softfind__bar" onClick={onOpenSearch}>
+            <SearchIcon size={18} />
+            <span>제목·메모로 찾기</span>
+          </button>
+        )}
+      </div>
+
+      {/*
+        멤버는 담는 레일 없이 알약 하나하나가 떠 있다. 지금 고른 것만
+        검은 알약이 되어, 아래 탭바에서 지금 자리를 알리는 방식과 같은
+        말을 쓴다 — 이 스킨에서 '지금 이것'은 늘 검게 채워진다.
+      */}
+      <div className="softmembers" role="tablist" aria-label="멤버">
+        <button
+          className="softchip"
+          role="tab"
+          aria-selected={memberId === null}
+          onClick={() => onSelectMember(null)}
+        >
+          전체
+        </button>
+        {members.map((m) => (
+          <button
+            key={m.id}
+            className="softchip"
+            role="tab"
+            aria-selected={memberId === m.id}
+            onClick={() => onSelectMember(memberId === m.id ? null : m.id)}
+          >
+            {m.name}
+          </button>
+        ))}
+        <button className="softchip softchip--add" onClick={onAddMember} aria-label="멤버 추가">
+          <PlusIcon size={16} />
+        </button>
+      </div>
+
+      {loading ? null : cards.length === 0 ? (
+        empty
+      ) : (
+        <>
+          <div className="softgrid">
+            {cards.map((card) => (
+              <Frame
+                key={card.id}
+                card={card}
+                showFav={mode !== 'favorites'}
+                selectable={selectMode}
+                selected={selected.has(card.id)}
+                onOpen={onOpen}
+                onToggleSelect={onToggleSelect}
+              />
+            ))}
+          </div>
+
+          {!selectMode && (
+            <div className="softfoot">
+              <span>길게 누르면 여러 장을 고를 수 있어요</span>
+              <button className="softbtn softbtn--sm" onClick={onSelectAll}>
+                <CheckIcon size={15} />
+                전체 선택
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 흰 액자에 끼운 사진 한 장.
+ *
+ * 사진을 판 위에 바로 얹지 않고 흰 여백으로 한 번 둘러싼다. 그래야 회색
+ * 바탕 위에서 카드가 '떠 있는 물건'으로 보이고, 사진마다 색이 제각각이어도
+ * 격자가 어수선해지지 않는다 — 흰 테가 같은 자리에서 눈을 잡아준다.
+ */
+const Frame = memo(function Frame({
+  card,
+  showFav,
+  selectable,
+  selected,
+  onOpen,
+  onToggleSelect,
+}: {
+  card: Card
+  showFav: boolean
+  selectable: boolean
+  selected: boolean
+  onOpen: (card: Card) => void
+  onToggleSelect: (card: Card) => void
+}) {
+  const url = useObjectUrl(card.thumb, card.id)
+
+  return (
+    <button
+      className="softcard"
+      data-card-id={card.id}
+      data-selected={selected}
+      onClick={() => (selectable ? onToggleSelect(card) : onOpen(card))}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        onToggleSelect(card)
+      }}
+      aria-label={card.title || card.memo || '포토카드'}
+    >
+      <span className="softcard__shot">{url && <img src={url} alt="" loading="lazy" decoding="async" />}</span>
+      {selectable && (
+        <span className="softcard__check" data-on={selected}>
+          {selected && <CheckIcon size={13} />}
+        </span>
+      )}
+      {card.favorite === 1 && showFav && !selectable && (
+        <span className="softcard__fav">
+          <HeartIcon size={14} filled />
+        </span>
+      )}
+    </button>
+  )
+})

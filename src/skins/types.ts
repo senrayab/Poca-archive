@@ -82,4 +82,12 @@ export interface HeaderView {
 export interface Layout {
   Header: ComponentType<HeaderView>
   Archive: ComponentType<ArchiveView>
+  /**
+   * 스킨이 제 길찾기를 갖는 경우.
+   *
+   * 없으면 기본 차림(오른쪽 아래 FAB + 햄버거로 여는 서랍)을 쓴다. 있으면
+   * FAB를 띄우지 않는다 — 아래 탭바를 두는 스킨에서 등록 단추가 둘이 되면
+   * 어느 쪽이 진짜인지 알 수 없다.
+   */
+  Nav?: ComponentType
 }

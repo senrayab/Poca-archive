@@ -6,6 +6,8 @@ import { seedIfEmpty } from './db/seed'
 import { initAppName } from './lib/appName'
 import { initTheme } from './lib/theme'
 import './styles/global.css'
+// 레이아웃까지 제 것을 갖는 스킨은 규칙도 제 파일에 둔다
+import './styles/skin-soft.css'
 
 initTheme()
 initAppName()
