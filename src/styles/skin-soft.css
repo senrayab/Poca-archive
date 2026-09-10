@@ -1,0 +1,386 @@
+/* ---------- skin: soft ---------- */
+
+/*
+ * 다섯 번째 스킨. 처음으로 색이 아니라 짜임이 다른 스킨이다.
+ *
+ * 결은 하나다 — 옅은 회색 바탕 위에 흰 판이 떠 있다. 그래서 이 스킨은
+ * 무엇이든 '판 위에 얹는' 방식으로 놓는다. 단추도 알약, 멤버도 알약,
+ * 사진도 흰 액자에 끼운 한 장이다. 경계선은 거의 쓰지 않는다 — 선 대신
+ * 넓고 옅은 그림자가 층을 가른다.
+ *
+ * 바탕이 흰색이 아니라 회색인 게 요점이다. 흰 판이 흰 바탕 위에 있으면
+ * 뜬 것으로 보이지 않으므로, 바탕을 한 톤 내려야 비로소 떠오른다.
+ *
+ * 지금 있는 자리는 색이 아니라 검게 채운 알약으로 알린다. 아래 탭바에서도
+ * 멤버 알약에서도 같은 말을 쓰므로, 어디서든 '검은 것이 지금 이것'이다.
+ *
+ * 이 파일은 global.css와 따로 둔다. 스킨이 레이아웃까지 갖게 되면 규칙이
+ * 수백 줄로 늘어나는데, 그걸 한 장에 계속 쌓으면 어느 규칙이 어느 스킨의
+ * 것인지 알 수 없어진다. 여기 있는 것은 전부 소프트의 것이다.
+ */
+
+:root[data-skin='soft'],
+:root[data-skin='soft'][data-theme='dark'] {
+  --bg-base: #121316;
+  --desk-bg-base: #0b0c0e;
+  --bg-elev-base: #1b1d21;
+  --bg-elev-2-base: #23262b;
+  --line-base: #2c3036;
+  --panel-line: transparent;
+  --text: #f2f3f5;
+  --text-dim: #8c929c;
+  /* 어두운 데서는 흰 것이 '지금 이것'이 된다 */
+  --accent: #f2f3f5;
+  --accent-ink: #14161a;
+  --accent-soft: rgba(242, 243, 245, .10);
+  --sky: #7bd8c4;
+  --violet: #9aa8ff;
+  --danger: #ff6b6b;
+
+  /* 선이 아니라 그림자로 층을 가른다 — 넓고 옅게 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, .40);
+  --shadow-md: 0 8px 22px rgba(0, 0, 0, .44);
+  --shadow-lg: 0 16px 42px rgba(0, 0, 0, .50);
+  --shadow-xl: 0 28px 72px rgba(0, 0, 0, .58);
+  --glow-spread: 0 10px 26px;
+  --glow: 0 10px 26px rgba(0, 0, 0, .5);
+  /* 바탕은 고르게 둔다. 얼룩이 지면 떠 있는 판의 그림자가 흐려진다. */
+  --wash: none;
+
+  --radius: 28px;
+  --radius-sm: 20px;
+  --radius-xs: 16px;
+  --panel-radius: 24px;
+  --thumb-radius: 16px;
+  --stage-radius: 28px;
+
+  --rail-bg: transparent;
+  --rail-fade: var(--bg);
+
+  /* 아래 탭바가 먹는 높이. 목록의 마지막 줄이 그 밑에 깔리지 않게 한다. */
+  --nav-h: 78px;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='soft']:not([data-theme='dark']) {
+    --bg-base: #eceef1;
+    --desk-bg-base: #e2e5e9;
+    --bg-elev-base: #ffffff;
+    --bg-elev-2-base: #f4f5f8;
+    --line-base: #e3e6ea;
+    --panel-line: transparent;
+    --text: #14161a;
+    --text-dim: #878d96;
+    --accent: #17191d;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(23, 25, 29, .07);
+    --sky: #2bb99b;
+    --violet: #5b6bd6;
+    --danger: #e04b4b;
+
+    --shadow-sm: 0 2px 8px rgba(22, 26, 34, .05);
+    --shadow-md: 0 8px 22px rgba(22, 26, 34, .07);
+    --shadow-lg: 0 16px 42px rgba(22, 26, 34, .09);
+    --shadow-xl: 0 28px 72px rgba(22, 26, 34, .14);
+    --glow-spread: 0 10px 26px;
+    --glow: 0 10px 26px rgba(22, 26, 34, .18);
+    --wash: none;
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='soft'][data-theme='light'] {
+  --bg-base: #eceef1;
+  --desk-bg-base: #e2e5e9;
+  --bg-elev-base: #ffffff;
+  --bg-elev-2-base: #f4f5f8;
+  --line-base: #e3e6ea;
+  --panel-line: transparent;
+  --text: #14161a;
+  --text-dim: #878d96;
+  --accent: #17191d;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(23, 25, 29, .07);
+  --sky: #2bb99b;
+  --violet: #5b6bd6;
+  --danger: #e04b4b;
+
+  --shadow-sm: 0 2px 8px rgba(22, 26, 34, .05);
+  --shadow-md: 0 8px 22px rgba(22, 26, 34, .07);
+  --shadow-lg: 0 16px 42px rgba(22, 26, 34, .09);
+  --shadow-xl: 0 28px 72px rgba(22, 26, 34, .14);
+  --glow-spread: 0 10px 26px;
+  --glow: 0 10px 26px rgba(22, 26, 34, .18);
+  --wash: none;
+
+  color-scheme: light;
+}
+
+/* 아래 탭바가 가리지 않도록 모든 화면의 발치를 그만큼 비운다 */
+:root[data-skin='soft'] .content {
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 12px);
+}
+
+/* ---------- 알약 단추 ---------- */
+
+.softbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease), background .15s;
+}
+.softbtn:active { transform: scale(.95); }
+.softbtn--round { width: 40px; padding: 0; justify-content: center; }
+.softbtn--sm { height: 34px; padding: 0 13px; font-size: 12px; }
+.softbtn--dark {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+}
+
+/* ---------- 머리 ---------- */
+
+.softhead {
+  /* 이 머리는 흐르는 층이라, 노치 밑으로 들어가지 않게 직접 비켜준다 */
+  padding: calc(10px + var(--safe-top)) 20px 0;
+}
+.softhead__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+/* 오른쪽 단추들은 오른쪽 끝으로 밀어붙인다 */
+.softhead__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.softhead__title {
+  margin: 16px 0 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+}
+.softhead__sub {
+  margin: 5px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+/* ---------- 찾기 ---------- */
+
+.softfind { padding: 16px 20px 0; }
+.softfind__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  color: var(--text-dim);
+  font-size: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease);
+}
+.softfind__bar:active { transform: scale(.99); }
+.softfind__on { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- 알약 하나 (멤버 · 걸린 검색어) ---------- */
+
+.softmembers {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
+  overscroll-behavior-x: contain;
+}
+.softmembers::-webkit-scrollbar { display: none; }
+
+.softchip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease), background .15s, color .15s;
+}
+.softchip:active { transform: scale(.94); }
+/* 이 스킨에서 '지금 이것'은 늘 검게 채워진다 — 탭바도 같은 말을 쓴다 */
+.softchip[aria-selected='true'],
+.softchip--on {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+}
+.softchip--add { width: 38px; padding: 0; justify-content: center; color: var(--text-dim); }
+
+/* ---------- 세 열 격자 ---------- */
+
+.softgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+/*
+ * 사진을 판 위에 바로 얹지 않고 흰 여백으로 한 번 둘러싼다. 회색 바탕
+ * 위에서 카드가 떠 있는 물건으로 보이고, 사진마다 색이 제각각이어도
+ * 흰 테가 같은 자리에서 눈을 잡아준다.
+ */
+.softcard {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 6px;
+  border-radius: calc(var(--thumb-radius) + 6px);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-md);
+  transition: transform .18s var(--ease), box-shadow .18s;
+  /* 길게 누르면 폰이 사진 저장 메뉴를 띄운다 — 고르기 손짓과 부딪힌다 */
+  -webkit-touch-callout: none;
+}
+.softcard:active { transform: scale(.96); }
+.softcard__shot {
+  display: block;
+  aspect-ratio: var(--card-ratio);
+  border-radius: var(--thumb-radius);
+  overflow: hidden;
+  background: var(--bg-elev-2);
+  line-height: 0;
+}
+.softcard__shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.softcard[data-selected='true'] {
+  box-shadow: var(--shadow-md), inset 0 0 0 2.5px var(--accent);
+}
+
+.softcard__fav {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--fav);
+  line-height: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .35));
+}
+.softcard__check {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .42);
+  backdrop-filter: blur(4px);
+  color: #fff;
+}
+.softcard__check[data-on='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  backdrop-filter: none;
+}
+
+/* ---------- 발치 ---------- */
+
+.softfoot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.softfoot span { flex: 1; min-width: 0; }
+
+/* ---------- 아래 탭바 ---------- */
+
+/*
+ * 화면 아래에 떠 있는 흰 알약.
+ *
+ * 데스크탑에서는 앱이 가운데 좁은 기둥으로 서므로 탭바도 그 기둥 폭에
+ * 맞춰 가운데로 모은다(--app-w). 폰에서는 좌우 16px만 두고 꽉 찬다.
+ */
+.softnav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 12px);
+  z-index: 30;
+  width: min(calc(100% - 32px), calc(var(--app-w) - 32px));
+  height: var(--nav-h);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  padding: 0 6px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-lg);
+}
+
+.softnav__item {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 8px 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 600;
+  transition: color .15s;
+}
+.softnav__item span { line-height: 1; }
+.softnav__item.active { color: var(--text); font-weight: 800; }
+
+/*
+ * 가운데 등록 단추. 다른 것과 생김새가 아예 달라 '이건 다른 일'이라고
+ * 말한다. 탭바보다 위로 솟게 두면 손가락이 먼저 닿는다.
+ */
+.softnav__add {
+  justify-self: center;
+  width: 56px;
+  height: 56px;
+  margin-top: -18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+  transition: transform .15s var(--ease);
+}
+.softnav__add:active { transform: scale(.92); }
+
+@media (prefers-reduced-motion: reduce) {
+  .softbtn,
+  .softchip,
+  .softcard,
+  .softnav__add,
+  .softfind__bar { transition: none; }
+}

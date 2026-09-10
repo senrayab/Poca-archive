@@ -30,6 +30,7 @@ const FAB_ROUTES = new Set(['/', '/favorites', '/trash'])
 
 export function AppShell() {
   const { pathname } = useLocation()
+  const { Nav } = useLayout()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editorMember, setEditorMember] = useState<Member | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
@@ -51,7 +52,12 @@ export function AppShell() {
       </div>
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      {FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />}
+      {/*
+        길찾기는 스킨이 제 것을 갖고 있으면 그것을 쓴다. 없을 때만 기본
+        차림인 FAB를 띄운다 — 아래 탭바 안에 등록 단추가 있는데 오른쪽
+        아래에도 하나 더 뜨면 어느 쪽이 진짜인지 알 수 없다.
+      */}
+      {Nav ? <Nav /> : FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />}
 
       {editorOpen && (
         <MemberEditor
