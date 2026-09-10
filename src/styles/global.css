@@ -3217,10 +3217,15 @@ a { color: inherit; }
   --panel-line: #3d3540;
   --text: #f6f0ea;
   --text-dim: #a89e96;
-  /* 어두운 데서는 받은 색 그대로 — 노랑은 검은 판 위에서 가장 잘 산다 */
-  --accent: #fed672;
-  --accent-ink: #2b1e04;
-  --accent-soft: rgba(254, 214, 114, .18);
+  /*
+   * 어두운 데서도 밝은 데와 같은 색상(28도)에 선다. 다른 스킨도 다크와
+   * 라이트가 같은 색을 밝기만 달리해 쓰므로, 여기만 노랑과 주황으로
+   * 갈리면 테마를 넘길 때 다른 스킨으로 건너간 것처럼 보인다.
+   * 검은 판 위에서는 밝게 올려 두면 된다.
+   */
+  --accent: #ffad66;
+  --accent-ink: #2b1204;
+  --accent-soft: rgba(255, 173, 102, .18);
   /* 그래프가 쓰는 두 색도 장난감 팔레트로 — 이름이 아니라 자리다 */
   --sky: #5fd8b4;
   --violet: #ff8fbe;
@@ -3231,7 +3236,7 @@ a { color: inherit; }
   --shadow-lg: 4px 4px 0 rgba(0, 0, 0, .42);
   --shadow-xl: 7px 7px 0 rgba(0, 0, 0, .46);
   --glow-spread: 3px 3px 0;
-  --glow: 3px 3px 0 rgba(254, 214, 114, .34);
+  --glow: 3px 3px 0 rgba(255, 173, 102, .34);
   --wash:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
@@ -3515,7 +3520,7 @@ a { color: inherit; }
 .skin[data-preview='brick'] .skin__swatch {
   background: linear-gradient(
     90deg,
-    #ffd772 0 26%,
+    #ffb06b 0 26%,
     #ffb3d1 26% 48%,
     #7fd6b5 48% 74%,
     #e2352c 74%
