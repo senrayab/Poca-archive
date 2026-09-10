@@ -49,6 +49,13 @@
   --fav: #ff3d57;
 
   /*
+   * 포인트 색 그림자의 번짐. 색은 --glow가 들고, 여기는 모양만 든다.
+   * 사람이 포인트 색을 고르면 색만 갈아끼우고 이 모양은 그대로 쓴다 —
+   * 스킨마다 그림자의 성격이 다르기 때문이다(블록은 번지지 않는다).
+   */
+  --glow-spread: 0 8px 22px;
+
+  /*
    * 상세 팝업은 딤 위에 얹히므로 안쪽 색이 앱 테마와 따로 논다.
    * 스킨이 통째로 갈아끼울 수 있게 토큰으로 빼둔다.
    */
@@ -112,13 +119,14 @@
    * 색을 달리 두면 덮인 화면의 색감이 스킨을 따라 미묘하게 흔들리는데,
    * 그 위에 뜬 팝업은 늘 같은 흰 글씨라 어울림이 스킨마다 달라진다.
    *
-   * 그래서 밑색은 파스텔의 것 하나로 통일한다. 거의 검정에 가까워 어떤
-   * 포인트 색과 놓아도 다투지 않는다. 스킨이 고를 수 있는 건 농도뿐이다.
+   * 그래서 밑색은 그냥 검정 하나로 둔다. 색기가 없어야 어떤 포인트 색과
+   * 놓아도 다투지 않고, 덮인 화면의 색감도 그대로 어두워지기만 한다.
+   * 스킨과 테마가 고를 수 있는 건 농도뿐이다.
    *
    * 예외는 모노의 라이트 하나다. 그쪽은 팝업을 흰 종이 위에 놓은 것처럼
    * 보이려고 딤까지 밝게 두었고, 그에 맞춰 딤 위의 글씨도 검정이다.
    */
-  --scrim-ink: #06060a;
+  --scrim-ink: #000000;
   --scrim: color-mix(in srgb, var(--scrim-ink) 60%, transparent);
   --modal-scrim: color-mix(in srgb, var(--scrim-ink) 78%, transparent);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, .45);
@@ -148,7 +156,7 @@
     --sky: #8ecfe8;
     --violet: #7b3fe4;
     --danger: #e0243f;
-    --scrim-ink: #1c1628;
+    --scrim-ink: #000000;
     --scrim: color-mix(in srgb, var(--scrim-ink) 38%, transparent);
     --modal-scrim: color-mix(in srgb, var(--scrim-ink) 70%, transparent);
     --shadow-sm: 0 1px 3px rgba(74, 58, 110, .07);
@@ -179,7 +187,7 @@
   --sky: #8ecfe8;
   --violet: #7b3fe4;
   --danger: #e0243f;
-  --scrim-ink: #1c1628;
+  --scrim-ink: #000000;
   --scrim: color-mix(in srgb, var(--scrim-ink) 38%, transparent);
   --modal-scrim: color-mix(in srgb, var(--scrim-ink) 70%, transparent);
   --shadow-sm: 0 1px 3px rgba(74, 58, 110, .07);
@@ -3140,6 +3148,7 @@ a { color: inherit; }
   --shadow-md: 2px 2px 0 rgba(0, 0, 0, .40);
   --shadow-lg: 4px 4px 0 rgba(0, 0, 0, .42);
   --shadow-xl: 7px 7px 0 rgba(0, 0, 0, .46);
+  --glow-spread: 3px 3px 0;
   --glow: 3px 3px 0 rgba(255, 111, 174, .34);
   --wash:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
@@ -3183,6 +3192,7 @@ a { color: inherit; }
     --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
     --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
     --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+    --glow-spread: 3px 3px 0;
     --glow: 3px 3px 0 rgba(239, 77, 146, .30);
     --wash:
       repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
@@ -3213,6 +3223,7 @@ a { color: inherit; }
   --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
   --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
   --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+  --glow-spread: 3px 3px 0;
   --glow: 3px 3px 0 rgba(239, 77, 146, .30);
   --wash:
     repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
