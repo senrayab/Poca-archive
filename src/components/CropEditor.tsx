@@ -376,7 +376,17 @@ export function CropEditor({ source, onCancel, onDone }: CropEditorProps) {
   }
 
   return (
-    <Modal onClose={requestClose} panel={false} label="사진 자르기">
+    <Modal
+      onClose={requestClose}
+      panel={false}
+      /*
+       * 맞춰놓은 걸 딤 한 번 스쳐 잃는 일이 없게 한다. 물어보긴 하지만
+       * 물음이 뜨는 것 자체가 성가시고, 급히 고르다 날릴 수도 있다.
+       * 나갈 길은 위의 닫기와 아래 두 단추가 이미 내주고 있다.
+       */
+      closeOnScrim={false}
+      label="사진 자르기"
+    >
       <div className="crop">
         <div className="crop__top">
           <span className="crop__hint">두 손가락으로 크기 조절 · 틀 밖은 저장되지 않아요</span>
