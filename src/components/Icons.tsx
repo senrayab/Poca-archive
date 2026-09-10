@@ -2,8 +2,10 @@ import {
   Archive,
   ArchiveRestore,
   Check,
+  ChevronDown as LuChevronDown,
   ChevronLeft as LuChevronLeft,
   ChevronRight as LuChevronRight,
+  ChevronUp as LuChevronUp,
   Camera,
   ChartColumn,
   Crop,
@@ -141,6 +143,12 @@ export const GridIcon = ({ size = 22, className }: IconProps) => (
 )
 export const ChevronLeft = ({ size = 22, className }: IconProps) => (
   <LuChevronLeft size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const ChevronDown = ({ size = 22, className }: IconProps) => (
+  <LuChevronDown size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
+)
+export const ChevronUp = ({ size = 22, className }: IconProps) => (
+  <LuChevronUp size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 export const ChevronRight = ({ size = 22, className }: IconProps) => (
   <LuChevronRight size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
