@@ -41,8 +41,6 @@ interface QueueItem {
   fp: string | null
 }
 
-const stripExtension = (name: string) => name.replace(/\.[^.]+$/, '')
-
 /** 겹친다고 짚어준 보관함 카드의 썸네일 (나란히 놓고 눈으로 견주라고) */
 function TwinThumb({ card }: { card: Card }) {
   const url = useObjectUrl(card.thumb, card.id)
@@ -86,7 +84,14 @@ export function UploadPage() {
       ...prev,
       {
         key: uid(),
-        title: stripExtension(file.name),
+        /*
+         * 제목은 비워 둔다.
+         *
+         * 파일 이름을 그대로 쓰면 'Screenshot_20260907_…'이나 다른 앱이 붙인
+         * 긴 숫자가 제목이 된다. 그건 이름이 아니라 파일이 들고 온 꼬리표라,
+         * 적어둘 말이 있을 때만 사람이 직접 적는 편이 낫다.
+         */
+        title: '',
         memberId: '',
         categoryId: '',
         previewUrl: URL.createObjectURL(processed.thumb.blob),
@@ -205,7 +210,6 @@ export function UploadPage() {
         members.length ? '멤버를 먼저 선택해 주세요.' : '멤버를 먼저 추가해 주세요.',
       )
     }
-    if (going.some((i) => !i.title.trim())) return toast('제목이 비어 있는 카드가 있어요.')
 
     // 아직 물어보지 않았다면 먼저 견줘 본다
     if (!skip) {
@@ -467,7 +471,7 @@ export function UploadPage() {
                       <input
                         type="text"
                         value={item.title}
-                        placeholder="제목 (예: 라이즈 1집 A ver.)"
+                        placeholder="제목 (없어도 됩니다)"
                         onChange={(e) =>
                           setItems((prev) =>
                             prev.map((i) =>

@@ -121,7 +121,8 @@ function HistoryRow({
       <span className="history__thumb">{url && <img src={url} alt="" loading="lazy" />}</span>
 
       <span className="history__body">
-        <span className="history__title">{card.title}</span>
+        {/* 제목은 없을 수 있다. 그 자리를 비워두면 줄이 어긋나므로 메모로 채운다. */}
+        <span className="history__title">{card.title || card.memo || '제목 없음'}</span>
         <span className="history__meta">
           {member && <b>{member}</b>}
           {SHOW_CATEGORY && category && <span>{category}</span>}

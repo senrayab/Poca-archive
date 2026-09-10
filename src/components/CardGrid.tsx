@@ -39,7 +39,7 @@ const Thumb = memo(function Thumb({
         if (handledByPress()) return
         onToggleSelect(card)
       }}
-      aria-label={card.title}
+      aria-label={card.title || card.memo || '포토카드'}
     >
       {url && <img src={url} alt="" loading="lazy" decoding="async" />}
       {selectable && (

@@ -282,11 +282,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   })
 
   const save = async () => {
+    // 제목은 없어도 된다. 적어둘 말이 있을 때만 적는 자리다.
     const title = draft.title.trim()
-    if (!title) {
-      toast('제목을 입력해 주세요.')
-      return false
-    }
     // 사진을 갈아 끼웠으면 지문도 새 그림의 것으로 바꾼다 (안 그러면 중복 검사가 엉뚱해진다)
     const fp = pending ? await fingerprintOf(pending.thumb.blob) : null
 
@@ -350,7 +347,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
       panel={false}
       // 고치는 중에는 딤을 눌러도 아무 일이 없다 — 나갈 길은 취소와 저장이 낸다
       closeOnScrim={!editing}
-      label={card.title}
+      /* 제목이 없을 수 있으므로 읽어줄 이름은 있는 것 중에서 고른다 */
+      label={card.title || member?.name || '포토카드'}
     >
       {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
       <div
@@ -525,7 +523,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                         </button>
                       )}
                 </div>
-                <h2 className="detail__title">{card.title}</h2>
+                {card.title && <h2 className="detail__title">{card.title}</h2>}
 
               </div>
             )}
@@ -549,6 +547,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   type="text"
                   value={draft.title}
                   onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                  placeholder="없어도 됩니다"
                   autoFocus
                 />
               </label>
