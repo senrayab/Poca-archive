@@ -996,6 +996,12 @@ a { color: inherit; }
   gap: 6px;
   font-size: 11px;
   color: var(--on-scrim-dim);
+  /*
+   * 줄 간격을 여기서 한 번만 정해 아이들이 모두 같은 줄 상자를 갖게 한다.
+   * 메모를 펼칠 때만 따로 주면 그 상자만 높아지고, 글자가 상자 안에서
+   * 가운데로 내려앉아 옆의 이름보다 처져 보인다.
+   */
+  line-height: 1.45;
   margin-bottom: 3px;
   /* 유리가 다 켜지기 전 자리라 제목과 같이 그림자를 깐다 */
   text-shadow: var(--on-scrim-shadow);
@@ -1041,11 +1047,16 @@ a { color: inherit; }
 .detail__memo-line[data-open] .detail__memo-text {
   white-space: normal;
   overflow: visible;
-  line-height: 1.5;
 }
 /* 펼쳐지면 윗줄의 멤버 이름과 높이가 어긋나므로 위쪽에 맞춘다 */
 .detail__who:has(.detail__memo-line[data-open]) { align-items: flex-start; }
-.detail__memo-line svg { flex-shrink: 0; opacity: .8; }
+/* 펼쳐도 표시는 첫 줄에 남는다 — 줄 상자 높이와 아이콘 높이의 차만큼만 내린다 */
+.detail__memo-line svg {
+  flex-shrink: 0;
+  opacity: .8;
+  align-self: flex-start;
+  margin-top: calc((1.45em - 13px) / 2);
+}
 .detail__who b + .detail__cat::before {
   content: '';
   display: inline-block;
