@@ -1026,10 +1026,23 @@ a { color: inherit; }
   align-items: center;
   gap: 3px;
   min-width: 0;
+  /* 단추는 기본 안여백을 달고 온다. 그 1px이 옆의 이름보다 글자를 내려앉힌다. */
+  padding: 0;
   color: inherit;
   font: inherit;
   font-weight: 600;
   text-align: left;
+}
+/*
+ * 이름과 메모를 가르는 선.
+ *
+ * 이 선은 .detail__cat의 ::before인데, 지금 .detail__cat이 flex 상자라
+ * 선도 그 안의 한 칸이 된다. 칸이 되면 vertical-align이 듣지 않아 위쪽에
+ * 붙어 홀로 떠 보인다. 줄 상자와 선의 높이 차만큼 내려 첫 줄에 맞춘다.
+ */
+.detail__memo-line::before {
+  align-self: flex-start;
+  margin-top: calc((1.45em - 9px) / 2);
 }
 /*
  * 유리 시트는 사진을 두 번 두드려 찜할 수 있게 손을 안 타도록 해뒀다.
