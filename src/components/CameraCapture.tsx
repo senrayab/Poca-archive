@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBackClose } from '@/hooks/useBackClose'
 import { CloseIcon } from './Icons'
 
 interface CameraCaptureProps {
@@ -35,6 +36,9 @@ export function CameraCapture({ onShot, onClose }: CameraCaptureProps) {
   const [error, setError] = useState<string>()
   const [count, setCount] = useState(0)
   const [flash, setFlash] = useState(0)
+
+  // 카메라 화면은 Modal을 거치지 않으므로 여기서 직접 붙인다
+  useBackClose(onClose)
 
   useEffect(() => {
     let alive = true
