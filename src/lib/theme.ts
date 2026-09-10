@@ -27,11 +27,11 @@ export const ACCENT_PRESETS = [
  */
 export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   { id: 'pastel', name: '파스텔', hint: '파스텔 얼룩 배경에 코랄 포인트, 한쪽이 물린 둥글기' },
-  { id: 'mono', name: '모노', hint: '무채색 배경에 검정 포인트, 얇은 테두리와 균일한 둥글기' },
+  { id: 'mono', name: '모노', hint: '안개 낀 무채색 배경, 붓으로 그은 듯한 탭과 얇은 테두리' },
   {
     id: 'aurora',
     name: '오로라',
-    hint: '유리에 갇힌 무지개빛 배경에 오팔 보라 포인트, 크게 부푼 둥글기',
+    hint: '라벤더에서 분홍으로 갈리는 유리빛 배경, 크게 부푼 둥글기',
   },
 ]
 
@@ -52,7 +52,7 @@ const FAV_CUT_IDS: FavCut[] = FAV_CUTS.map((c) => c.id)
 const BAR_COLOR: Record<SkinId, Record<'light' | 'dark', string>> = {
   pastel: { dark: '#0f0e14', light: '#f4f3f9' },
   mono: { dark: '#0b0b0c', light: '#f1f1f2' },
-  aurora: { dark: '#0e0b1a', light: '#f5f2fb' },
+  aurora: { dark: '#100a1c', light: '#f7f3fc' },
 }
 
 const media =
