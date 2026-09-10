@@ -67,7 +67,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
 
         <div className="drawer__section">보관함</div>
         {item('/', <GridIcon size={20} />, '전체 포토카드', total)}
-        {item('/favorites', <TagIcon size={20} />, '즐겨찾기')}
+        {item('/favorites', <TagIcon size={20} />, '좋아요')}
         {item('/trash', <TrashIcon size={20} />, '휴지통', trash)}
 
         <div className="drawer__section">관리</div>

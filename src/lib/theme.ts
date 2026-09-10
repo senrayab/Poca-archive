@@ -43,7 +43,7 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
 const SKIN_IDS: SkinId[] = SKINS.map((s) => s.id)
 
 /**
- * 자세히보기에서 찜 하트가 앉는 자리의 모양.
+ * 자세히보기에서 좋아요 하트가 앉는 자리의 모양.
  * 실제 곡선은 CSS의 --fav-shape가 갖고 있고, 여기서는 이름만 안다.
  */
 export const FAV_CUTS: Array<{ id: FavCut; name: string }> = [

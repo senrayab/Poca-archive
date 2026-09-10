@@ -69,7 +69,7 @@ export const TrashIcon = ({ size = 22, className }: IconProps) => (
   <Trash2 size={size} strokeWidth={STROKE} className={className} aria-hidden="true" />
 )
 
-/** 즐겨찾기는 켜졌을 때 속을 채운다. */
+/** 좋아요는 켜졌을 때 속을 채운다. */
 export const HeartIcon = ({
   size = 22,
   className,

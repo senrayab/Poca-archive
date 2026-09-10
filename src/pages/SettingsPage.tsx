@@ -250,10 +250,10 @@ export function SettingsPage() {
 
           <div className="card-panel">
             <p>
-              자세히보기에서 찜 하트가 앉는 자리입니다. 카드 오른쪽 위를
+              자세히보기에서 좋아요 하트가 앉는 자리입니다. 카드 오른쪽 위를
               <b> 모서리째 베어내거나</b>, 그 안에 <b>사진 조각을 하나 남길</b> 수 있어요.
             </p>
-            <div className="segmented" role="group" aria-label="찜 하트 자리">
+            <div className="segmented" role="group" aria-label="좋아요 하트 자리">
               {FAV_CUTS.map((option) => {
                 const Icon = CUT_ICONS[option.id]
                 return (
@@ -291,7 +291,7 @@ export function SettingsPage() {
 
           <div className="card-panel">
             <p>
-              포인트 색입니다. 선택된 탭, 등록 버튼, 즐겨찾기 하트처럼 강조되는 곳에
+              포인트 색입니다. 선택된 탭, 등록 버튼, 좋아요 하트처럼 강조되는 곳에
               쓰입니다. 고르지 않으면 스킨이 정한 색을 씁니다.
             </p>
             <div className="swatches">
