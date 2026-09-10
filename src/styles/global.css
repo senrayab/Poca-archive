@@ -2282,6 +2282,26 @@ a { color: inherit; }
  * 숫자를 원 안에 가두지 않으니 자릿수가 늘어도 자리 걱정이 없다.
  */
 /*
+ * 곁들이 수치 한 줄. 판때기에 담지 않고 페이지 위에 그대로 얹는다.
+ * 아래 '멤버별'·'카테고리별'보다 높은 위계가 아니므로, 흰 상자에 큰 글씨로
+ * 담으면 실제보다 무겁게 읽힌다.
+ */
+.facts {
+  margin: -2px 0 6px;
+  padding: 0 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.facts b {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
  * 이름을 stackbar로 둔 건, 이 앱에 이미 .bar가 있어서다 — 설정 화면의
  * 6px짜리 가는 막대다. 같은 이름을 쓰면 그 규칙(height: 6px, overflow: hidden)이
  * 이 컨테이너에도 걸려, 안에 든 것이 통째로 6px 상자에 갇혀 잘린다.

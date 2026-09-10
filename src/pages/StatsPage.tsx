@@ -108,13 +108,22 @@ export function StatsPage() {
             <StackedBar segments={statusBar} totalLabel="장 거쳐갔어요" />
           </div>
 
-          <div className="card-panel">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-              <Stat label="즐겨찾기" value={`${stats.favorite}장`} />
-              <Stat label="휴지통" value={`${stats.trash}장`} />
-              <Stat label="저장 용량" value={formatBytes(stats.bytes)} />
-            </div>
-          </div>
+          {/*
+            곁들이 수치라 판때기에 담지 않는다. 아래 '멤버별'·'카테고리별'보다
+            높은 위계가 아닌데 흰 상자에 큰 글씨로 담으면 그렇게 읽힌다.
+            한 줄로 낮춰 막대에 딸린 설명처럼 둔다.
+          */}
+          <p className="facts">
+            <span>
+              즐겨찾기 <b>{stats.favorite}장</b>
+            </span>
+            <span>
+              휴지통 <b>{stats.trash}장</b>
+            </span>
+            <span>
+              저장 용량 <b>{formatBytes(stats.bytes)}</b>
+            </span>
+          </p>
 
           <h2>
             <UsersIcon size={15} />
@@ -138,14 +147,5 @@ export function StatsPage() {
         </div>
       </div>
     </>
-  )
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div style={{ fontSize: 11, color: 'var(--text-dim)', marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 17, fontWeight: 700 }}>{value}</div>
-    </div>
   )
 }
