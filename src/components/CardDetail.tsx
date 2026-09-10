@@ -547,7 +547,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   type="text"
                   value={draft.title}
                   onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-                  placeholder="없어도 됩니다"
+                  placeholder="비워두셔도 됩니다"
                   autoFocus
                 />
               </label>
