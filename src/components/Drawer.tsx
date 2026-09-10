@@ -53,7 +53,11 @@ export function Drawer({ open, onClose }: DrawerProps) {
       <nav className="drawer" aria-label="주 메뉴">
         <div style={{ display: 'flex', alignItems: 'flex-start' }}>
           <div className="drawer__brand" style={{ flex: 1 }}>
-            <strong>POCA</strong>
+            {/* 앞은 가볍게, 뒤는 최대한 굵게 — 두 무게 차이가 이름의 생김새다 */}
+            <strong className="brand">
+              <span className="brand__thin">varies</span>
+              <span className="brand__bold">gem.</span>
+            </strong>
             <span>{appName}</span>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label="메뉴 닫기">
