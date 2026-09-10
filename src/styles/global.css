@@ -2288,9 +2288,14 @@ a { color: inherit; }
  */
 .facts {
   margin: -2px 0 6px;
-  padding: 0 4px;
+  padding: 0 2px;
   display: flex;
   flex-wrap: wrap;
+  /*
+   * 오른쪽으로 붙인다. 왼쪽에 두면 바로 아래 '멤버별' 같은 소제목과 같은
+   * 자리에서 시작해, 둘이 한 줄기처럼 읽히며 서로 부딪힌다.
+   */
+  justify-content: flex-end;
   gap: 4px 16px;
   font-size: 12px;
   color: var(--text-dim);
@@ -2314,6 +2319,11 @@ a { color: inherit; }
   gap: 5px;
 }
 .stackbar__head strong {
+  /*
+   * 판때기 안의 p는 흐린 색을 쓰지만 이 숫자는 아니다.
+   * 아래 도넛 가운데 숫자와 같은 색이라야 같은 급으로 읽힌다.
+   */
+  color: var(--text);
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -.03em;
