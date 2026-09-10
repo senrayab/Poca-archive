@@ -4,6 +4,7 @@ import { EditIcon, PlusIcon, TagIcon, TrashIcon, UsersIcon } from '@/components/
 import { useToast } from '@/components/Toast'
 import { db, uid } from '@/db/db'
 import type { Category } from '@/db/types'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { useCategories, useCountsByMember, useMembers } from '@/hooks/useData'
 import { CHART_PALETTE } from '@/lib/palette'
 
@@ -168,6 +169,8 @@ export function MembersPage() {
             </button>
           </form>
 
+          {SHOW_CATEGORY && (
+            <>
           <h2>
             <TagIcon size={15} />
             카테고리
@@ -209,6 +212,8 @@ export function MembersPage() {
               추가
             </button>
           </form>
+            </>
+          )}
         </div>
       </div>
     </>

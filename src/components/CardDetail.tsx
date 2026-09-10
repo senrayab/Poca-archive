@@ -8,6 +8,7 @@ import { useBackClose } from '@/hooks/useBackClose'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatBytes, formatDate } from '@/lib/format'
 import { fingerprintOf } from '@/lib/duplicates'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { processImage, type ProcessedImage } from '@/lib/image'
 import { CropEditor } from './CropEditor'
 import {
@@ -476,9 +477,16 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               <div className="detail__sheet">
                 {/* 유리는 별도 층이다 — 마스크로 윗경계를 흐리려면 글자와 분리돼야 한다 */}
                 <span className="detail__glass" aria-hidden="true" />
+                {/*
+                  분류를 감춰둔 동안에는 그 자리에 메모가 들어간다.
+                  분류 대신 메모에 알아볼 말을 적는 쪽을 쓰기로 했으므로,
+                  사진 위에서 바로 읽히는 자리는 메모가 갖는 게 맞다.
+                */}
                 <div className="detail__who">
                   {member && <b>{member.name}</b>}
-                  {category && <span className="detail__cat">{category.name}</span>}
+                  {SHOW_CATEGORY
+                    ? category && <span className="detail__cat">{category.name}</span>
+                    : card.memo && <span className="detail__cat">{card.memo}</span>}
                 </div>
                 <h2 className="detail__title">{card.title}</h2>
 
@@ -521,6 +529,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                     ))}
                   </select>
                 </label>
+                {SHOW_CATEGORY && (
                 <label className="field">
                   <span>카테고리</span>
                   <select
@@ -535,6 +544,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                     ))}
                   </select>
                 </label>
+                )}
               </div>
               <label className="field">
                 <span>메모</span>
@@ -548,7 +558,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
           ) : (
             /* 제목·멤버는 카드 위 유리 시트로 올라갔고, 여기엔 부수 정보만 남는다 */
             <>
-              {card.memo && <p className="detail__memo">{card.memo}</p>}
+              {/* 분류를 감춰둔 동안에는 메모가 사진 위로 올라가므로 여기서는 뺀다 */}
+              {SHOW_CATEGORY && card.memo && <p className="detail__memo">{card.memo}</p>}
               <div className="detail__meta">
                 <span>{formatDate(card.createdAt)}</span>
                 <span>

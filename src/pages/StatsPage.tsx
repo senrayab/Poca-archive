@@ -4,6 +4,7 @@ import { Donut, StackedBar, type BarSegment, type DonutSlice } from '@/component
 import { TagIcon, UsersIcon } from '@/components/Icons'
 import { db } from '@/db/db'
 import { useCategories, useMembers } from '@/hooks/useData'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { formatBytes } from '@/lib/format'
 import { chartColor } from '@/lib/palette'
 
@@ -137,13 +138,17 @@ export function StatsPage() {
             )}
           </div>
 
-          <h2>
-            <TagIcon size={15} />
-            카테고리별
-          </h2>
-          <div className="card-panel">
-            <Donut slices={categorySlices} centerLabel="장 소장" />
-          </div>
+          {SHOW_CATEGORY && (
+            <>
+              <h2>
+                <TagIcon size={15} />
+                카테고리별
+              </h2>
+              <div className="card-panel">
+                <Donut slices={categorySlices} centerLabel="장 소장" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

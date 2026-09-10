@@ -1,6 +1,7 @@
 import { useEffect, type ReactElement } from 'react'
 import { createPortal } from 'react-dom'
 import { useAppName } from '@/lib/appName'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { NavLink } from 'react-router-dom'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
 import {
@@ -71,7 +72,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
 
         <div className="drawer__section">관리</div>
         {item('/upload', <UploadIcon size={20} />, '포토카드 등록')}
-        {item('/members', <UsersIcon size={20} />, '멤버 · 카테고리 관리')}
+        {item('/members', <UsersIcon size={20} />, SHOW_CATEGORY ? '멤버 · 카테고리 관리' : '멤버 관리')}
         {item('/history', <HistoryIcon size={20} />, '양도 · 판매 내역')}
         {item('/stats', <ChartIcon size={20} />, '통계')}
         {item('/settings', <SettingsIcon size={20} />, '백업 · 설정')}
