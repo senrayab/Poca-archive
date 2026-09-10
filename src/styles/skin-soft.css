@@ -182,24 +182,10 @@
   color: var(--text-dim);
 }
 
-/* ---------- 찾기 ---------- */
+/* ---------- 걸린 검색어 ---------- */
 
+/* 찾는 자리는 아래 탭바가 맡는다. 여기는 걸린 것을 알리고 푸는 자리다. */
 .softfind { padding: 16px 20px 0; }
-.softfind__bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  height: 46px;
-  padding: 0 16px;
-  border-radius: var(--pill);
-  background: var(--bg-elev);
-  color: var(--text-dim);
-  font-size: 14px;
-  box-shadow: var(--shadow-sm);
-  transition: transform .15s var(--ease);
-}
-.softfind__bar:active { transform: scale(.99); }
 .softfind__on { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* ---------- 알약 하나 (멤버 · 걸린 검색어) ---------- */
@@ -383,6 +369,5 @@
   .softbtn,
   .softchip,
   .softcard,
-  .softnav__add,
-  .softfind__bar { transition: none; }
+  .softnav__add { transition: none; }
 }
