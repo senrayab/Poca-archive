@@ -26,7 +26,7 @@ export type ArchiveMode = 'all' | 'favorites' | 'trash'
 
 /* 전체 보관함의 제목은 설정에서 바꾼 이름을 쓴다 */
 const TITLES: Record<Exclude<ArchiveMode, 'all'>, string> = {
-  favorites: '즐겨찾기',
+  favorites: '좋아요',
   trash: '휴지통',
 }
 
@@ -347,7 +347,7 @@ function EmptyState({ mode, filtered }: { mode: ArchiveMode; filtered: boolean }
   if (mode === 'favorites') {
     return (
       <div className="empty">
-        <strong>즐겨찾기한 카드가 없어요</strong>
+        <strong>좋아요한 카드가 없어요</strong>
         <p>카드를 열어 하트를 누르면 여기에 모입니다.</p>
       </div>
     )

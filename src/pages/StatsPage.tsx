@@ -117,7 +117,7 @@ export function StatsPage() {
           */}
           <p className="facts">
             <span>
-              즐겨찾기 <b>{stats.favorite}장</b>
+              좋아요 <b>{stats.favorite}장</b>
             </span>
             <span>
               휴지통 <b>{stats.trash}장</b>

@@ -464,8 +464,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                 onClick={toggleFavorite}
                 aria-pressed={card.favorite === 1}
                 data-on={card.favorite === 1}
-                aria-label={card.favorite === 1 ? '찜 해제' : '찜하기'}
-                title="찜"
+                aria-label={card.favorite === 1 ? '좋아요 취소' : '좋아요'}
+                title="좋아요"
               >
                 <HeartIcon size={22} filled={card.favorite === 1} />
 
