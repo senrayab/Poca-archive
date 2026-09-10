@@ -55,8 +55,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
           <div className="drawer__brand" style={{ flex: 1 }}>
             {/* 앞은 가볍게, 뒤는 최대한 굵게 — 두 무게 차이가 이름의 생김새다 */}
             <strong className="brand">
-              <span className="brand__thin">varies</span>
-              <span className="brand__bold">gem.</span>
+              <span className="brand__thin">varies</span> <span className="brand__bold">gem.</span>
             </strong>
             <span>{appName}</span>
           </div>
