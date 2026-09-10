@@ -52,7 +52,6 @@ export function Archive(view: ArchiveView) {
     onClearQuery,
     byImage,
     onClearByImage,
-    onOpenSearch,
     onTrash,
     onRestore,
     onPurge,
@@ -123,13 +122,13 @@ export function Archive(view: ArchiveView) {
       </header>
 
       {/*
-        검색은 늘 보이는 알약 하나로 둔다. 기본 차림은 머리의 돋보기
-        아이콘이었는데, 이 레이아웃에서는 위층이 이미 알약으로 차 있어서
-        아이콘 하나를 더 얹으면 어느 것이 검색인지 눈에 띄지 않는다.
-        걸린 검색어가 있으면 그 알약이 바로 걸린 말을 보여준다.
+        찾는 자리는 아래 탭바가 맡는다. 여기에 입력 칸을 하나 더 두면
+        같은 일을 두 곳에서 시작하는 셈이고, 늘 자리를 차지해 카드가
+        그만큼 밀린다. 걸린 것이 있을 때만 그 말을 알약으로 보여준다 —
+        무엇에 걸려 있는지 알리고, 눌러 푸는 자리다.
       */}
-      <div className="softfind">
-        {query || byImage ? (
+      {(query || byImage) && (
+        <div className="softfind">
           <div className="softfind__on">
             {query && (
               <button className="softchip softchip--on" onClick={onClearQuery}>
@@ -146,13 +145,8 @@ export function Archive(view: ArchiveView) {
               </button>
             )}
           </div>
-        ) : (
-          <button className="softfind__bar" onClick={onOpenSearch}>
-            <SearchIcon size={18} />
-            <span>제목·메모로 찾기</span>
-          </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/*
         멤버는 담는 레일 없이 알약 하나하나가 떠 있다. 지금 고른 것만
