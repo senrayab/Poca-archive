@@ -72,14 +72,31 @@
  *
  * --wash는 배경에 깔리는 파스텔 얼룩이다. 배경색 위에 이미지 레이어로 얹어
  * 별도 요소나 z-index 없이 화면 전체에 은은한 색감을 준다.
+ *
+ * 바탕과 선은 포인트 색을 아주 옅게 머금는다.
+ *
+ *   --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
+ *                            ~~~~~~~~~~~~ 스민 정도   ~~~~~~~ 밑색
+ *
+ * 포인트 색만 바꾸면 판때기도 선도 페이지 바탕도 그 색 쪽으로 함께 기운다.
+ * 강조만 갈아끼우는 것이 아니라 앱 전체의 색감이 따라 옮겨가는 것이다.
+ *
+ * 밑색은 눈으로 고른 값이 아니라 거꾸로 푼 값이다. 스킨이 정한 기본 포인트
+ * 색을 넣었을 때 예전과 똑같은 색이 나오도록 B = (C - p·A) / (1 - p)로
+ * 구했다. 그래서 포인트 색을 건드리지 않은 사람에게는 달라진 것이 없고,
+ * 바꾼 사람에게만 색감이 따라온다. (판때기가 이미 순백이던 자리는 더
+ * 밝아질 수 없어 아주 옅은 종이빛으로 내려앉는다 — 유일한 예외다.)
+ *
+ * 스민 정도는 자리마다 다르다. 넓게 깔리는 바탕일수록 옅게(3~6%), 가늘어서
+ * 잘 안 보이는 선일수록 짙게(10~12%) 둬야 같은 세기로 느껴진다.
  */
 :root,
 :root[data-theme='dark'] {
-  --bg: #0f0e14;
-  --desk-bg: #08070c;
-  --bg-elev: #191822;
-  --bg-elev-2: #23212e;
-  --line: #2c2a3a;
+  --bg: color-mix(in srgb, var(--accent) 5%, #020b10);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000306);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #121620);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #151e2b);
+  --line: color-mix(in srgb, var(--accent) 12%, #0f2534);
   --text: #efedf6;
   --text-dim: #9793a8;
   --accent: #ff4d64;
@@ -104,11 +121,11 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: #f4f3f9;
-    --desk-bg: #eae8f2;
-    --bg-elev: #ffffff;
-    --bg-elev-2: #f2f1f8;
-    --line: #e8e5f1;
+    --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
+    --desk-bg: color-mix(in srgb, var(--accent) 6%, #e9f3fc);
+    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #f1fcff);
+    --line: color-mix(in srgb, var(--accent) 12%, #e5fcff);
     --text: #17161d;
     --text-dim: #79758a;
     --accent: #ff3d57;
@@ -134,11 +151,11 @@
 }
 
 :root[data-theme='light'] {
-  --bg: #f4f3f9;
-  --desk-bg: #eae8f2;
-  --bg-elev: #ffffff;
-  --bg-elev-2: #f2f1f8;
-  --line: #e8e5f1;
+  --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #e9f3fc);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #f1fcff);
+  --line: color-mix(in srgb, var(--accent) 12%, #e5fcff);
   --text: #17161d;
   --text-dim: #79758a;
   --accent: #ff3d57;
@@ -2627,12 +2644,12 @@ a { color: inherit; }
  */
 :root[data-skin='mono'],
 :root[data-skin='mono'][data-theme='dark'] {
-  --bg: #0b0b0c;
-  --desk-bg: #050506;
-  --bg-elev: #151517;
-  --bg-elev-2: #1f1f22;
-  --line: #2b2b30;
-  --panel-line: #27272b;
+  --bg: color-mix(in srgb, var(--accent) 5%, #000000);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000000);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #0e0e10);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #111115);
+  --line: color-mix(in srgb, var(--accent) 12%, #101015);
+  --panel-line: color-mix(in srgb, var(--accent) 10%, #101015);
   --text: #f3f3f4;
   --text-dim: #8e8e96;
   /* 다크에서는 흰색이 포인트가 된다 */
@@ -2679,12 +2696,12 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='mono']:not([data-theme='dark']) {
-    --bg: #f1f1f2;
-    --desk-bg: #e3e3e5;
-    --bg-elev: #ffffff;
-    --bg-elev-2: #f5f5f6;
-    --line: #e3e3e5;
-    --panel-line: #e6e6e8;
+    --bg: color-mix(in srgb, var(--accent) 5%, #fdfdfe);
+    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f0f0f2);
+    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #ffffff);
+    --line: color-mix(in srgb, var(--accent) 12%, #ffffff);
+    --panel-line: color-mix(in srgb, var(--accent) 10%, #fefeff);
     --text: #0e0e0f;
     --text-dim: #76767c;
     --accent: #121214;
@@ -2719,12 +2736,12 @@ a { color: inherit; }
 }
 
 :root[data-skin='mono'][data-theme='light'] {
-  --bg: #f1f1f2;
-  --desk-bg: #e3e3e5;
-  --bg-elev: #ffffff;
-  --bg-elev-2: #f5f5f6;
-  --line: #e3e3e5;
-  --panel-line: #e6e6e8;
+  --bg: color-mix(in srgb, var(--accent) 5%, #fdfdfe);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f0f0f2);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #ffffff);
+  --line: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --panel-line: color-mix(in srgb, var(--accent) 10%, #fefeff);
   --text: #0e0e0f;
   --text-dim: #76767c;
   --accent: #121214;
@@ -2860,11 +2877,11 @@ a { color: inherit; }
  */
 :root[data-skin='aurora'],
 :root[data-skin='aurora'][data-theme='dark'] {
-  --bg: #100a1c;
-  --desk-bg: #080512;
-  --bg-elev: #1c1433;
-  --bg-elev-2: #281d46;
-  --line: #372a5e;
+  --bg: color-mix(in srgb, var(--accent) 5%, #070211);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000004);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #17102d);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #1f143b);
+  --line: color-mix(in srgb, var(--accent) 12%, #25194a);
   --panel-line: rgba(190, 168, 255, .18);
   --text: #f3ecff;
   --text-dim: #a89ccc;
@@ -2908,11 +2925,11 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='aurora']:not([data-theme='dark']) {
-    --bg: #f7f3fc;
-    --desk-bg: #ece5f7;
-    --bg-elev: #ffffff;
-    --bg-elev-2: #f9f5fe;
-    --line: #eae2f7;
+    --bg: color-mix(in srgb, var(--accent) 5%, #fdfafd);
+    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2edf8);
+    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fffeff);
+    --line: color-mix(in srgb, var(--accent) 12%, #f7f2f9);
     --panel-line: rgba(140, 115, 215, .13);
     --text: #1e1630;
     --text-dim: #7c73a2;
@@ -2940,11 +2957,11 @@ a { color: inherit; }
 }
 
 :root[data-skin='aurora'][data-theme='light'] {
-  --bg: #f7f3fc;
-  --desk-bg: #ece5f7;
-  --bg-elev: #ffffff;
-  --bg-elev-2: #f9f5fe;
-  --line: #eae2f7;
+  --bg: color-mix(in srgb, var(--accent) 5%, #fdfafd);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2edf8);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fffeff);
+  --line: color-mix(in srgb, var(--accent) 12%, #f7f2f9);
   --panel-line: rgba(140, 115, 215, .13);
   --text: #1e1630;
   --text-dim: #7c73a2;
@@ -3096,12 +3113,12 @@ a { color: inherit; }
  */
 :root[data-skin='brick'],
 :root[data-skin='brick'][data-theme='dark'] {
-  --bg: #17131b;
-  --desk-bg: #0e0b11;
-  --bg-elev: #221c27;
-  --bg-elev-2: #2d2534;
-  --line: #3a3042;
-  --panel-line: #3a3042;
+  --bg: color-mix(in srgb, var(--accent) 5%, #0b0e13);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000507);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #1b1923);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #20202c);
+  --line: color-mix(in srgb, var(--accent) 12%, #1f2733);
+  --panel-line: color-mix(in srgb, var(--accent) 10%, #242936);
   --text: #f6eef3;
   --text-dim: #a495ad;
   --accent: #ff6fae;
@@ -3143,12 +3160,12 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='brick']:not([data-theme='dark']) {
-    --bg: #fdf6f9;
-    --desk-bg: #f2e6ec;
-    --bg-elev: #ffffff;
-    --bg-elev-2: #fdf0f5;
-    --line: #f0dce6;
-    --panel-line: #f2dfe8;
+    --bg: color-mix(in srgb, var(--accent) 5%, #fefffe);
+    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2f0f2);
+    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fefafb);
+    --line: color-mix(in srgb, var(--accent) 12%, #f0f0f1);
+    --panel-line: color-mix(in srgb, var(--accent) 10%, #f2eff2);
     --text: #2a1f27;
     --text-dim: #8a7580;
     --accent: #ef4d92;
@@ -3175,12 +3192,12 @@ a { color: inherit; }
 }
 
 :root[data-skin='brick'][data-theme='light'] {
-  --bg: #fdf6f9;
-  --desk-bg: #f2e6ec;
-  --bg-elev: #ffffff;
-  --bg-elev-2: #fdf0f5;
-  --line: #f0dce6;
-  --panel-line: #f2dfe8;
+  --bg: color-mix(in srgb, var(--accent) 5%, #fefffe);
+  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2f0f2);
+  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
+  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fefafb);
+  --line: color-mix(in srgb, var(--accent) 12%, #f0f0f1);
+  --panel-line: color-mix(in srgb, var(--accent) 10%, #f2eff2);
   --text: #2a1f27;
   --text-dim: #8a7580;
   --accent: #ef4d92;
