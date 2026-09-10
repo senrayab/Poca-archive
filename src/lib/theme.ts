@@ -53,12 +53,28 @@ export const FAV_CUTS: Array<{ id: FavCut; name: string }> = [
 
 const FAV_CUT_IDS: FavCut[] = FAV_CUTS.map((c) => c.id)
 
-/** 주소창/상태바 색. CSS의 --bg와 값을 맞춰둔다. */
-const BAR_COLOR: Record<SkinId, Record<'light' | 'dark', string>> = {
-  pastel: { dark: '#0f0e14', light: '#f4f3f9' },
-  mono: { dark: '#0b0b0c', light: '#f1f1f2' },
-  aurora: { dark: '#100a1c', light: '#f7f3fc' },
-  brick: { dark: '#17131b', light: '#fdf6f9' },
+/**
+ * 주소창·상태바 색.
+ *
+ * 예전에는 스킨마다 값을 적어둔 표가 있었다. 그런데 표는 CSS를 보고 손으로
+ * 옮겨 적은 것이라, 스킨을 하나 더하거나 색을 손볼 때마다 잊기 쉬웠다.
+ * 포인트 색이 바탕까지 물들이게 된 뒤로는 아예 맞출 수가 없다 — 사람이
+ * 고른 색에서 나오는 값을 미리 적어둘 방법이 없기 때문이다.
+ *
+ * 그래서 적어두는 대신 읽어 온다. 화면에 실제로 칠해진 색을 그대로 가져오니
+ * 어떤 스킨이든, 포인트 색을 무엇으로 바꾸든 어긋날 자리가 없다.
+ */
+function barColor(): string {
+  if (typeof document === 'undefined' || !document.body) return ''
+  const painted = getComputedStyle(document.body).backgroundColor
+  // 'rgb(20 18 26)'이든 'rgba(20, 18, 26, 1)'이든 숫자만 뽑으면 된다
+  const parts = painted.match(/[\d.]+/g)
+  if (!parts || parts.length < 3) return painted
+  const hex = parts
+    .slice(0, 3)
+    .map((v) => Math.round(Number(v)).toString(16).padStart(2, '0'))
+    .join('')
+  return `#${hex}`
 }
 
 const media =
@@ -143,16 +159,21 @@ function apply() {
     root.style.setProperty('--accent', accent)
     root.style.setProperty('--accent-ink', inkFor(accent))
     root.style.setProperty('--accent-soft', `color-mix(in srgb, ${accent} 12%, transparent)`)
-    root.style.setProperty('--glow', `0 8px 22px color-mix(in srgb, ${accent} 34%, transparent)`)
+    /*
+     * 그림자의 번짐은 스킨이 정한다. 블록 스킨은 번지지 않는 오프셋 그림자를
+     * 쓰는데, 여기서 모양까지 박아버리면 포인트 색을 바꾸는 순간 그 스킨만
+     * 흐릿해졌다. 색만 갈아끼우고 모양은 스킨의 것(--glow-spread)을 쓴다.
+     */
+    const spread = getComputedStyle(root).getPropertyValue('--glow-spread').trim() || '0 8px 22px'
+    root.style.setProperty('--glow', `${spread} color-mix(in srgb, ${accent} 34%, transparent)`)
   } else {
     for (const name of ['--accent', '--accent-ink', '--accent-soft', '--glow']) {
       root.style.removeProperty(name)
     }
   }
 
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', BAR_COLOR[skin][resolveTheme()])
+  const bar = barColor()
+  if (bar) document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar)
 }
 
 export function setThemeMode(next: ThemeMode) {
