@@ -679,13 +679,24 @@ a { color: inherit; }
 /*
  * 사이를 flex 간격이 아니라 진짜 띄어쓰기로 둔다. 글씨 크기를 따라 함께
  * 벌어지고, 읽어주는 기능에도 두 낱말로 전해진다.
+ *
+ * 자리를 밝혀(.drawer__brand .brand__…) 힘을 올린 건 바로 위 한 줄 때문이다.
+ * '.drawer__brand span'은 아래 앱 이름 줄을 12px 흐린 색으로 만드는 규칙인데,
+ * 클래스 하나짜리로 적으면 그 규칙(클래스+요소)보다 힘이 약해 밀린다.
+ * 그래서 이름이 앱 이름과 같은 크기·색으로 나왔다.
  */
 .brand { display: block; }
-.brand__thin {
+.drawer__brand .brand__thin,
+.drawer__brand .brand__bold {
+  /* 감싼 strong의 크기와 색을 그대로 물려받는다 */
+  font-size: inherit;
+  color: var(--text);
+}
+.drawer__brand .brand__thin {
   font-weight: 300;
   letter-spacing: .01em;
 }
-.brand__bold {
+.drawer__brand .brand__bold {
   font-weight: 900;
   letter-spacing: -.03em;
 }
