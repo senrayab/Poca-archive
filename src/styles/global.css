@@ -491,6 +491,16 @@ a { color: inherit; }
   font-weight: 700;
 }
 
+/*
+ * 설정 화면의 갈래 줄. 아래 .page가 가운데로 모이고 좌우 16px을 두므로,
+ * 탭도 같은 자리에서 시작해야 넓은 화면에서 홀로 왼쪽에 붙지 않는다.
+ */
+.subtabs--page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-inline: 16px;
+}
+
 /* ---------- grid ---------- */
 
 /* 폰에서는 한 줄에 4장 고정, 화면이 넓어지면 칸 수를 늘린다. */

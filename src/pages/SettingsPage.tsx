@@ -55,6 +55,25 @@ const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }
   { mode: 'dark', label: '다크', icon: <MoonIcon size={16} /> },
 ]
 
+/*
+ * 설정을 성격끼리 묶어 한 번에 한 갈래만 보인다.
+ *
+ * 기능이 늘면서 한 화면에 다 쌓이니, 바꾸려는 것 하나를 찾으려고 관계없는
+ * 것들을 한참 지나쳐야 했다. 나눈 기준은 '무엇을 건드리는가'다 — 보이는
+ * 모습인가, 안에 든 데이터인가, 앱 자체인가.
+ *
+ * 생김새는 보관함의 카테고리 줄(.subtabs)과 같은 것을 쓴다. 새 모양을
+ * 만들면 이 앱에 탭처럼 생긴 것이 셋이 되고, 어느 것이 더 윗자리인지
+ * 헷갈린다.
+ */
+const TABS = [
+  { id: 'look', label: '화면' },
+  { id: 'data', label: '데이터' },
+  { id: 'app', label: '앱' },
+] as const
+
+type SettingsTab = (typeof TABS)[number]['id']
+
 export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
   const skin = useSkin()
@@ -63,6 +82,7 @@ export function SettingsPage() {
   const appNameInput = useAppNameInput()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
+  const [tab, setTab] = useState<SettingsTab>('look')
   const [working, setWorking] = useState<'export' | 'import' | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [lastBackup, setLastBackup] = useState(getLastBackupAt())
@@ -200,249 +220,274 @@ export function SettingsPage() {
       <Header title="백업 · 설정" />
 
       <div className="content content--no-fab">
-        <div className="page">
-          <h2>
-            <SkinIcon size={15} />
-            인터페이스
-          </h2>
-          <div className="card-panel">
-            <p>
-              보관함 화면 제목과 서랍 메뉴에 쓰이는 이름입니다. 비워두면
-              <b> {DEFAULT_APP_NAME}</b>로 돌아갑니다.
-            </p>
-            <label className="field" style={{ marginBottom: 0 }}>
-              <span>보관함 이름</span>
-              <input
-                type="text"
-                value={appNameInput}
-                onChange={(e) => setAppName(e.target.value)}
-                placeholder={DEFAULT_APP_NAME}
-                maxLength={40}
-              />
-            </label>
-          </div>
-
-          <div className="card-panel">
-            <p>
-              스킨은 색·둥글기·그림자를 한 벌로 묶은 것입니다. 아래 테마(다크·라이트)와
-              따로 놀지 않고, 고른 스킨 안에서 다시 밝기가 갈립니다.
-            </p>
-            <div className="skins">
-              {SKINS.map((option) => (
-                <button
-                  key={option.id}
-                  className="skin"
-                  data-preview={option.id}
-                  aria-pressed={skin === option.id}
-                  onClick={() => setSkin(option.id)}
-                >
-                  <span className="skin__swatch" aria-hidden="true">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <b>{option.name}</b>
-                  <small>{option.hint}</small>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="card-panel">
-            <p>
-              자세히보기에서 찜 하트가 앉는 자리입니다. 카드 오른쪽 위를
-              <b> 모서리째 베어내거나</b>, 그 안에 <b>사진 조각을 하나 남길</b> 수 있어요.
-            </p>
-            <div className="segmented" role="group" aria-label="찜 하트 자리">
-              {FAV_CUTS.map((option) => {
-                const Icon = CUT_ICONS[option.id]
-                return (
-                  <button
-                    key={option.id}
-                    aria-pressed={favCut === option.id}
-                    onClick={() => setFavCut(option.id)}
-                  >
-                    <Icon size={20} />
-                    {option.name}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="card-panel">
-            <p>
-              테마를 고르세요. <b>시스템</b>은 폰·PC의 다크 모드 설정을 그대로 따라갑니다.
-              지금은 <b>{resolved === 'dark' ? '다크' : '라이트'}</b>로 보이는 중이에요.
-            </p>
-            <div className="segmented" role="group" aria-label="테마">
-              {THEME_OPTIONS.map((option) => (
-                <button
-                  key={option.mode}
-                  aria-pressed={themeMode === option.mode}
-                  onClick={() => setThemeMode(option.mode)}
-                >
-                  {option.icon}
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="card-panel">
-            <p>
-              포인트 색입니다. 선택된 탭, 등록 버튼, 즐겨찾기 하트처럼 강조되는 곳에
-              쓰입니다. 고르지 않으면 스킨이 정한 색을 씁니다.
-            </p>
-            <div className="swatches">
-              {ACCENT_PRESETS.map((hex) => (
-                <button
-                  key={hex}
-                  className="swatch"
-                  style={{ background: hex }}
-                  aria-label={hex}
-                  aria-pressed={accent === hex}
-                  onClick={() => setAccent(hex)}
-                />
-              ))}
-              <label className="swatch swatch--pick" aria-label="직접 고르기">
-                <PaletteIcon size={17} />
-                <input
-                  type="color"
-                  value={accent ?? '#ff3d57'}
-                  onChange={(e) => setAccent(e.target.value)}
-                />
-              </label>
-            </div>
+        <div className="subtabs subtabs--page" role="tablist" aria-label="설정 갈래">
+          {TABS.map((option) => (
             <button
-              className="btn btn--sm btn--ghost"
-              disabled={accent === null}
-              onClick={() => setAccent(null)}
+              key={option.id}
+              role="tab"
+              aria-selected={tab === option.id}
+              onClick={() => setTab(option.id)}
             >
-              스킨 기본색으로
+              {option.label}
             </button>
-          </div>
+          ))}
+        </div>
 
-          <h2>
-            <BackupIcon size={15} />
-            백업
-          </h2>
-          <div className="card-panel">
-            <p>
-              모든 카드 이미지와 정보를 ZIP 한 개로 묶어 내려받습니다. 이 앱의 데이터는
-              브라우저 안에만 있어서, <b>기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다.</b>{' '}
-              주기적으로 클라우드 드라이브에 백업해 두세요.
-              {lastBackup && (
-                <>
+        <div className="page">
+          {tab === 'look' && (
+            <>
+              <h2>
+                <SkinIcon size={15} />
+                인터페이스
+              </h2>
+              <div className="card-panel">
+                <p>
+                  보관함 화면 제목과 서랍 메뉴에 쓰이는 이름입니다. 비워두면
+                  <b> {DEFAULT_APP_NAME}</b>로 돌아갑니다.
+                </p>
+                <label className="field" style={{ marginBottom: 0 }}>
+                  <span>보관함 이름</span>
+                  <input
+                    type="text"
+                    value={appNameInput}
+                    onChange={(e) => setAppName(e.target.value)}
+                    placeholder={DEFAULT_APP_NAME}
+                    maxLength={40}
+                  />
+                </label>
+              </div>
+
+              <div className="card-panel">
+                <p>
+                  스킨은 색·둥글기·그림자를 한 벌로 묶은 것입니다. 아래 테마(다크·라이트)와
+                  따로 놀지 않고, 고른 스킨 안에서 다시 밝기가 갈립니다.
+                </p>
+                <div className="skins">
+                  {SKINS.map((option) => (
+                    <button
+                      key={option.id}
+                      className="skin"
+                      data-preview={option.id}
+                      aria-pressed={skin === option.id}
+                      onClick={() => setSkin(option.id)}
+                    >
+                      <span className="skin__swatch" aria-hidden="true">
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                      <b>{option.name}</b>
+                      <small>{option.hint}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-panel">
+                <p>
+                  자세히보기에서 찜 하트가 앉는 자리입니다. 카드 오른쪽 위를
+                  <b> 모서리째 베어내거나</b>, 그 안에 <b>사진 조각을 하나 남길</b> 수 있어요.
+                </p>
+                <div className="segmented" role="group" aria-label="찜 하트 자리">
+                  {FAV_CUTS.map((option) => {
+                    const Icon = CUT_ICONS[option.id]
+                    return (
+                      <button
+                        key={option.id}
+                        aria-pressed={favCut === option.id}
+                        onClick={() => setFavCut(option.id)}
+                      >
+                        <Icon size={20} />
+                        {option.name}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="card-panel">
+                <p>
+                  테마를 고르세요. <b>시스템</b>은 폰·PC의 다크 모드 설정을 그대로 따라갑니다.
+                  지금은 <b>{resolved === 'dark' ? '다크' : '라이트'}</b>로 보이는 중이에요.
+                </p>
+                <div className="segmented" role="group" aria-label="테마">
+                  {THEME_OPTIONS.map((option) => (
+                    <button
+                      key={option.mode}
+                      aria-pressed={themeMode === option.mode}
+                      onClick={() => setThemeMode(option.mode)}
+                    >
+                      {option.icon}
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-panel">
+                <p>
+                  포인트 색입니다. 선택된 탭, 등록 버튼, 즐겨찾기 하트처럼 강조되는 곳에
+                  쓰입니다. 고르지 않으면 스킨이 정한 색을 씁니다.
+                </p>
+                <div className="swatches">
+                  {ACCENT_PRESETS.map((hex) => (
+                    <button
+                      key={hex}
+                      className="swatch"
+                      style={{ background: hex }}
+                      aria-label={hex}
+                      aria-pressed={accent === hex}
+                      onClick={() => setAccent(hex)}
+                    />
+                  ))}
+                  <label className="swatch swatch--pick" aria-label="직접 고르기">
+                    <PaletteIcon size={17} />
+                    <input
+                      type="color"
+                      value={accent ?? '#ff3d57'}
+                      onChange={(e) => setAccent(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <button
+                  className="btn btn--sm btn--ghost"
+                  disabled={accent === null}
+                  onClick={() => setAccent(null)}
+                >
+                  스킨 기본색으로
+                </button>
+              </div>
+            </>
+          )}
+
+          {tab === 'data' && (
+            <>
+              <h2>
+                <BackupIcon size={15} />
+                백업
+              </h2>
+              <div className="card-panel">
+                <p>
+                  모든 카드 이미지와 정보를 ZIP 한 개로 묶어 내려받습니다. 이 앱의 데이터는
+                  브라우저 안에만 있어서, <b>기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다.</b>{' '}
+                  주기적으로 클라우드 드라이브에 백업해 두세요.
+                  {lastBackup && (
+                    <>
+                      <br />
+                      마지막 백업: {relativeDays(lastBackup)}
+                    </>
+                  )}
+                </p>
+                <div className="row">
+                  <button className="btn btn--primary" onClick={exportNow} disabled={working !== null}>
+                    <DownloadIcon size={18} />
+                    {working === 'export' ? '만드는 중…' : '백업 내보내기'}
+                  </button>
+                  <button
+                    className="btn"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={working !== null}
+                  >
+                    <UploadIcon size={18} />
+                    {working === 'import' ? '복원 중…' : '백업 가져오기'}
+                  </button>
+                </div>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept=".zip,application/zip"
+                  hidden
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    e.target.value = ''
+                    if (file) void importNow(file)
+                  }}
+                />
+              </div>
+
+              <h2>
+                <EditIcon size={15} />
+                제목 정리
+              </h2>
+              <div className="card-panel">
+                <p>
+                  예전에는 파일 이름이 그대로 제목이 됐습니다. 그래서{' '}
+                  <b>IMG_ · KakaoTalk_ · Screenshot_으로 시작하는 이름</b>이나 <b>숫자뿐인 제목</b>(20260907_165454처럼
+                  밑줄로 이어 붙인 것도 포함)이 붙어 있을 수 있어요. 그런 것만 골라 비웁니다 — 직접
+                  적으신 제목은 건드리지 않습니다.
                   <br />
-                  마지막 백업: {relativeDays(lastBackup)}
-                </>
-              )}
-            </p>
-            <div className="row">
-              <button className="btn btn--primary" onClick={exportNow} disabled={working !== null}>
-                <DownloadIcon size={18} />
-                {working === 'export' ? '만드는 중…' : '백업 내보내기'}
-              </button>
-              <button
-                className="btn"
-                onClick={() => fileRef.current?.click()}
-                disabled={working !== null}
-              >
-                <UploadIcon size={18} />
-                {working === 'import' ? '복원 중…' : '백업 가져오기'}
-              </button>
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".zip,application/zip"
-              hidden
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                e.target.value = ''
-                if (file) void importNow(file)
-              }}
-            />
-          </div>
+                  되돌릴 수 없으니 <b>백업을 먼저 내려받아 두세요.</b>
+                </p>
+                <button className="btn btn--block" onClick={clearFileNameTitles}>
+                  <EditIcon size={17} />
+                  파일 이름으로 된 제목 비우기
+                </button>
+              </div>
 
-          <h2>
-            <EditIcon size={15} />
-            제목 정리
-          </h2>
-          <div className="card-panel">
-            <p>
-              예전에는 파일 이름이 그대로 제목이 됐습니다. 그래서{' '}
-              <b>IMG_ · KakaoTalk_ · Screenshot_으로 시작하는 이름</b>이나 <b>숫자뿐인 제목</b>(20260907_165454처럼
-              밑줄로 이어 붙인 것도 포함)이 붙어 있을 수 있어요. 그런 것만 골라 비웁니다 — 직접
-              적으신 제목은 건드리지 않습니다.
-              <br />
-              되돌릴 수 없으니 <b>백업을 먼저 내려받아 두세요.</b>
-            </p>
-            <button className="btn btn--block" onClick={clearFileNameTitles}>
-              <EditIcon size={17} />
-              파일 이름으로 된 제목 비우기
-            </button>
-          </div>
+              <h2>
+                <StorageIcon size={15} />
+                저장소
+              </h2>
+              <div className="card-panel">
+                <p>
+                  {quota
+                    ? `${formatBytes(quota.usage)} 사용 중 · 최대 약 ${formatBytes(quota.quota)}`
+                    : '저장소 사용량을 확인할 수 없는 브라우저입니다.'}
+                  <br />
+                  영구 저장: {persisted === null ? '확인 중' : persisted ? '켜짐' : '꺼짐'}
+                </p>
+                {persisted === false && (
+                  <button className="btn btn--block" onClick={requestPersist}>
+                    영구 저장 요청하기
+                  </button>
+                )}
+              </div>
 
-          <h2>
-            <StorageIcon size={15} />
-            저장소
-          </h2>
-          <div className="card-panel">
-            <p>
-              {quota
-                ? `${formatBytes(quota.usage)} 사용 중 · 최대 약 ${formatBytes(quota.quota)}`
-                : '저장소 사용량을 확인할 수 없는 브라우저입니다.'}
-              <br />
-              영구 저장: {persisted === null ? '확인 중' : persisted ? '켜짐' : '꺼짐'}
-            </p>
-            {persisted === false && (
-              <button className="btn btn--block" onClick={requestPersist}>
-                영구 저장 요청하기
-              </button>
-            )}
-          </div>
+              <h2>
+                <ResetIcon size={15} />
+                초기화
+              </h2>
+              <div className="card-panel">
+                <p>모든 데이터를 지우고 처음 상태로 되돌립니다.</p>
+                <button className="btn btn--danger btn--block" onClick={resetAll}>
+                  전체 삭제
+                </button>
+              </div>
+            </>
+          )}
 
-          <h2>
-            <SyncIcon size={15} />
-            업데이트
-          </h2>
-          <div className="card-panel">
-            <p>
-              이 앱은 화면 파일을 기기에 저장해 두고 오프라인에서도 열리게 합니다. 그래서
-              새 버전이 올라가도 <b>새로고침만으로는 바뀌지 않을 수 있어요.</b> 아래 버튼은
-              새 버전이 있는지 직접 확인하고, 있으면 받아서 다시 엽니다.
-              <br />
-              지금 화면: {formatDateTime(Date.parse(BUILD_TIME))} 빌드
-            </p>
-            <button className="btn btn--block" onClick={syncNow} disabled={syncing}>
-              <SyncIcon size={18} />
-              {syncing ? '확인 중…' : '최신으로 맞추기'}
-            </button>
-          </div>
+          {tab === 'app' && (
+            <>
+              <h2>
+                <SyncIcon size={15} />
+                업데이트
+              </h2>
+              <div className="card-panel">
+                <p>
+                  이 앱은 화면 파일을 기기에 저장해 두고 오프라인에서도 열리게 합니다. 그래서
+                  새 버전이 올라가도 <b>새로고침만으로는 바뀌지 않을 수 있어요.</b> 아래 버튼은
+                  새 버전이 있는지 직접 확인하고, 있으면 받아서 다시 엽니다.
+                  <br />
+                  지금 화면: {formatDateTime(Date.parse(BUILD_TIME))} 빌드
+                </p>
+                <button className="btn btn--block" onClick={syncNow} disabled={syncing}>
+                  <SyncIcon size={18} />
+                  {syncing ? '확인 중…' : '최신으로 맞추기'}
+                </button>
+              </div>
 
-          <h2>
-            <InstallIcon size={15} />
-            앱으로 설치
-          </h2>
-          <div className="card-panel">
-            <p>
-              브라우저 메뉴에서 <b>홈 화면에 추가</b>(iOS는 공유 → 홈 화면에 추가)를 누르면
-              주소창 없이 앱처럼 열리고, 오프라인에서도 보관함을 볼 수 있습니다.
-            </p>
-          </div>
-
-          <h2>
-            <ResetIcon size={15} />
-            초기화
-          </h2>
-          <div className="card-panel">
-            <p>모든 데이터를 지우고 처음 상태로 되돌립니다.</p>
-            <button className="btn btn--danger btn--block" onClick={resetAll}>
-              전체 삭제
-            </button>
-          </div>
+              <h2>
+                <InstallIcon size={15} />
+                앱으로 설치
+              </h2>
+              <div className="card-panel">
+                <p>
+                  브라우저 메뉴에서 <b>홈 화면에 추가</b>(iOS는 공유 → 홈 화면에 추가)를 누르면
+                  주소창 없이 앱처럼 열리고, 오프라인에서도 보관함을 볼 수 있습니다.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
