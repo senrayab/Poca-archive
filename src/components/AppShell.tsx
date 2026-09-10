@@ -1,59 +1,25 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useCallback, useMemo, useState } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import type { Member } from '@/db/types'
+import { useLayout } from '@/skins'
+import type { HeaderView } from '@/skins/types'
 import { Drawer } from './Drawer'
 import { Fab } from './Fab'
-import { ChevronLeft, MenuIcon } from './Icons'
 import { MemberEditor } from './MemberEditor'
+import { ShellContext, type ShellApi } from './shell'
 
-interface ShellApi {
-  openDrawer: () => void
-  openMemberEditor: (member?: Member) => void
-}
+export { useShell } from './shell'
 
-const ShellContext = createContext<ShellApi>({
-  openDrawer: () => {},
-  openMemberEditor: () => {},
-})
-
-export const useShell = () => useContext(ShellContext)
-
-interface HeaderProps {
-  title: string
-  /*
-   * 뒤로가기는 '흐름을 빠져나오는' 화면(등록)만 쓴다.
-   * 서랍에서 바로 여는 관리 화면은 온 길이 하나가 아니라서, 뒤로가기보다
-   * 서랍을 다시 여는 편이 자연스럽다.
-   */
-  back?: boolean
-  /*
-   * 아래에 붙는 층(멤버·분류 탭)이 헤더 자리까지 덮는 배경을 직접 그릴 때 켠다.
-   * backdrop-filter는 요소마다 따로 계산돼서, 헤더와 탭이 각자 흐림을 걸면
-   * 맞닿는 자리에 경계가 생긴다. 그래서 한쪽이 배경을 통째로 맡는다.
-   */
-  bare?: boolean
-  actions?: ReactNode
-}
-
-export function Header({ title, back = false, bare = false, actions }: HeaderProps) {
-  const { openDrawer } = useShell()
-  const navigate = useNavigate()
-
-  return (
-    <header className="header" data-bare={bare || undefined}>
-      {back ? (
-        <button className="icon-btn" onClick={() => navigate(-1)} aria-label="뒤로">
-          <ChevronLeft />
-        </button>
-      ) : (
-        <button className="icon-btn" onClick={openDrawer} aria-label="메뉴 열기">
-          <MenuIcon />
-        </button>
-      )}
-      <h1 className="header__title">{title}</h1>
-      {actions}
-    </header>
-  )
+/**
+ * 머리는 스킨이 그린다.
+ *
+ * 화면들은 예전처럼 Header 하나만 부르면 되고, 그것이 지금 스킨의 머리로
+ * 이어진다. 큰 제목 덩어리로 갈지 흐린 바로 갈지는 스킨이 정할 일이지,
+ * 화면이 알 일이 아니다.
+ */
+export function Header(view: HeaderView) {
+  const { Header: Painted } = useLayout()
+  return <Painted {...view} />
 }
 
 /**

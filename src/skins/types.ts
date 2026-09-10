@@ -1,0 +1,85 @@
+import type { ComponentType, ReactNode } from 'react'
+import type { Card, Category } from '@/db/types'
+
+/**
+ * 스킨이 갈아끼우는 레이아웃.
+ *
+ * 지금까지 스킨은 색과 모서리만 갈아끼웠다. 마크업은 한 벌을 넷이 같이
+ * 썼으므로, 무엇을 어디에 놓을지는 늘 같았고 스킨을 바꿔도 '같은 앱에
+ * 다른 물감'이었다.
+ *
+ * 그래서 화면과 레이아웃을 가른다. 화면(pages/)은 무엇을 보여줄지만 알고,
+ * 어떻게 놓을지는 스킨이 고른 부품이 맡는다. 그 사이를 오가는 것이 아래의
+ * 꾸러미다 — 값과 손짓만 담고, 생김새에 대한 말은 한 마디도 담지 않는다.
+ *
+ * 그래야 레이아웃을 새로 짜는 사람이 DB도 자르기도 중복 찾기도 건드리지
+ * 않고, 오직 '어떻게 보일까'만 생각할 수 있다.
+ */
+
+export type ArchiveMode = 'all' | 'favorites' | 'trash'
+
+export interface ArchiveView {
+  mode: ArchiveMode
+  /** 화면 이름. 고르는 중이면 '3장 선택'처럼 바뀐다. */
+  title: string
+  /** 아직 읽어오는 중. 빈 화면과 구별해야 한 번 깜빡이지 않는다. */
+  loading: boolean
+  cards: Card[]
+  /** 보여줄 것이 없을 때 놓을 말. 사연마다 다르므로 화면이 만들어 넘긴다. */
+  empty: ReactNode
+
+  selected: Set<string>
+  selectMode: boolean
+  onOpen: (card: Card) => void
+  onToggleSelect: (card: Card) => void
+  /** 쓸어 고르는 동안 바뀐 상태를 통째로 받는다 */
+  onSweep: (next: Set<string>) => void
+  onSelectAll: () => void
+  onClearSelection: () => void
+
+  memberId: string | null
+  onSelectMember: (id: string | null) => void
+  onAddMember: () => void
+
+  categories: Category[]
+  categoryId: string | null
+  onSelectCategory: (id: string | null) => void
+
+  query: string
+  onClearQuery: () => void
+  /** 사진으로 찾은 결과. null이면 그 기능을 쓰지 않는 상태다. */
+  byImage: string[] | null
+  onClearByImage: () => void
+  onOpenSearch: () => void
+
+  /*
+   * 고른 카드에 하는 일. 화면 성격에 따라 없을 수 있어 물음표를 달았다 —
+   * 휴지통에서만 되돌리기와 완전 삭제가 있고, 나머지에는 버리기만 있다.
+   */
+  onTrash?: () => void
+  onRestore?: () => void
+  onPurge?: () => void
+  onEmptyTrash?: () => void
+}
+
+export interface HeaderView {
+  title: string
+  /** 흐름을 빠져나오는 화면(등록)만 뒤로가기를 쓴다 */
+  back?: boolean
+  /** 아래 붙는 층이 헤더 자리까지 덮는 배경을 직접 그릴 때 켠다 */
+  bare?: boolean
+  actions?: ReactNode
+}
+
+/*
+ * 레이아웃의 부품은 반드시 컴포넌트로 둔다.
+ *
+ * 함수처럼 불러 쓰면(Archive({...})) 그 안의 훅이 부른 쪽의 훅 줄에 끼어든다.
+ * 스킨을 바꾸는 순간 부품이 갈리므로 훅의 수가 달라지고, 리액트는 그때
+ * '훅이 모자란다'며 화면을 통째로 놓친다. <Archive {...view} />로 세워두면
+ * 부품마다 제 훅 줄을 갖는다.
+ */
+export interface Layout {
+  Header: ComponentType<HeaderView>
+  Archive: ComponentType<ArchiveView>
+}
