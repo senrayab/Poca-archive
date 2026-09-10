@@ -672,6 +672,20 @@ a { color: inherit; }
   font-weight: 800;
   letter-spacing: -.02em;
 }
+/*
+ * 이름은 두 무게로 이뤄진다 — 앞은 가볍게, 뒤는 최대한 굵게.
+ * 그 차이가 이름의 생김새라, 무게를 양 끝으로 벌려 둔다.
+ */
+.brand { display: flex; align-items: baseline; gap: 4px; }
+.brand__thin {
+  font-weight: 300;
+  letter-spacing: .01em;
+  color: var(--text-dim);
+}
+.brand__bold {
+  font-weight: 900;
+  letter-spacing: -.03em;
+}
 .drawer__brand span { font-size: 12px; color: var(--text-dim); }
 
 .drawer__section {
