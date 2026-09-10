@@ -105,8 +105,22 @@
   --sky: #7fc4e0;
   --violet: #a67bff;
   --danger: #ff6b7d;
-  --scrim: rgba(0, 0, 0, .6);
-  --modal-scrim: rgba(6, 6, 10, .78);
+  /*
+   * 딤은 스킨을 가리지 않는다.
+   *
+   * 딤은 화면을 덮어 뒤를 물리는 층이지 스킨의 얼굴이 아니다. 스킨마다
+   * 색을 달리 두면 덮인 화면의 색감이 스킨을 따라 미묘하게 흔들리는데,
+   * 그 위에 뜬 팝업은 늘 같은 흰 글씨라 어울림이 스킨마다 달라진다.
+   *
+   * 그래서 밑색은 파스텔의 것 하나로 통일한다. 거의 검정에 가까워 어떤
+   * 포인트 색과 놓아도 다투지 않는다. 스킨이 고를 수 있는 건 농도뿐이다.
+   *
+   * 예외는 모노의 라이트 하나다. 그쪽은 팝업을 흰 종이 위에 놓은 것처럼
+   * 보이려고 딤까지 밝게 두었고, 그에 맞춰 딤 위의 글씨도 검정이다.
+   */
+  --scrim-ink: #06060a;
+  --scrim: color-mix(in srgb, var(--scrim-ink) 60%, transparent);
+  --modal-scrim: color-mix(in srgb, var(--scrim-ink) 78%, transparent);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, .45);
   --shadow-md: 0 4px 14px rgba(0, 0, 0, .45);
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, .5);
@@ -134,8 +148,9 @@
     --sky: #8ecfe8;
     --violet: #7b3fe4;
     --danger: #e0243f;
-    --scrim: rgba(28, 22, 44, .38);
-    --modal-scrim: rgba(24, 20, 32, .70);
+    --scrim-ink: #1c1628;
+    --scrim: color-mix(in srgb, var(--scrim-ink) 38%, transparent);
+    --modal-scrim: color-mix(in srgb, var(--scrim-ink) 70%, transparent);
     --shadow-sm: 0 1px 3px rgba(74, 58, 110, .07);
     --shadow-md: 0 4px 14px rgba(74, 58, 110, .09);
     --shadow-lg: 0 10px 30px rgba(74, 58, 110, .13);
@@ -164,8 +179,9 @@
   --sky: #8ecfe8;
   --violet: #7b3fe4;
   --danger: #e0243f;
-  --scrim: rgba(28, 22, 44, .38);
-  --modal-scrim: rgba(24, 20, 32, .70);
+  --scrim-ink: #1c1628;
+  --scrim: color-mix(in srgb, var(--scrim-ink) 38%, transparent);
+  --modal-scrim: color-mix(in srgb, var(--scrim-ink) 70%, transparent);
   --shadow-sm: 0 1px 3px rgba(74, 58, 110, .07);
   --shadow-md: 0 4px 14px rgba(74, 58, 110, .09);
   --shadow-lg: 0 10px 30px rgba(74, 58, 110, .13);
@@ -2657,8 +2673,6 @@ a { color: inherit; }
   --accent-ink: #0b0b0c;
   --accent-soft: rgba(243, 243, 244, .10);
   --danger: #e6e6e9;
-  --scrim: rgba(0, 0, 0, .62);
-  --modal-scrim: rgba(8, 8, 9, .84);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
   --shadow-md: 0 2px 10px rgba(0, 0, 0, .45);
   --shadow-lg: 0 8px 26px rgba(0, 0, 0, .5);
@@ -2708,8 +2722,8 @@ a { color: inherit; }
     --accent-ink: #ffffff;
     --accent-soft: rgba(18, 18, 20, .07);
     --danger: #26262a;
-    --scrim: rgba(18, 18, 22, .34);
-    /* 딤도 밝게 — 상세 팝업이 흰 종이 위에 놓인 것처럼 보인다 */
+    /* 팝업 딤만 밝게 — 상세 팝업이 흰 종이 위에 놓인 것처럼 보인다.
+       바깥 딤(서랍 뒤)은 다른 스킨과 같은 검은 계열을 그대로 쓴다. */
     --modal-scrim: rgba(236, 236, 238, .86);
     --shadow-sm: 0 1px 2px rgba(15, 15, 20, .06);
     --shadow-md: 0 2px 10px rgba(15, 15, 20, .07);
@@ -2748,7 +2762,6 @@ a { color: inherit; }
   --accent-ink: #ffffff;
   --accent-soft: rgba(18, 18, 20, .07);
   --danger: #26262a;
-  --scrim: rgba(18, 18, 22, .34);
   --modal-scrim: rgba(236, 236, 238, .86);
   --shadow-sm: 0 1px 2px rgba(15, 15, 20, .06);
   --shadow-md: 0 2px 10px rgba(15, 15, 20, .07);
@@ -2891,8 +2904,6 @@ a { color: inherit; }
   --sky: #9fc0ff;
   --violet: #cba8ff;
   --danger: #ff7ec4;
-  --scrim: rgba(8, 4, 20, .62);
-  --modal-scrim: rgba(11, 6, 24, .80);
   --shadow-sm: 0 1px 3px rgba(6, 2, 18, .5);
   --shadow-md: 0 4px 14px rgba(6, 2, 18, .5);
   --shadow-lg: 0 10px 30px rgba(6, 2, 18, .55);
@@ -2939,8 +2950,6 @@ a { color: inherit; }
     --sky: #7fabf5;
     --violet: #a97bf0;
     --danger: #e2418e;
-    --scrim: rgba(38, 24, 70, .32);
-    --modal-scrim: rgba(26, 16, 44, .72);
     --shadow-sm: 0 1px 3px rgba(84, 58, 145, .08);
     --shadow-md: 0 4px 14px rgba(84, 58, 145, .10);
     --shadow-lg: 0 10px 30px rgba(84, 58, 145, .14);
@@ -2971,8 +2980,6 @@ a { color: inherit; }
   --sky: #7fabf5;
   --violet: #a97bf0;
   --danger: #e2418e;
-  --scrim: rgba(38, 24, 70, .32);
-  --modal-scrim: rgba(26, 16, 44, .72);
   --shadow-sm: 0 1px 3px rgba(84, 58, 145, .08);
   --shadow-md: 0 4px 14px rgba(84, 58, 145, .10);
   --shadow-lg: 0 10px 30px rgba(84, 58, 145, .14);
@@ -3128,8 +3135,6 @@ a { color: inherit; }
   --sky: #5fd8b4;
   --violet: #ffd24d;
   --danger: #ff5c50;
-  --scrim: rgba(0, 0, 0, .62);
-  --modal-scrim: rgba(10, 7, 13, .82);
   /* 번지지 않는 그림자 — 플라스틱 조각이 판 위에 떨어뜨리는 것 */
   --shadow-sm: 1px 1px 0 rgba(0, 0, 0, .38);
   --shadow-md: 2px 2px 0 rgba(0, 0, 0, .40);
@@ -3174,8 +3179,6 @@ a { color: inherit; }
     --sky: #4cc7a4;
     --violet: #f5b81a;
     --danger: #e03b30;
-    --scrim: rgba(42, 26, 36, .34);
-    --modal-scrim: rgba(30, 18, 26, .72);
     --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
     --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
     --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
@@ -3206,8 +3209,6 @@ a { color: inherit; }
   --sky: #4cc7a4;
   --violet: #f5b81a;
   --danger: #e03b30;
-  --scrim: rgba(42, 26, 36, .34);
-  --modal-scrim: rgba(30, 18, 26, .72);
   --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
   --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
   --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
