@@ -471,7 +471,7 @@ export function UploadPage() {
                       <input
                         type="text"
                         value={item.title}
-                        placeholder="제목 (없어도 됩니다)"
+                        placeholder="제목 (비워두셔도 됩니다)"
                         onChange={(e) =>
                           setItems((prev) =>
                             prev.map((i) =>
