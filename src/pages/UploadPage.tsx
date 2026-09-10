@@ -200,7 +200,11 @@ export function UploadPage() {
   const save = async (skip?: Set<string>) => {
     const going = skip ? items.filter((i) => !skip.has(i.key)) : items
     if (!going.length) return
-    if (!memberId) return toast('멤버를 먼저 선택해 주세요.')
+    if (!memberId) {
+      return toast(
+        members.length ? '멤버를 먼저 선택해 주세요.' : '멤버를 먼저 추가해 주세요.',
+      )
+    }
     if (going.some((i) => !i.title.trim())) return toast('제목이 비어 있는 카드가 있어요.')
 
     // 아직 물어보지 않았다면 먼저 견줘 본다
@@ -278,6 +282,13 @@ export function UploadPage() {
 
       <div className="content content--no-fab">
         <div className="page">
+          {/*
+            위에서 한 번 고르고 아래가 그걸 따르는 판.
+            지금은 분류를 감춰 멤버 하나뿐인데, 그 하나는 대기 목록의 줄마다
+            이미 고를 수 있다. 같은 것을 두 자리에서 고르게 두면 어느 쪽이
+            이기는지 헷갈리기만 한다. 분류가 돌아오면 이 판도 함께 돌아온다.
+          */}
+          {SHOW_CATEGORY && (
           <div className="card-panel">
             <div className="row">
               <label className="field" style={{ marginBottom: 0 }}>
@@ -306,6 +317,7 @@ export function UploadPage() {
               )}
             </div>
           </div>
+          )}
 
           <button
             className="dropzone"
@@ -466,7 +478,12 @@ export function UploadPage() {
                       />
                       <div className="queue__pair">
                         <select
-                          value={item.memberId}
+                          /*
+                           * 따로 고른 게 없으면 첫 멤버가 이미 골라진 채로 보인다.
+                           * 위에 고르는 자리가 없어졌으므로 '위에서 고른 멤버'라는
+                           * 답도 없다 — 늘 어느 멤버인지 눈에 보이는 편이 낫다.
+                           */
+                          value={item.memberId || memberId}
                           onChange={(e) =>
                             setItems((prev) =>
                               prev.map((i) =>
@@ -475,7 +492,7 @@ export function UploadPage() {
                             )
                           }
                         >
-                          <option value="">위에서 고른 멤버</option>
+                          {SHOW_CATEGORY && <option value="">위에서 고른 멤버</option>}
                           {members.map((m) => (
                             <option key={m.id} value={m.id}>
                               {m.name}
