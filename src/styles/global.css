@@ -3454,6 +3454,59 @@ a { color: inherit; }
 :root[data-skin='brick'] .chip--add:hover { background: var(--bg-elev-2); }
 :root[data-skin='brick'] .chip--add::before { content: none; }
 
+/* ---------- 더보기 (갈 곳 목록) ---------- */
+
+/*
+ * 서랍이 하던 일을 한 화면에 펼친 것이다.
+ *
+ * 줄은 판때기 안에 묶어 둔다. 낱장으로 흩어 놓으면 '보관함'과 '관리'가
+ * 어디서 갈리는지 여백만으로 재야 하는데, 묶어두면 판 하나가 곧 한 갈래다.
+ * 판 안쪽의 줄 사이만 선으로 가른다.
+ */
+.more { padding: 8px 16px 16px; max-width: 640px; margin: 0 auto; }
+
+.more__group {
+  margin: 22px 0 8px 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--text-dim);
+}
+.more__group:first-child { margin-top: 6px; }
+
+.more__panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.more__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.more__row + .more__row { border-top: 1px solid var(--line); }
+.more__row:hover { background: var(--bg-elev-2); }
+.more__row:active { background: var(--bg-elev-2); }
+.more__icon { display: grid; place-items: center; color: var(--text-dim); line-height: 0; }
+.more__label { flex: 1; min-width: 0; }
+/* 장수는 화살표 앞에 붙는 곁말이라 한 단계 물러난다 */
+.more__count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.more__row svg:last-child { color: var(--text-dim); opacity: .7; }
+
 /* ---------- skin / accent picker ---------- */
 
 .swatches {
