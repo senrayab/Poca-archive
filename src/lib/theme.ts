@@ -176,12 +176,6 @@ function apply() {
   if (accent) {
     root.style.setProperty('--accent', accent)
     root.style.setProperty('--accent-ink', inkFor(accent))
-    /*
-     * 글자가 되는 자리도 고른 색으로 맞춘다. 스킨이 그 자리를 따로 정해둔
-     * 경우(블록의 라이트가 그렇다) 그 값이 남아 있으면, 고른 색과 상관없는
-     * 색이 서랍과 갈래에 그대로 남는다.
-     */
-    root.style.setProperty('--accent-text', accent)
     root.style.setProperty('--accent-soft', `color-mix(in srgb, ${accent} 12%, transparent)`)
     /*
      * 그림자의 번짐은 스킨이 정한다. 블록 스킨은 번지지 않는 오프셋 그림자를
@@ -196,7 +190,7 @@ function apply() {
       root.style.setProperty(name, `color-mix(in srgb, ${accent} ${pct}%, var(${name}-base))`)
     }
   } else {
-    for (const name of ['--accent', '--accent-ink', '--accent-text', '--accent-soft', '--glow']) {
+    for (const name of ['--accent', '--accent-ink', '--accent-soft', '--glow']) {
       root.style.removeProperty(name)
     }
     // 스킨이 정한 밑색으로 돌아간다
