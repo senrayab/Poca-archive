@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { ReactElement } from 'react'
 import { Header } from '@/components/AppShell'
 import {
+  BackupIcon,
   ChartIcon,
   ChevronRight,
   GridIcon,
@@ -64,7 +65,8 @@ export function MorePage() {
             )}
             {row('/history', <HistoryIcon size={19} />, '양도 · 판매 내역')}
             {row('/stats', <ChartIcon size={19} />, '통계')}
-            {row('/settings', <SettingsIcon size={19} />, '백업 · 설정')}
+            {row('/settings', <SettingsIcon size={19} />, '설정')}
+            {row('/manage', <BackupIcon size={19} />, '백업 · 관리')}
           </div>
         </div>
       </div>

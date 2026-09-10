@@ -5,6 +5,7 @@ import { ToastProvider, useToast } from '@/components/Toast'
 import { ArchivePage } from '@/pages/ArchivePage'
 import { CardPage } from '@/pages/CardPage'
 import { HistoryPage } from '@/pages/HistoryPage'
+import { ManagePage } from '@/pages/ManagePage'
 import { MembersPage } from '@/pages/MembersPage'
 import { MorePage } from '@/pages/MorePage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -41,6 +42,7 @@ export function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/stats" element={<StatsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/manage" element={<ManagePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
