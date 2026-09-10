@@ -2801,30 +2801,21 @@ a { color: inherit; }
   font-weight: 800;
 }
 /*
- * 밑줄은 자로 그은 선이 아니라 붓으로 그은 획이다.
+ * 밑줄은 글자 너비만큼 곧게 긋는다. 끝을 흘려보면 안개 낀 결에 맞을 줄
+ * 알았는데, 폰에서는 그냥 흐릿한 선으로 보여 어느 것이 골라졌는지 덜
+ * 또렷했다. 색을 쓰지 않는 스킨에서 이 선이 유일한 표시라 또렷함이 먼저다.
  *
- * 양 끝을 투명으로 흘려 두면 선이 시작하고 끝나는 자리가 흐려진다. 먹이
- * 종이에 닿고 떨어지는 그 자리다. 딱 떨어지는 2px 막대는 또렷하긴 해도
- * 이 스킨이 기대는 안개 낀 결과 어울리지 않는다.
- *
- * 글자 너비만큼만 긋는다. 레일이 overflow-x: auto라 칩 바깥으로 나가는
- * 그림자는 잘리지만, 안쪽에 그은 획은 잘리지 않는다.
+ * 레일이 overflow-x: auto라 칩 바깥으로 나가는 그림자는 잘리지만,
+ * 안쪽에 그은 선은 잘리지 않는다.
  */
 :root[data-skin='mono'] .chip[aria-selected='true']::after {
   content: '';
   position: absolute;
-  left: -2px;
-  right: -2px;
+  left: 0;
+  right: 0;
   bottom: 4px;
   height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--accent) 22%,
-    var(--accent) 78%,
-    transparent
-  );
+  background: var(--accent);
 }
 /* 세는 숫자는 이름에 붙은 첨자처럼 한 단계 더 물러난다 */
 :root[data-skin='mono'] .chip__count { opacity: .55; font-weight: 600; }
@@ -2908,9 +2899,9 @@ a { color: inherit; }
   --thumb-radius: 18px;
   --stage-radius: 26px;
 
-  /* 레일도 유리다. 페이드는 조금 더 짙게 둬야 덧댄 자리가 뿌옇지 않다. */
-  --rail-bg: color-mix(in srgb, var(--bg-elev) 60%, transparent);
-  --rail-fade: color-mix(in srgb, var(--bg-elev) 86%, transparent);
+  /* 담는 레일이 없다. 끝 페이드만 페이지 색에서 시작한다. */
+  --rail-bg: transparent;
+  --rail-fade: var(--bg);
 
   color-scheme: dark;
 }
@@ -3000,28 +2991,58 @@ a { color: inherit; }
 }
 
 /*
- * 오로라의 멤버 탭 — 유리 캡슐 안에서 고른 것만 빛이 갈린다.
+ * 오로라의 멤버 탭 — 담는 그릇을 없애고 방울을 띄운다.
  *
- * 파스텔의 레일은 흰 판이 떠 있는 것이었다. 이 스킨에서 그러면 배경에
- * 깔아둔 무지개가 레일 자리에서만 뚝 끊긴다. 그래서 레일을 비치게 두어
- * 뒤의 빛이 그대로 지나가게 하고, 흐림 한 겹으로 두께만 준다.
+ * 파스텔은 흰 알약 하나가 이름들을 담는 방식이다. 이 스킨에서 그러면
+ * 배경에 깔아둔 빛이 그 알약 자리에서만 뚝 끊기고, 결국 파스텔에 색만
+ * 바꿔 칠한 것으로 보인다.
  *
- * 고른 칩은 포인트 색 하나로 칠하지 않고, 그 색을 가운데 두고 한쪽 끝은
- * 민트로 다른 쪽 끝은 분홍으로 갈라 놓는다. 판때기에 덮은 막과 같은
- * 방식이다 — 이 스킨에서 '지금 이것'은 늘 빛이 갈리는 것으로 나타난다.
+ * 그래서 그릇을 아예 걷는다. 이름 하나하나가 따로 떠 있는 비누방울이
+ * 된다 — 속이 비쳐 뒤의 빛이 지나가고, 위쪽에는 빛이 맺힌 자리가 있고,
+ * 고르면 부풀면서 그 안에서 색이 갈린다. 참고한 그림에서 인형 발치에
+ * 굴러다니던 것들이 그 방울이다.
+ *
+ * 빛 맺힌 자리는 ::before로 얹는다. 방울 안쪽이라 레일이 잘라내지 못한다.
+ * 바깥으로 나가는 그림자는 overflow-x: auto에 잘리므로 쓰지 않는다.
+ */
+:root[data-skin='aurora'] .tabs {
+  padding: 4px;
+  border: none;
+  box-shadow: none;
+}
+:root[data-skin='aurora'] .tabs__inner { gap: 7px; }
+
+:root[data-skin='aurora'] .chip {
+  position: relative;
+  overflow: hidden;
+  padding: 0 16px;
+  background: color-mix(in srgb, var(--bg-elev) 50%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+:root[data-skin='aurora'] .chip:hover {
+  background: color-mix(in srgb, var(--bg-elev) 72%, transparent);
+}
+
+/* 방울 위쪽에 맺히는 빛 */
+:root[data-skin='aurora'] .chip::before {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 2px;
+  height: 42%;
+  border-radius: var(--pill);
+  background: linear-gradient(rgba(255, 255, 255, .55), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+/*
+ * 고른 방울은 부풀고, 그 안에서 빛이 갈린다.
  *
  * 무지개를 고정된 색으로 박지 않고 --accent에서 섞어내는 게 요점이다.
  * 그래야 설정에서 포인트 색을 바꿔도 그 색이 가운데 남고, 갈라지는 결만
  * 스킨의 것으로 남는다.
- *
- * 그림자는 얹지 않는다. 레일이 overflow-x: auto라 칩 바깥으로 나가는
- * 그림자는 위아래가 잘린다. 대신 안쪽 위에 흰 선 하나로 볼록함을 준다.
  */
-:root[data-skin='aurora'] .tabs {
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, .30);
-}
-
 :root[data-skin='aurora'] .chip[aria-selected='true'] {
   background: linear-gradient(
     118deg,
@@ -3030,11 +3051,17 @@ a { color: inherit; }
     color-mix(in srgb, var(--accent) 46%, #ff86c8)
   );
   color: var(--accent-ink);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .34);
+  transform: scale(1.04);
 }
 
-/* 더하기 단추는 채우는 대신 포인트 색을 옅게 머금은 유리로 */
+/*
+ * 더하기 단추도 방울 하나. 다만 포인트 색을 옅게 머금는다.
+ * padding을 도로 0으로 두는 건, 위의 .chip 규칙이 .chip--add보다
+ * 셈이 높아 좌우 여백을 밀어 넣기 때문이다.
+ */
 :root[data-skin='aurora'] .chip--add {
+  padding: 0;
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
@@ -3042,6 +3069,219 @@ a { color: inherit; }
 :root[data-skin='aurora'] .chip--add:hover {
   background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
+
+/* ---------- skin: brick ---------- */
+
+/*
+ * 네 번째 스킨. 손으로 끼워 맞춘 블록 장난감이다.
+ *
+ * 참고한 그림은 낱개 블록을 쌓아 만든 오리였다. 거기서 가져올 것은 색보다
+ * 먼저 '만듦새'다 — 모서리가 둥글지 않고, 조각과 조각 사이가 눈에 보이고,
+ * 위쪽에는 다음 조각이 얹힐 돌기가 있고, 누르면 딸깍 들어간다.
+ *
+ * 그래서 이 스킨만 --pill을 999px에서 7px로 내린다. 알약이던 것이 전부
+ * 각진 조각이 되므로 단추도 탭도 배지도 한꺼번에 블록이 된다. 토큰 하나로
+ * 앱 전체의 만듦새가 바뀌는 자리라, 스킨이 색 한 벌 이상을 바꾼 첫 예다.
+ *
+ * 그림자도 흐리지 않다. 플라스틱 조각은 빛을 머금지 않고 제 그림자를 또렷이
+ * 떨어뜨리므로, 번짐 없는 오프셋 그림자만 쓴다.
+ *
+ * 배경에는 얼룩 대신 모눈을 깐다. 블록이 놓이는 판이다. 귀퉁이에 노랑과
+ * 민트를 옅게 두어 그림에 있던 색 조각들을 남긴다.
+ *
+ * 딤 위의 색(--on-scrim 무리)은 건드리지 않는다 — 파스텔과 같은 '어두운 딤
+ * 위 흰 글씨'다.
+ *
+ * 스킨은 순서가 곧 우선순위다. 오로라 블록 전부 뒤에 와야 한다.
+ */
+:root[data-skin='brick'],
+:root[data-skin='brick'][data-theme='dark'] {
+  --bg: #17131b;
+  --desk-bg: #0e0b11;
+  --bg-elev: #221c27;
+  --bg-elev-2: #2d2534;
+  --line: #3a3042;
+  --panel-line: #3a3042;
+  --text: #f6eef3;
+  --text-dim: #a495ad;
+  --accent: #ff6fae;
+  --accent-ink: #241019;
+  --accent-soft: rgba(255, 111, 174, .18);
+  /* 그래프가 쓰는 두 색도 장난감 팔레트로 — 이름이 아니라 자리다 */
+  --sky: #5fd8b4;
+  --violet: #ffd24d;
+  --danger: #ff5c50;
+  --scrim: rgba(0, 0, 0, .62);
+  --modal-scrim: rgba(10, 7, 13, .82);
+  /* 번지지 않는 그림자 — 플라스틱 조각이 판 위에 떨어뜨리는 것 */
+  --shadow-sm: 1px 1px 0 rgba(0, 0, 0, .38);
+  --shadow-md: 2px 2px 0 rgba(0, 0, 0, .40);
+  --shadow-lg: 4px 4px 0 rgba(0, 0, 0, .42);
+  --shadow-xl: 7px 7px 0 rgba(0, 0, 0, .46);
+  --glow: 3px 3px 0 rgba(255, 111, 174, .34);
+  --wash:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
+    radial-gradient(48% 30% at 100% 0%, rgba(255, 210, 77, .13), transparent 70%),
+    radial-gradient(52% 32% at 0% 100%, rgba(95, 216, 180, .13), transparent 70%);
+
+  /* 알약을 조각으로. 이 한 줄이 단추·탭·배지를 한꺼번에 각지게 만든다. */
+  --pill: 7px;
+  --radius: 8px;
+  --radius-sm: 7px;
+  --radius-xs: 6px;
+  --panel-radius: 8px;
+  --thumb-radius: 5px;
+  --stage-radius: 8px;
+
+  /* 조각은 저마다 놓인다. 담는 판이 따로 없다. */
+  --rail-bg: transparent;
+  --rail-fade: var(--bg);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='brick']:not([data-theme='dark']) {
+    --bg: #fdf6f9;
+    --desk-bg: #f2e6ec;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #fdf0f5;
+    --line: #f0dce6;
+    --panel-line: #f2dfe8;
+    --text: #2a1f27;
+    --text-dim: #8a7580;
+    --accent: #ef4d92;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(239, 77, 146, .12);
+    --sky: #4cc7a4;
+    --violet: #f5b81a;
+    --danger: #e03b30;
+    --scrim: rgba(42, 26, 36, .34);
+    --modal-scrim: rgba(30, 18, 26, .72);
+    --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
+    --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
+    --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
+    --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+    --glow: 3px 3px 0 rgba(239, 77, 146, .30);
+    --wash:
+      repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(0deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
+      radial-gradient(48% 30% at 100% 0%, rgba(245, 184, 26, .18), transparent 70%),
+      radial-gradient(52% 32% at 0% 100%, rgba(76, 199, 164, .18), transparent 70%);
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='brick'][data-theme='light'] {
+  --bg: #fdf6f9;
+  --desk-bg: #f2e6ec;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #fdf0f5;
+  --line: #f0dce6;
+  --panel-line: #f2dfe8;
+  --text: #2a1f27;
+  --text-dim: #8a7580;
+  --accent: #ef4d92;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(239, 77, 146, .12);
+  --sky: #4cc7a4;
+  --violet: #f5b81a;
+  --danger: #e03b30;
+  --scrim: rgba(42, 26, 36, .34);
+  --modal-scrim: rgba(30, 18, 26, .72);
+  --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
+  --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
+  --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
+  --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+  --glow: 3px 3px 0 rgba(239, 77, 146, .30);
+  --wash:
+    repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(0deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
+    radial-gradient(48% 30% at 100% 0%, rgba(245, 184, 26, .18), transparent 70%),
+    radial-gradient(52% 32% at 0% 100%, rgba(76, 199, 164, .18), transparent 70%);
+
+  color-scheme: light;
+}
+
+/*
+ * 판때기는 두께가 있는 조각이다.
+ *
+ * 아래쪽 안에 짙은 띠 하나를 넣으면 조각의 옆면처럼 보인다. 바깥으로
+ * 그림자를 더 주는 것보다 이쪽이 낫다 — 판이 떠 있는 게 아니라 두꺼운
+ * 것으로 읽혀야 한다.
+ */
+:root[data-skin='brick'] .card-panel {
+  box-shadow: var(--shadow-md), inset 0 -3px 0 color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+/*
+ * 브릭의 멤버 탭 — 이름 하나가 조각 하나다.
+ *
+ * 담는 판을 걷고, 이름마다 두께 있는 조각을 준다. 위에 돌기 두 개를 얹어
+ * 무엇을 흉내 낸 것인지 한눈에 보이게 하고, 고른 것은 눌러 끼운 것처럼
+ * 두께가 사라지며 아래로 내려앉는다. 색이 아니라 '들어갔다'로 알리는
+ * 방식이라, 포인트 색을 무엇으로 바꿔도 뜻이 흐려지지 않는다.
+ *
+ * 돌기와 두께는 모두 조각 안쪽에 그린다. 레일이 overflow-x: auto라
+ * 바깥으로 나가는 것은 잘린다.
+ */
+:root[data-skin='brick'] .tabs {
+  padding: 4px;
+  border: none;
+  box-shadow: none;
+}
+:root[data-skin='brick'] .tabs__inner { gap: 6px; }
+
+:root[data-skin='brick'] .chip {
+  position: relative;
+  height: 38px;
+  padding: 8px 14px 0;
+  align-items: center;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  background: var(--bg-elev);
+  box-shadow:
+    inset 0 -3px 0 color-mix(in srgb, var(--text) 13%, transparent),
+    inset 0 0 0 1px var(--panel-line);
+}
+:root[data-skin='brick'] .chip:hover { background: var(--bg-elev-2); }
+
+/* 위에 얹힌 돌기 둘 */
+:root[data-skin='brick'] .chip::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 4px;
+  background: radial-gradient(circle at 5px 50%, currentColor 1.8px, transparent 2px) repeat-x;
+  background-size: 10px 4px;
+  opacity: .28;
+  pointer-events: none;
+}
+
+/* 눌러 끼운 조각 — 두께가 사라지고 그만큼 내려앉는다 */
+:root[data-skin='brick'] .chip[aria-selected='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, .18),
+    inset 0 2px 0 rgba(0, 0, 0, .10);
+}
+
+:root[data-skin='brick'] .chip--add {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+}
+:root[data-skin='brick'] .chip--add:hover { background: var(--bg-elev-2); }
+:root[data-skin='brick'] .chip--add::before { content: none; }
 
 /* ---------- skin / accent picker ---------- */
 
@@ -3139,3 +3379,17 @@ a { color: inherit; }
 .skin[data-preview='aurora'] i:nth-child(1) { background: rgba(255, 255, 255, .82); border-radius: 10px; }
 .skin[data-preview='aurora'] i:nth-child(2) { background: rgba(255, 255, 255, .82); border-radius: 10px; }
 .skin[data-preview='aurora'] i:nth-child(3) { background: linear-gradient(160deg, #9fc0ff, #8b6ee8 55%, #ff86c8); }
+
+.skin[data-preview='brick'] .skin__swatch {
+  background: linear-gradient(
+    90deg,
+    #ffb3d1 0 26%,
+    #ffd21e 26% 48%,
+    #7fd6b5 48% 74%,
+    #e2352c 74%
+  );
+  border-radius: 4px;
+}
+.skin[data-preview='brick'] i:nth-child(1) { background: #fff; border-radius: 3px; }
+.skin[data-preview='brick'] i:nth-child(2) { background: #fff; border-radius: 3px; }
+.skin[data-preview='brick'] i:nth-child(3) { background: #ef4d92; border-radius: 3px; }

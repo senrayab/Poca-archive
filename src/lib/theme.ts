@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 export type ThemeMode = 'system' | 'light' | 'dark'
-export type SkinId = 'pastel' | 'mono' | 'aurora'
+export type SkinId = 'pastel' | 'mono' | 'aurora' | 'brick'
 export type FavCut = 'notch' | 'disc'
 
 const THEME_KEY = 'poca:theme'
@@ -31,7 +31,12 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   {
     id: 'aurora',
     name: '오로라',
-    hint: '라벤더에서 분홍으로 갈리는 유리빛 배경, 크게 부푼 둥글기',
+    hint: '라벤더에서 분홍으로 갈리는 유리빛 배경, 방울처럼 떠 있는 탭',
+  },
+  {
+    id: 'brick',
+    name: '블록',
+    hint: '모눈 판 위 각진 조각들, 고르면 눌러 끼운 것처럼 들어가는 탭',
   },
 ]
 
@@ -53,6 +58,7 @@ const BAR_COLOR: Record<SkinId, Record<'light' | 'dark', string>> = {
   pastel: { dark: '#0f0e14', light: '#f4f3f9' },
   mono: { dark: '#0b0b0c', light: '#f1f1f2' },
   aurora: { dark: '#100a1c', light: '#f7f3fc' },
+  brick: { dark: '#17131b', light: '#fdf6f9' },
 }
 
 const media =
