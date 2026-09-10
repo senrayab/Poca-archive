@@ -36,7 +36,7 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   {
     id: 'brick',
     name: '블록',
-    hint: '모눈 판 위 각진 조각들, 고르면 눌러 끼운 것처럼 들어가는 탭',
+    hint: '노란 조각이 놓인 모눈 판, 고르면 눌러 끼운 것처럼 들어가는 탭',
   },
 ]
 

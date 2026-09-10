@@ -3201,20 +3201,21 @@ a { color: inherit; }
  */
 :root[data-skin='brick'],
 :root[data-skin='brick'][data-theme='dark'] {
-  --bg-base: #17131b;
-  --desk-bg-base: #0e0b11;
-  --bg-elev-base: #221c27;
-  --bg-elev-2-base: #2d2534;
-  --line-base: #3a3042;
-  --panel-line: #3a3042;
-  --text: #f6eef3;
-  --text-dim: #a495ad;
-  --accent: #ff6fae;
-  --accent-ink: #241019;
-  --accent-soft: rgba(255, 111, 174, .18);
+  --bg-base: #191519;
+  --desk-bg-base: #100d10;
+  --bg-elev-base: #241f25;
+  --bg-elev-2-base: #2f2931;
+  --line-base: #3d3540;
+  --panel-line: #3d3540;
+  --text: #f6f0ea;
+  --text-dim: #a89e96;
+  /* 어두운 데서는 받은 색 그대로 — 노랑은 검은 판 위에서 가장 잘 산다 */
+  --accent: #fed672;
+  --accent-ink: #2b1e04;
+  --accent-soft: rgba(254, 214, 114, .18);
   /* 그래프가 쓰는 두 색도 장난감 팔레트로 — 이름이 아니라 자리다 */
   --sky: #5fd8b4;
-  --violet: #ffd24d;
+  --violet: #ff8fbe;
   --danger: #ff5c50;
   /* 번지지 않는 그림자 — 플라스틱 조각이 판 위에 떨어뜨리는 것 */
   --shadow-sm: 1px 1px 0 rgba(0, 0, 0, .38);
@@ -3222,11 +3223,11 @@ a { color: inherit; }
   --shadow-lg: 4px 4px 0 rgba(0, 0, 0, .42);
   --shadow-xl: 7px 7px 0 rgba(0, 0, 0, .46);
   --glow-spread: 3px 3px 0;
-  --glow: 3px 3px 0 rgba(255, 111, 174, .34);
+  --glow: 3px 3px 0 rgba(254, 214, 114, .34);
   --wash:
     repeating-linear-gradient(90deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, .045) 0 1px, transparent 1px 26px),
-    radial-gradient(48% 30% at 100% 0%, rgba(255, 210, 77, .13), transparent 70%),
+    radial-gradient(48% 30% at 100% 0%, rgba(255, 143, 190, .13), transparent 70%),
     radial-gradient(52% 32% at 0% 100%, rgba(95, 216, 180, .13), transparent 70%);
 
   /* 알약을 조각으로. 이 한 줄이 단추·탭·배지를 한꺼번에 각지게 만든다. */
@@ -3247,30 +3248,36 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='brick']:not([data-theme='dark']) {
-    --bg-base: #fdf6f9;
-    --desk-bg-base: #f2e6ec;
+    --bg-base: #fffaef;
+    --desk-bg-base: #f4ead6;
     --bg-elev-base: #ffffff;
-    --bg-elev-2-base: #fdf0f5;
-    --line-base: #f0dce6;
-    --panel-line: #f2dfe8;
-    --text: #2a1f27;
-    --text-dim: #8a7580;
-    --accent: #ef4d92;
-    --accent-ink: #ffffff;
-    --accent-soft: rgba(239, 77, 146, .12);
-    --sky: #4cc7a4;
-    --violet: #f5b81a;
-    --danger: #e03b30;
-    --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
-    --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
-    --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
-    --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+    --bg-elev-2-base: #fdf5e6;
+    --line-base: #f0e4cd;
+    --panel-line: #f2e8d6;
+    --text: #2a2119;
+    --text-dim: #8a7d6d;
+    /*
+     * 흰 바탕에서는 같은 노랑을 그대로 쓸 수 없다. 서랍의 켜진 메뉴,
+     * 내역의 고른 갈래, 검색어 꼬리표는 포인트 색이 '글자'가 되는 자리인데,
+     * 밝은 노랑은 흰 종이 위에서 거의 안 보인다. 그래서 같은 노랑을 한참
+     * 내려 앉힌 짙은 금빛으로 둔다 — 계열은 그대로고 읽히기만 한다.
+     */
+    --accent: #b8830c;
+    --accent-ink: #fffaef;
+    --accent-soft: rgba(184, 131, 12, .13);
+    --sky: #2fae87;
+    --violet: #e8558f;
+    --danger: #d43a2f;
+    --shadow-sm: 1px 1px 0 rgba(120, 95, 40, .16);
+    --shadow-md: 2px 2px 0 rgba(120, 95, 40, .17);
+    --shadow-lg: 4px 4px 0 rgba(120, 95, 40, .18);
+    --shadow-xl: 7px 7px 0 rgba(120, 95, 40, .22);
     --glow-spread: 3px 3px 0;
-    --glow: 3px 3px 0 rgba(239, 77, 146, .30);
+    --glow: 3px 3px 0 rgba(184, 131, 12, .30);
     --wash:
-      repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
-      repeating-linear-gradient(0deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
-      radial-gradient(48% 30% at 100% 0%, rgba(245, 184, 26, .18), transparent 70%),
+      repeating-linear-gradient(90deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(0deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
+      radial-gradient(48% 30% at 100% 0%, rgba(232, 85, 143, .16), transparent 70%),
       radial-gradient(52% 32% at 0% 100%, rgba(76, 199, 164, .18), transparent 70%);
 
     color-scheme: light;
@@ -3278,30 +3285,31 @@ a { color: inherit; }
 }
 
 :root[data-skin='brick'][data-theme='light'] {
-  --bg-base: #fdf6f9;
-  --desk-bg-base: #f2e6ec;
+  --bg-base: #fffaef;
+  --desk-bg-base: #f4ead6;
   --bg-elev-base: #ffffff;
-  --bg-elev-2-base: #fdf0f5;
-  --line-base: #f0dce6;
-  --panel-line: #f2dfe8;
-  --text: #2a1f27;
-  --text-dim: #8a7580;
-  --accent: #ef4d92;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(239, 77, 146, .12);
-  --sky: #4cc7a4;
-  --violet: #f5b81a;
-  --danger: #e03b30;
-  --shadow-sm: 1px 1px 0 rgba(120, 70, 100, .16);
-  --shadow-md: 2px 2px 0 rgba(120, 70, 100, .17);
-  --shadow-lg: 4px 4px 0 rgba(120, 70, 100, .18);
-  --shadow-xl: 7px 7px 0 rgba(120, 70, 100, .22);
+  --bg-elev-2-base: #fdf5e6;
+  --line-base: #f0e4cd;
+  --panel-line: #f2e8d6;
+  --text: #2a2119;
+  --text-dim: #8a7d6d;
+  /* 흰 바탕에서는 같은 노랑을 한참 내려 앉힌다 — 위 주석을 보라 */
+  --accent: #b8830c;
+  --accent-ink: #fffaef;
+  --accent-soft: rgba(184, 131, 12, .13);
+  --sky: #2fae87;
+  --violet: #e8558f;
+  --danger: #d43a2f;
+  --shadow-sm: 1px 1px 0 rgba(120, 95, 40, .16);
+  --shadow-md: 2px 2px 0 rgba(120, 95, 40, .17);
+  --shadow-lg: 4px 4px 0 rgba(120, 95, 40, .18);
+  --shadow-xl: 7px 7px 0 rgba(120, 95, 40, .22);
   --glow-spread: 3px 3px 0;
-  --glow: 3px 3px 0 rgba(239, 77, 146, .30);
+  --glow: 3px 3px 0 rgba(184, 131, 12, .30);
   --wash:
-    repeating-linear-gradient(90deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
-    repeating-linear-gradient(0deg, rgba(120, 70, 100, .055) 0 1px, transparent 1px 26px),
-    radial-gradient(48% 30% at 100% 0%, rgba(245, 184, 26, .18), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(0deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
+    radial-gradient(48% 30% at 100% 0%, rgba(232, 85, 143, .16), transparent 70%),
     radial-gradient(52% 32% at 0% 100%, rgba(76, 199, 164, .18), transparent 70%);
 
   color-scheme: light;
@@ -3496,8 +3504,8 @@ a { color: inherit; }
 .skin[data-preview='brick'] .skin__swatch {
   background: linear-gradient(
     90deg,
-    #ffb3d1 0 26%,
-    #ffd21e 26% 48%,
+    #ffd772 0 26%,
+    #ffb3d1 26% 48%,
     #7fd6b5 48% 74%,
     #e2352c 74%
   );
@@ -3505,4 +3513,4 @@ a { color: inherit; }
 }
 .skin[data-preview='brick'] i:nth-child(1) { background: #fff; border-radius: 3px; }
 .skin[data-preview='brick'] i:nth-child(2) { background: #fff; border-radius: 3px; }
-.skin[data-preview='brick'] i:nth-child(3) { background: #ef4d92; border-radius: 3px; }
+.skin[data-preview='brick'] i:nth-child(3) { background: #b8830c; border-radius: 3px; }
