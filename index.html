@@ -29,6 +29,14 @@
           r.style.setProperty('--accent-ink', y > 0.65 ? '#111114' : '#ffffff')
           r.style.setProperty('--accent-soft', 'color-mix(in srgb, ' + a + ' 12%, transparent)')
           r.style.setProperty('--glow', '0 8px 22px color-mix(in srgb, ' + a + ' 34%, transparent)')
+          // 바탕에 스미는 정도. theme.ts의 TINTED와 같은 표다.
+          var tint = [['--bg-elev', 3], ['--bg', 5], ['--desk-bg', 6], ['--bg-elev-2', 6], ['--line', 12]]
+          for (var i = 0; i < tint.length; i++) {
+            r.style.setProperty(
+              tint[i][0],
+              'color-mix(in srgb, ' + a + ' ' + tint[i][1] + '%, var(' + tint[i][0] + '-base))',
+            )
+          }
         }
       } catch (e) {}
     </script>
