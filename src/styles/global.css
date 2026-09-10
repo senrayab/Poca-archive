@@ -668,7 +668,7 @@ a { color: inherit; }
 .drawer__brand { padding: 10px 12px 14px; }
 .drawer__brand strong {
   display: block;
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -.02em;
 }
@@ -694,7 +694,8 @@ a { color: inherit; }
 }
 .drawer__brand .brand__thin {
   font-weight: 300;
-  letter-spacing: .01em;
+  /* 획이 얇아 자간이 벌어져 보인다. 조금 당겨야 뒤의 굵은 쪽과 한 이름으로 읽힌다. */
+  letter-spacing: -.02em;
 }
 .drawer__brand .brand__bold {
   font-weight: 900;
