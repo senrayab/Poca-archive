@@ -1,8 +1,6 @@
-import { useRef } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useShell } from '@/components/shell'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
-import { setPendingFiles } from '@/lib/pendingFiles'
 
 /**
  * 아래에 떠 있는 알약 탭바.
@@ -24,56 +22,45 @@ import { setPendingFiles } from '@/lib/pendingFiles'
 export function Nav() {
   const { openDrawer } = useShell()
   const navigate = useNavigate()
-  const pickRef = useRef<HTMLInputElement>(null)
-
-  const onFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? [])
-    e.target.value = ''
-    if (!files.length) return
-    setPendingFiles(files)
-    navigate('/upload')
-  }
 
   return (
-    <>
-      <nav className="softnav" aria-label="길찾기">
-        <NavLink className="softnav__item" to="/" end>
-          <GridIcon size={21} />
-          <span>보관함</span>
-        </NavLink>
-        <NavLink className="softnav__item" to="/favorites">
-          <HeartIcon size={21} />
-          <span>좋아요</span>
-        </NavLink>
+    <nav className="softnav" aria-label="길찾기">
+      <NavLink className="softnav__item" to="/" end>
+        <GridIcon size={21} />
+        <span>보관함</span>
+      </NavLink>
+      <NavLink className="softnav__item" to="/favorites">
+        <HeartIcon size={21} />
+        <span>좋아요</span>
+      </NavLink>
 
-        <button
-          className="softnav__add"
-          onClick={() => pickRef.current?.click()}
-          aria-label="사진 올리기"
-        >
-          <PlusIcon size={26} />
-        </button>
+      {/*
+        등록 화면으로 간다.
+        사진 고르기를 여기서 바로 열면 빠르긴 해도 그 길 하나만 남는다 —
+        카메라로 찍어 올리는 길이 등록 화면에만 있어서, 눌러 놓고 취소한
+        사람은 거기까지 가는 방법을 찾지 못한다. 문 하나만 열어준다.
+      */}
+      <button className="softnav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+        <PlusIcon size={26} />
+      </button>
 
-        {/*
-          검색은 화면이 아니라 보관함 위에 뜨는 시트다. 그래서 자리를
-          옮기는 게 아니라 '보관함으로 가서 시트를 연다'고 일러준다.
-          주소에 흔적을 남기지 않으려고 state로 보낸다 — 새로고침하면
-          그냥 보관함이지 검색이 열린 채로 되살아나지 않는다.
-        */}
-        <button
-          className="softnav__item"
-          onClick={() => navigate('/', { state: { find: Date.now() } })}
-        >
-          <SearchIcon size={21} />
-          <span>검색</span>
-        </button>
-        <button className="softnav__item" onClick={openDrawer}>
-          <MenuIcon size={21} />
-          <span>더보기</span>
-        </button>
-      </nav>
-
-      <input ref={pickRef} type="file" accept="image/*" multiple hidden onChange={onFiles} />
-    </>
+      {/*
+        검색은 화면이 아니라 보관함 위에 뜨는 시트다. 그래서 자리를
+        옮기는 게 아니라 '보관함으로 가서 시트를 연다'고 일러준다.
+        주소에 흔적을 남기지 않으려고 state로 보낸다 — 새로고침하면
+        그냥 보관함이지 검색이 열린 채로 되살아나지 않는다.
+      */}
+      <button
+        className="softnav__item"
+        onClick={() => navigate('/', { state: { find: Date.now() } })}
+      >
+        <SearchIcon size={21} />
+        <span>검색</span>
+      </button>
+      <button className="softnav__item" onClick={openDrawer}>
+        <MenuIcon size={21} />
+        <span>더보기</span>
+      </button>
+    </nav>
   )
 }
