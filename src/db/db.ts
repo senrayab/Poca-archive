@@ -59,6 +59,34 @@ export class PocaDB extends Dexie {
       images: 'cardId',
       prints: 'cardId',
     })
+
+    /*
+     * v4: '사진은 지웠고 기록만 남은 카드'를 가릴 표를 더한다.
+     *
+     * 휴지통 장수는 서랍에 늘 떠 있어, 셀 때 행을 읽으면 딸린 썸네일까지
+     * 메모리에 올라온다. 그래서 색인으로 세야 하고, 색인으로 세려면
+     * photoGone이 모든 행에 있어야 한다 — 없는 값은 색인이 아예 건너뛴다.
+     * 그래서 여기서 기존 행에 0을 심는다. 사진을 만질 일이 없는 순수한
+     * 값 쓰기라 트랜잭션 안에서 해도 안전하다.
+     */
+    this.version(4)
+      .stores({
+        members: 'id, name, order',
+        categories: 'id, name, order',
+        cards:
+          'id, memberId, categoryId, createdAt, deleted, favorite, ' +
+          '[deleted+createdAt], [memberId+deleted], [deleted+favorite], [deleted+photoGone]',
+        images: 'cardId',
+        prints: 'cardId',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('cards')
+          .toCollection()
+          .modify((card) => {
+            card.photoGone = 0
+          })
+      })
   }
 }
 
@@ -67,11 +95,58 @@ export const db = new PocaDB()
 export const uid = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 
-/** 카드와 딸린 것들을 함께 지운다. 완전 삭제는 반드시 이걸 거쳐야 한다. */
-export async function purgeCards(ids: string[]) {
+/**
+ * 카드와 딸린 것을 통째로 지운다. 남는 것이 없다.
+ *
+ * 양도·판매 내역에서 기록 자체를 지울 때 쓴다. 휴지통 비우기는 이걸
+ * 바로 부르지 않는다 — 아래 purgeCards를 보라.
+ */
+export async function eraseCards(ids: string[]) {
   if (!ids.length) return
   await db.transaction('rw', db.cards, db.images, db.prints, async () => {
     await db.cards.bulkDelete(ids)
+    await db.images.bulkDelete(ids)
+    await db.prints.bulkDelete(ids)
+  })
+}
+
+/**
+ * 휴지통에서 완전 삭제. 양도·판매한 것은 기록을 남긴다.
+ *
+ * 휴지통과 양도·판매 내역은 같은 행을 다르게 보는 두 화면이다. 그래서
+ * 예전에는 휴지통을 비우면 내역까지 통째로 비었다. 하지만 두 화면이 담은
+ * 뜻은 다르다 — 휴지통은 '되돌릴 수 있는 임시 보관'이고, 내역은 '무엇을
+ * 언제 넘겼나'다. 뒤엣것은 사진이 없어져도 남아야 할 기록이다.
+ *
+ * 그래서 자리를 차지하는 것과 뜻을 지니는 것을 가른다. 원본 사진과 지문은
+ * 지우고(용량의 거의 전부다), 행과 작은 썸네일은 남긴다. 남은 행은
+ * photoGone 표가 서므로 휴지통 목록에서는 빠지고 내역에만 보인다.
+ *
+ * 기록까지 지우고 싶으면 내역 화면에서 지운다 — 그쪽은 eraseCards로 간다.
+ */
+export async function purgeCards(ids: string[]) {
+  if (!ids.length) return
+  await db.transaction('rw', db.cards, db.images, db.prints, async () => {
+    const rows = await db.cards.bulkGet(ids)
+    const keep = rows
+      .filter((row): row is Card => Boolean(row) && (row!.status === 'traded' || row!.status === 'sold'))
+      .map((row) => row.id)
+    const keepSet = new Set(keep)
+
+    await db.cards.bulkDelete(ids.filter((id) => !keepSet.has(id)))
+    if (keep.length) {
+      const now = Date.now()
+      await db.cards
+        .where('id')
+        .anyOf(keep)
+        .modify((card) => {
+          card.photoGone = 1
+          // 원본이 나갔으니 차지하는 자리도 남은 썸네일만큼이다
+          card.bytes = card.thumb.size
+          card.updatedAt = now
+        })
+    }
+    // 남긴 행이든 지운 행이든, 자리를 차지하던 것은 모두 나간다
     await db.images.bulkDelete(ids)
     await db.prints.bulkDelete(ids)
   })

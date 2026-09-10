@@ -1714,6 +1714,15 @@ a { color: inherit; }
   align-self: center;
   flex-shrink: 0;
 }
+/* 되돌릴 수 없는 기록에서 버튼 자리를 대신하는 한 줄 */
+.detail__gone {
+  margin: 0;
+  padding: 14px 0 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--on-scrim-dim);
+}
+
 /*
  * 호버 표시는 버튼 전체가 아니라 아이콘 자리에만 원으로 준다.
  * 버튼은 아이콘 + 라벨이라 세로로 길어서, 통째로 칠하면 둥근 사각형이 된다.
@@ -2306,6 +2315,34 @@ a { color: inherit; }
   gap: 8px;
   padding: 6px 12px 12px;
 }
+
+/*
+ * 줄 하나 + 지우는 단추.
+ *
+ * 줄 자체가 누르는 단추라 그 안에 또 단추를 넣을 수 없다. 나란히 놓고,
+ * 편집을 켰을 때만 오른쪽에 자리를 낸다. 줄은 남는 폭을 다 쓰므로 단추가
+ * 붙고 떨어질 때 스스로 줄었다 늘었다 한다.
+ */
+.history__item {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.history__item > .history__row { min-width: 0; }
+
+.history__erase {
+  flex-shrink: 0;
+  width: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--panel-radius);
+  background: var(--bg-elev);
+  border: 1px solid var(--panel-line);
+  box-shadow: var(--shadow-sm);
+  color: var(--danger);
+  transition: transform .15s var(--ease);
+}
+.history__erase:active { transform: scale(.94); }
 
 .history__row {
   display: flex;

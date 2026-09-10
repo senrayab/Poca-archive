@@ -29,7 +29,8 @@ export function StatsPage() {
       favorite: owned.filter((c) => c.favorite === 1).length,
       traded: cards.filter((c) => c.deleted === 1 && c.status === 'traded').length,
       sold: cards.filter((c) => c.deleted === 1 && c.status === 'sold').length,
-      trash: cards.filter((c) => c.deleted === 1).length,
+      // 사진을 지운 기록은 휴지통에 없다 — 양도·판매 내역에만 남는다
+      trash: cards.filter((c) => c.deleted === 1 && !c.photoGone).length,
       bytes: cards.reduce((sum, c) => sum + c.bytes, 0),
       byMember,
       byCategory,

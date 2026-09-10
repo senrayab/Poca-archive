@@ -248,6 +248,7 @@ export function UploadPage() {
         deleted: 0,
         deletedAt: null,
         status: 'own',
+        photoGone: 0,
         // 여러 장을 한 번에 올려도 고른 순서대로 정렬되도록 1ms씩 벌린다
         createdAt: now + index,
         updatedAt: now + index,

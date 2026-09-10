@@ -60,6 +60,18 @@ export interface Card {
   deletedAt: number | null
   /** 휴지통으로 보낸 사유 (양도/판매 기록용) */
   status: CardStatus
+  /**
+   * 원본 사진을 지운 기록인가.
+   *
+   * 양도·판매한 카드는 휴지통을 비워도 행이 남는다. 넘긴 날짜와 상대는
+   * 사진이 없어져도 남아야 할 기록이기 때문이다. 대신 자리를 차지하는
+   * 원본(images)과 지문(prints)은 지우고 이 표를 세운다. 목록에 쓰는
+   * 작은 썸네일은 몇 KB뿐이라 남겨, 기록에도 얼굴이 붙어 있게 한다.
+   *
+   * 휴지통 목록은 이 표가 선 것을 걸러낸다 — 비운 것이 도로 보이면
+   * 비운 것이 아니다. 색인을 걸어야 해서 모든 행이 0이나 1을 갖는다.
+   */
+  photoGone: 0 | 1
   createdAt: number
   updatedAt: number
 }
@@ -71,5 +83,6 @@ export interface BackupManifest {
   exportedAt: number
   members: Member[]
   categories: Category[]
-  cards: Array<Omit<Card, 'thumb'> & { imageFile: string; thumbFile: string }>
+  /** imageFile은 없을 수 있다 — 사진을 지우고 기록만 남긴 카드다 */
+  cards: Array<Omit<Card, 'thumb'> & { imageFile?: string; thumbFile: string }>
 }

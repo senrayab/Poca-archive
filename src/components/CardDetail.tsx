@@ -639,10 +639,19 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         {!editing && (
           <div className="detail__rail">
             {card.deleted === 1 ? (
-              <button className="rail-btn" onClick={restore}>
-                <RestoreIcon size={21} />
-                <span>복원</span>
-              </button>
+              /*
+               * 사진을 지운 기록은 되돌릴 것이 없다. 되돌려 봐야 원본 없는
+               * 카드가 보관함에 서고, 크게 보면 흐린 썸네일뿐이다. 복원을
+               * 막는 대신 왜 없는지를 그 자리에 적는다.
+               */
+              card.photoGone === 1 ? (
+                <p className="detail__gone">사진은 지웠고 기록만 남아 있어요</p>
+              ) : (
+                <button className="rail-btn" onClick={restore}>
+                  <RestoreIcon size={21} />
+                  <span>복원</span>
+                </button>
+              )
             ) : (
               <>
                 <button className="rail-btn" onClick={() => setEditing(true)}>
