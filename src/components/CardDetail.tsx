@@ -331,11 +331,18 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <div className="detail__top">
-          <button className="detail__close" onClick={requestClose} aria-label="닫기">
-            <CloseIcon size={20} />
-          </button>
-        </div>
+        {/*
+          수정 중에는 닫기를 두지 않는다. 아래에 취소와 저장이 있어 나갈 길이
+          분명하고, 그 둘은 고친 것을 어떻게 할지까지 정해준다. 줄을 통째로
+          걷어내면 좁은 화면에서 폼이 그만큼 넓어진다.
+        */}
+        {!editing && (
+          <div className="detail__top">
+            <button className="detail__close" onClick={requestClose} aria-label="닫기">
+              <CloseIcon size={20} />
+            </button>
+          </div>
+        )}
 
         {/*
           좌우 이동 버튼은 사진 양옆의 빈 칸에 세운다. 사진 위에 얹으면
