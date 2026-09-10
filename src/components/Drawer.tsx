@@ -5,6 +5,7 @@ import { SHOW_CATEGORY } from '@/lib/features'
 import { NavLink } from 'react-router-dom'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
 import {
+  BackupIcon,
   ChartIcon,
   CloseIcon,
   GridIcon,
@@ -75,7 +76,8 @@ export function Drawer({ open, onClose }: DrawerProps) {
         {item('/members', <UsersIcon size={20} />, SHOW_CATEGORY ? '멤버 · 카테고리 관리' : '멤버 관리')}
         {item('/history', <HistoryIcon size={20} />, '양도 · 판매 내역')}
         {item('/stats', <ChartIcon size={20} />, '통계')}
-        {item('/settings', <SettingsIcon size={20} />, '백업 · 설정')}
+        {item('/settings', <SettingsIcon size={20} />, '설정')}
+        {item('/manage', <BackupIcon size={20} />, '백업 · 관리')}
       </nav>
     </>,
     document.body,
