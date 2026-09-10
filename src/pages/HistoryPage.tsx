@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
-import { CardDetail } from '@/components/CardDetail'
 import { CloseIcon, EditIcon, TrashIcon } from '@/components/Icons'
 import { useToast } from '@/components/Toast'
 import { db, eraseCards } from '@/db/db'
@@ -34,7 +32,6 @@ export function HistoryPage() {
   const members = useMembers()
   const categories = useCategories()
   const [filter, setFilter] = useState<Filter>('all')
-  const [openCard, setOpenCard] = useState<Card | null>(null)
   const [editing, setEditing] = useState(false)
   const toast = useToast()
 
@@ -49,15 +46,6 @@ export function HistoryPage() {
     () => (cards ?? []).filter((card) => filter === 'all' || card.status === filter),
     [cards, filter],
   )
-
-  /*
-   * 자세히보기로 넘길 수 있는 것들.
-   *
-   * 사진을 지운 기록은 열어봐야 흐린 썸네일을 크게 늘린 것뿐이라 알아보기
-   * 어렵다. 목록에 붙은 작은 썸네일만으로 무엇인지 알 수 있으니 거기서
-   * 끝낸다. 좌우로 넘길 목록에서도 빼야, 옆으로 넘기다 빈 화면에 닿지 않는다.
-   */
-  const openable = useMemo(() => list.filter((card) => card.photoGone !== 1), [list])
 
   /*
    * 기록을 지우는 일은 되돌릴 수 없다.
@@ -127,22 +115,12 @@ export function HistoryPage() {
                 member={memberName(card.memberId)}
                 category={categoryName(card.categoryId)}
                 editing={editing}
-                onOpen={card.photoGone === 1 ? undefined : () => setOpenCard(card)}
                 onErase={() => void erase(card)}
               />
             ))}
           </div>
         )}
       </div>
-
-      {openCard && (
-        <CardDetail
-          card={openCard}
-          siblings={openable}
-          onNavigate={setOpenCard}
-          onClose={() => setOpenCard(null)}
-        />
-      )}
     </>
   )
 }
@@ -152,26 +130,26 @@ function HistoryRow({
   member,
   category,
   editing,
-  onOpen,
   onErase,
 }: {
   card: Card
   member?: string
   category?: string
   editing: boolean
-  /** 없으면 누를 수 없는 줄이다 — 사진을 지운 기록 */
-  onOpen?: () => void
   onErase: () => void
 }) {
   const url = useObjectUrl(card.thumb, card.id)
 
   /*
-   * 지우는 단추는 줄 안에 넣을 수 없다. 줄 자체가 단추라 단추 안의 단추가
-   * 되기 때문이다. 그래서 줄과 나란히 놓고, 편집을 켰을 때만 자리를 낸다.
+   * 줄은 읽는 것이지 누르는 것이 아니다.
+   *
+   * 여기 남은 것들은 이미 손을 뗀 카드다 — 넘겼거나 팔았고, 되돌릴 수도
+   * 없다. 열어서 할 일이 없으니 줄은 그냥 읽는 자리로 두고, 이 화면에서
+   * 누를 수 있는 것은 편집을 켰을 때 나오는 지우는 단추 하나뿐이다.
    */
   return (
     <div className="history__item" data-editing={editing || undefined}>
-      <Row onOpen={onOpen}>
+      <div className="history__row">
         <span className="history__thumb">{url && <img src={url} alt="" loading="lazy" />}</span>
 
         <span className="history__body">
@@ -189,28 +167,22 @@ function HistoryRow({
           </span>
           <span className="history__date">{formatDate(card.deletedAt ?? card.updatedAt)}</span>
         </span>
-      </Row>
+      </div>
 
-      {editing && (
-        <button className="history__erase" onClick={onErase} aria-label="기록 지우기">
-          <TrashIcon size={19} />
-        </button>
-      )}
+      {/*
+        단추는 늘 자리에 있고, 편집을 켜면 폭이 열리며 줄을 밀어낸다.
+        껐다 켤 때마다 붙였다 떼면 밀려나는 모습을 보여줄 수가 없다.
+        접혀 있는 동안에는 손끝에도 탭 순서에도 걸리지 않는다.
+      */}
+      <button
+        className="history__erase"
+        onClick={onErase}
+        aria-label="기록 지우기"
+        tabIndex={editing ? 0 : -1}
+        aria-hidden={!editing}
+      >
+        <TrashIcon size={19} />
+      </button>
     </div>
-  )
-}
-
-/*
- * 같은 줄이지만 누를 수 있을 때만 단추다.
- *
- * 누를 수 없는 것을 disabled 단추로 두면 글자까지 흐려져 읽기 힘들어지고,
- * 그냥 단추로 두면 눌리는 시늉만 하고 아무 일도 없다. 태그를 바꾼다.
- */
-function Row({ onOpen, children }: { onOpen?: () => void; children: ReactNode }) {
-  if (!onOpen) return <div className="history__row">{children}</div>
-  return (
-    <button className="history__row" onClick={onOpen}>
-      {children}
-    </button>
   )
 }
