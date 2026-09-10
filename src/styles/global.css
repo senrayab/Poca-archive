@@ -2756,6 +2756,161 @@ a { color: inherit; }
 /* 사진 위 캡션 그라데이션도 한 톤 줄인다 */
 :root[data-skin='mono'] .thumb__label { background: linear-gradient(transparent, rgba(0, 0, 0, .7)); }
 
+/* ---------- skin: aurora ---------- */
+
+/*
+ * 세 번째 스킨. 유리 안에 무지개가 갇힌 것 같은 결이다.
+ *
+ * 참고한 그림은 투명한 구(球) 표면에서 민트와 라일락, 복숭아빛이 각도에
+ * 따라 갈리는 모습이었다. 그 빛을 색 하나로 옮길 수는 없다 — 무지개는
+ * '여러 색이 한 자리에서 갈리는 일'이라 점 하나로는 표현되지 않는다.
+ * 그래서 셋으로 나눠 맡겼다.
+ *
+ *  1. 배경(--wash)이 무지개를 맡는다. 네 귀퉁이에서 민트·라일락·복숭아·
+ *     분홍이 번져 들어와 가운데서 섞인다. 화면을 굴릴 때 배경은 그대로
+ *     있으므로, 카드가 그 위를 지나며 빛깔이 갈리는 것처럼 보인다.
+ *  2. 판때기(.card-panel)가 유리의 두께를 맡는다. 비스듬히 흐르는 얇은
+ *     막 하나를 덮어, 흰 판이 아니라 빛을 머금은 판으로 보이게 한다.
+ *  3. 포인트 색은 오팔 보라 하나로 고정한다. 여기까지 무지개로 두면 어느
+ *     것이 눌린 상태인지 읽히지 않는다. 강조는 또렷해야 한다.
+ *
+ * 둥글기도 한몫한다. 참고한 것이 죄다 부푼 구슬이라 모서리를 크게 굴렸다 —
+ * 목록의 카드까지 포함해서, 이 스킨에서만 눈에 띄게 둥글다.
+ *
+ * 딤 위의 색(--on-scrim 무리)은 건드리지 않는다. 파스텔과 같은 '어두운 딤
+ * 위 흰 글씨'로 두면 모노에서 겪은 안 보이는 문제를 처음부터 만들지 않는다.
+ *
+ * 스킨은 순서가 곧 우선순위다. 모노 블록 전부 뒤에 와야 하고,
+ * 안쪽도 다크를 먼저 깔고 라이트가 덮는다.
+ */
+:root[data-skin='aurora'],
+:root[data-skin='aurora'][data-theme='dark'] {
+  --bg: #0e0b1a;
+  --desk-bg: #07050f;
+  --bg-elev: #191430;
+  --bg-elev-2: #241d42;
+  --line: #322a58;
+  --panel-line: rgba(178, 160, 255, .17);
+  --text: #f1ecff;
+  --text-dim: #a49bc8;
+  --accent: #a99bff;
+  --accent-ink: #14102a;
+  --accent-soft: rgba(169, 155, 255, .18);
+  --sky: #7ee8e0;
+  --violet: #c9a4ff;
+  --danger: #ff7fa8;
+  --scrim: rgba(6, 4, 16, .62);
+  --modal-scrim: rgba(9, 6, 20, .80);
+  --shadow-sm: 0 1px 3px rgba(4, 2, 14, .5);
+  --shadow-md: 0 4px 14px rgba(4, 2, 14, .5);
+  --shadow-lg: 0 10px 30px rgba(4, 2, 14, .55);
+  --shadow-xl: 0 24px 60px rgba(4, 2, 14, .66);
+  /* 포인트 색 위에 민트를 한 겹 더 얹어 빛이 갈리는 것처럼 보이게 한다 */
+  --glow: 0 8px 24px rgba(169, 155, 255, .40), 0 2px 16px rgba(126, 232, 224, .26);
+  --wash:
+    radial-gradient(58% 40% at 2% 2%, rgba(126, 232, 224, .18), transparent 68%),
+    radial-gradient(62% 44% at 100% 4%, rgba(201, 164, 255, .20), transparent 70%),
+    radial-gradient(66% 46% at 92% 98%, rgba(255, 168, 208, .16), transparent 72%),
+    radial-gradient(58% 40% at 0% 100%, rgba(255, 206, 168, .13), transparent 70%);
+
+  /* 유리를 흉내 내는 스킨이라 위에 뜬 바도 한 겹 더 비치게 둔다 */
+  --bar-bg: color-mix(in srgb, var(--bg) 66%, transparent);
+  --bar-blur: blur(22px);
+
+  --radius: 26px;
+  --radius-sm: 18px;
+  --radius-xs: 14px;
+  --panel-radius: 20px;
+  --thumb-radius: 18px;
+  --stage-radius: 26px;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='aurora']:not([data-theme='dark']) {
+    --bg: #f5f2fb;
+    --desk-bg: #eae5f6;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #f7f4fd;
+    --line: #e8e1f5;
+    --panel-line: rgba(140, 120, 210, .13);
+    --text: #201b33;
+    --text-dim: #7d76a0;
+    --accent: #7b6cf6;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(123, 108, 246, .11);
+    --sky: #5fcfc8;
+    --violet: #a97bf0;
+    --danger: #e0407e;
+    --scrim: rgba(38, 28, 70, .32);
+    --modal-scrim: rgba(24, 18, 42, .72);
+    --shadow-sm: 0 1px 3px rgba(80, 62, 140, .08);
+    --shadow-md: 0 4px 14px rgba(80, 62, 140, .10);
+    --shadow-lg: 0 10px 30px rgba(80, 62, 140, .14);
+    --shadow-xl: 0 24px 60px rgba(80, 62, 140, .22);
+    --glow: 0 8px 22px rgba(123, 108, 246, .34), 0 2px 14px rgba(95, 207, 200, .30);
+    --wash:
+      radial-gradient(58% 40% at 2% 2%, rgba(120, 226, 218, .34), transparent 68%),
+      radial-gradient(62% 44% at 100% 4%, rgba(190, 165, 255, .34), transparent 70%),
+      radial-gradient(66% 46% at 92% 98%, rgba(255, 176, 212, .30), transparent 72%),
+      radial-gradient(58% 40% at 0% 100%, rgba(255, 214, 178, .26), transparent 70%);
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='aurora'][data-theme='light'] {
+  --bg: #f5f2fb;
+  --desk-bg: #eae5f6;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #f7f4fd;
+  --line: #e8e1f5;
+  --panel-line: rgba(140, 120, 210, .13);
+  --text: #201b33;
+  --text-dim: #7d76a0;
+  --accent: #7b6cf6;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(123, 108, 246, .11);
+  --sky: #5fcfc8;
+  --violet: #a97bf0;
+  --danger: #e0407e;
+  --scrim: rgba(38, 28, 70, .32);
+  --modal-scrim: rgba(24, 18, 42, .72);
+  --shadow-sm: 0 1px 3px rgba(80, 62, 140, .08);
+  --shadow-md: 0 4px 14px rgba(80, 62, 140, .10);
+  --shadow-lg: 0 10px 30px rgba(80, 62, 140, .14);
+  --shadow-xl: 0 24px 60px rgba(80, 62, 140, .22);
+  --glow: 0 8px 22px rgba(123, 108, 246, .34), 0 2px 14px rgba(95, 207, 200, .30);
+  --wash:
+    radial-gradient(58% 40% at 2% 2%, rgba(120, 226, 218, .34), transparent 68%),
+    radial-gradient(62% 44% at 100% 4%, rgba(190, 165, 255, .34), transparent 70%),
+    radial-gradient(66% 46% at 92% 98%, rgba(255, 176, 212, .30), transparent 72%),
+    radial-gradient(58% 40% at 0% 100%, rgba(255, 214, 178, .26), transparent 70%);
+
+  color-scheme: light;
+}
+
+/*
+ * 판때기에 유리 두께를 준다.
+ *
+ * 색을 칠하는 게 아니라 비스듬히 흐르는 막을 덮는 것이다. 왼쪽 위에서
+ * 민트가 들어와 가운데서 사라졌다가 오른쪽 아래에서 분홍으로 다시 나온다 —
+ * 유리 모서리에서만 빛이 갈리는 모습을 그대로 옮겼다. 가운데를 비워둬야
+ * 글씨가 읽히고, 판때기가 색종이처럼 보이지 않는다.
+ */
+:root[data-skin='aurora'] .card-panel {
+  background:
+    linear-gradient(
+      142deg,
+      rgba(126, 232, 224, .16),
+      rgba(201, 164, 255, .05) 34%,
+      transparent 56%,
+      rgba(255, 176, 212, .14)
+    ),
+    var(--bg-elev);
+}
+
 /* ---------- skin / accent picker ---------- */
 
 .swatches {
@@ -2800,6 +2955,11 @@ a { color: inherit; }
 /* ---------- skin picker ---------- */
 
 .skins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/*
+ * 스킨이 홀수 개면 마지막 하나가 한 칸만 차지해 옆이 휑하게 빈다.
+ * 그 한 장만 줄을 다 쓰게 한다 — 스킨을 더하고 뺄 때 손댈 곳이 없다.
+ */
+.skin:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .skin {
   display: grid;
@@ -2840,3 +3000,10 @@ a { color: inherit; }
 .skin[data-preview='mono'] i:nth-child(1) { background: #fff; border: 1px solid #dcdce0; }
 .skin[data-preview='mono'] i:nth-child(2) { background: #fff; border: 1px solid #dcdce0; }
 .skin[data-preview='mono'] i:nth-child(3) { background: #121214; }
+
+.skin[data-preview='aurora'] .skin__swatch {
+  background: linear-gradient(122deg, #d7f5f0, #e6dcff 46%, #ffdfe9);
+}
+.skin[data-preview='aurora'] i:nth-child(1) { background: rgba(255, 255, 255, .82); border-radius: 10px; }
+.skin[data-preview='aurora'] i:nth-child(2) { background: rgba(255, 255, 255, .82); border-radius: 10px; }
+.skin[data-preview='aurora'] i:nth-child(3) { background: linear-gradient(160deg, #7ee8e0, #7b6cf6); }
