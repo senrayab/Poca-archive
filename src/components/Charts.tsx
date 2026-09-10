@@ -13,6 +13,15 @@ interface DonutProps {
   keepEmpty?: boolean
 }
 
+/*
+ * 가운데 숫자는 자릿수가 늘면 글씨를 줄인다.
+ *
+ * 동심원은 고리가 세 겹이라 안쪽에 지름 64px밖에 안 남는다. 24px 굵은
+ * 글씨로는 네 자리에서 고리에 닿고 다섯 자리면 넘어간다. 자릿수를 세어
+ * 알려주면 나머지는 CSS가 맡는다. (여섯 자리를 넘길 일은 없으니 거기서 묶는다)
+ */
+const lengthOf = (value: string | number) => Math.min(6, String(value).length)
+
 const SIZE = 132
 const STROKE = 13
 const R = (SIZE - STROKE) / 2
@@ -70,7 +79,7 @@ export function Donut({ slices, centerLabel, keepEmpty = false }: DonutProps) {
           </g>
         </svg>
 
-        <div className="chart__center">
+        <div className="chart__center" data-len={lengthOf(total)}>
           <strong>{total}</strong>
           <span>{centerLabel}</span>
         </div>
@@ -164,7 +173,7 @@ export function Rings({ series, total, centerValue, centerLabel }: RingsProps) {
           </g>
         </svg>
 
-        <div className="chart__center">
+        <div className="chart__center" data-len={lengthOf(centerValue)}>
           <strong>{centerValue}</strong>
           <span>{centerLabel}</span>
         </div>
