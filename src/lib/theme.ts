@@ -133,6 +133,24 @@ export function resolveTheme(next: ThemeMode = mode): 'light' | 'dark' {
   return media?.matches ? 'dark' : 'light'
 }
 
+/**
+ * 포인트 색이 바탕과 선에 스미는 정도.
+ *
+ * 스킨은 CSS에서 '-base' 이름으로 밑색만 정해두고, 여기서 그 위에 고른 색을
+ * 섞는다. 손대지 않은 사람에게는 이 일이 아예 일어나지 않으므로 스킨이 정한
+ * 색이 한 치도 어긋나지 않는다.
+ *
+ * 스민 정도는 자리마다 다르다. 넓게 깔리는 바탕일수록 옅게, 가늘어서 잘 안
+ * 보이는 선일수록 짙게 둬야 같은 세기로 느껴진다.
+ */
+const TINTED: Array<[string, number]> = [
+  ['--bg-elev', 3],
+  ['--bg', 5],
+  ['--desk-bg', 6],
+  ['--bg-elev-2', 6],
+  ['--line', 12],
+]
+
 /** 포인트 색 위에 올릴 글자색. 배경이 밝으면 검정, 어두우면 흰색. */
 export function inkFor(hex: string): string {
   const n = parseInt(hex.slice(1), 16)
@@ -166,10 +184,17 @@ function apply() {
      */
     const spread = getComputedStyle(root).getPropertyValue('--glow-spread').trim() || '0 8px 22px'
     root.style.setProperty('--glow', `${spread} color-mix(in srgb, ${accent} 34%, transparent)`)
+
+    // 바탕과 선에도 고른 색이 옅게 스민다 (스킨의 밑색 위에)
+    for (const [name, pct] of TINTED) {
+      root.style.setProperty(name, `color-mix(in srgb, ${accent} ${pct}%, var(${name}-base))`)
+    }
   } else {
     for (const name of ['--accent', '--accent-ink', '--accent-soft', '--glow']) {
       root.style.removeProperty(name)
     }
+    // 스킨이 정한 밑색으로 돌아간다
+    for (const [name] of TINTED) root.style.removeProperty(name)
   }
 
   const bar = barColor()

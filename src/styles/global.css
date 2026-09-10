@@ -24,6 +24,25 @@
   --panel-line: transparent;
 
   /*
+   * 바탕과 선의 밑색.
+   *
+   * 스킨은 여기 '-base'만 정하고, 실제로 쓰이는 --bg 같은 이름은 아래 한
+   * 줄로 그 밑색을 그대로 가리킨다. 포인트 색을 손대지 않은 사람에게는
+   * 밑색이 곧 화면의 색이라, 스킨이 정한 그대로가 한 치도 어긋나지 않는다.
+   *
+   * 사람이 포인트 색을 고르면 theme.ts가 이 이름들만 인라인으로 덮어써
+   * 밑색에 그 색을 옅게 섞는다. 섞는 일이 '고른 사람에게만' 일어나므로,
+   * 밑색을 거꾸로 풀어 맞출 필요도 없어졌다 — 예전에는 그렇게 맞췄는데,
+   * 흰색이나 검정에 닿은 자리는 더 밝아지거나 어두워질 수 없어 조금씩
+   * 어긋났다. 파스텔의 보랏빛이 분홍으로 기운 게 그 탓이다.
+   */
+  --bg: var(--bg-base);
+  --desk-bg: var(--desk-bg-base);
+  --bg-elev: var(--bg-elev-base);
+  --bg-elev-2: var(--bg-elev-2-base);
+  --line: var(--line-base);
+
+  /*
    * 멤버 레일의 바탕과, 그 양끝 페이드가 향하는 색.
    *
    * 스킨마다 레일을 다르게 입히는데(파스텔은 떠 있는 알약, 모노는 바탕이
@@ -80,30 +99,17 @@
  * --wash는 배경에 깔리는 파스텔 얼룩이다. 배경색 위에 이미지 레이어로 얹어
  * 별도 요소나 z-index 없이 화면 전체에 은은한 색감을 준다.
  *
- * 바탕과 선은 포인트 색을 아주 옅게 머금는다.
- *
- *   --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
- *                            ~~~~~~~~~~~~ 스민 정도   ~~~~~~~ 밑색
- *
- * 포인트 색만 바꾸면 판때기도 선도 페이지 바탕도 그 색 쪽으로 함께 기운다.
- * 강조만 갈아끼우는 것이 아니라 앱 전체의 색감이 따라 옮겨가는 것이다.
- *
- * 밑색은 눈으로 고른 값이 아니라 거꾸로 푼 값이다. 스킨이 정한 기본 포인트
- * 색을 넣었을 때 예전과 똑같은 색이 나오도록 B = (C - p·A) / (1 - p)로
- * 구했다. 그래서 포인트 색을 건드리지 않은 사람에게는 달라진 것이 없고,
- * 바꾼 사람에게만 색감이 따라온다. (판때기가 이미 순백이던 자리는 더
- * 밝아질 수 없어 아주 옅은 종이빛으로 내려앉는다 — 유일한 예외다.)
- *
- * 스민 정도는 자리마다 다르다. 넓게 깔리는 바탕일수록 옅게(3~6%), 가늘어서
- * 잘 안 보이는 선일수록 짙게(10~12%) 둬야 같은 세기로 느껴진다.
+ * 바탕과 선은 포인트 색을 아주 옅게 머금는다. 다만 스킨이 정한 밑색은
+ * 그대로 두고, 사람이 포인트 색을 고른 경우에만 그 위에 섞는다.
+ * 자세한 것은 맨 위 --bg-base 곁의 주석에 적어두었다.
  */
 :root,
 :root[data-theme='dark'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #020b10);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000306);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #121620);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #151e2b);
-  --line: color-mix(in srgb, var(--accent) 12%, #0f2534);
+  --bg-base: #0f0e14;
+  --desk-bg-base: #08070c;
+  --bg-elev-base: #191822;
+  --bg-elev-2-base: #23212e;
+  --line-base: #2c2a3a;
   --text: #efedf6;
   --text-dim: #9793a8;
   --accent: #ff4d64;
@@ -143,11 +149,11 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
-    --desk-bg: color-mix(in srgb, var(--accent) 6%, #e9f3fc);
-    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #f1fcff);
-    --line: color-mix(in srgb, var(--accent) 12%, #e5fcff);
+    --bg-base: #f4f3f9;
+    --desk-bg-base: #eae8f2;
+    --bg-elev-base: #ffffff;
+    --bg-elev-2-base: #f2f1f8;
+    --line-base: #e8e5f1;
     --text: #17161d;
     --text-dim: #79758a;
     --accent: #ff3d57;
@@ -174,11 +180,11 @@
 }
 
 :root[data-theme='light'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #f3fdff);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #e9f3fc);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #f1fcff);
-  --line: color-mix(in srgb, var(--accent) 12%, #e5fcff);
+  --bg-base: #f4f3f9;
+  --desk-bg-base: #eae8f2;
+  --bg-elev-base: #ffffff;
+  --bg-elev-2-base: #f2f1f8;
+  --line-base: #e8e5f1;
   --text: #17161d;
   --text-dim: #79758a;
   --accent: #ff3d57;
@@ -2705,12 +2711,12 @@ a { color: inherit; }
  */
 :root[data-skin='mono'],
 :root[data-skin='mono'][data-theme='dark'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #000000);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000000);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #0e0e10);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #111115);
-  --line: color-mix(in srgb, var(--accent) 12%, #101015);
-  --panel-line: color-mix(in srgb, var(--accent) 10%, #101015);
+  --bg-base: #0b0b0c;
+  --desk-bg-base: #050506;
+  --bg-elev-base: #151517;
+  --bg-elev-2-base: #1f1f22;
+  --line-base: #2b2b30;
+  --panel-line: #27272b;
   --text: #f3f3f4;
   --text-dim: #8e8e96;
   /* 다크에서는 흰색이 포인트가 된다 */
@@ -2755,12 +2761,12 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='mono']:not([data-theme='dark']) {
-    --bg: color-mix(in srgb, var(--accent) 5%, #fdfdfe);
-    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f0f0f2);
-    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #ffffff);
-    --line: color-mix(in srgb, var(--accent) 12%, #ffffff);
-    --panel-line: color-mix(in srgb, var(--accent) 10%, #fefeff);
+    --bg-base: #f1f1f2;
+    --desk-bg-base: #e3e3e5;
+    --bg-elev-base: #ffffff;
+    --bg-elev-2-base: #f5f5f6;
+    --line-base: #e3e3e5;
+    --panel-line: #e6e6e8;
     --text: #0e0e0f;
     --text-dim: #76767c;
     --accent: #121214;
@@ -2795,12 +2801,12 @@ a { color: inherit; }
 }
 
 :root[data-skin='mono'][data-theme='light'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #fdfdfe);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f0f0f2);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #ffffff);
-  --line: color-mix(in srgb, var(--accent) 12%, #ffffff);
-  --panel-line: color-mix(in srgb, var(--accent) 10%, #fefeff);
+  --bg-base: #f1f1f2;
+  --desk-bg-base: #e3e3e5;
+  --bg-elev-base: #ffffff;
+  --bg-elev-2-base: #f5f5f6;
+  --line-base: #e3e3e5;
+  --panel-line: #e6e6e8;
   --text: #0e0e0f;
   --text-dim: #76767c;
   --accent: #121214;
@@ -2935,11 +2941,11 @@ a { color: inherit; }
  */
 :root[data-skin='aurora'],
 :root[data-skin='aurora'][data-theme='dark'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #070211);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000004);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #17102d);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #1f143b);
-  --line: color-mix(in srgb, var(--accent) 12%, #25194a);
+  --bg-base: #100a1c;
+  --desk-bg-base: #080512;
+  --bg-elev-base: #1c1433;
+  --bg-elev-2-base: #281d46;
+  --line-base: #372a5e;
   --panel-line: rgba(190, 168, 255, .18);
   --text: #f3ecff;
   --text-dim: #a89ccc;
@@ -2981,11 +2987,11 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='aurora']:not([data-theme='dark']) {
-    --bg: color-mix(in srgb, var(--accent) 5%, #fdfafd);
-    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2edf8);
-    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fffeff);
-    --line: color-mix(in srgb, var(--accent) 12%, #f7f2f9);
+    --bg-base: #f7f3fc;
+    --desk-bg-base: #ece5f7;
+    --bg-elev-base: #ffffff;
+    --bg-elev-2-base: #f9f5fe;
+    --line-base: #eae2f7;
     --panel-line: rgba(140, 115, 215, .13);
     --text: #1e1630;
     --text-dim: #7c73a2;
@@ -3011,11 +3017,11 @@ a { color: inherit; }
 }
 
 :root[data-skin='aurora'][data-theme='light'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #fdfafd);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2edf8);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fffeff);
-  --line: color-mix(in srgb, var(--accent) 12%, #f7f2f9);
+  --bg-base: #f7f3fc;
+  --desk-bg-base: #ece5f7;
+  --bg-elev-base: #ffffff;
+  --bg-elev-2-base: #f9f5fe;
+  --line-base: #eae2f7;
   --panel-line: rgba(140, 115, 215, .13);
   --text: #1e1630;
   --text-dim: #7c73a2;
@@ -3165,12 +3171,12 @@ a { color: inherit; }
  */
 :root[data-skin='brick'],
 :root[data-skin='brick'][data-theme='dark'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #0b0e13);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #000507);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #1b1923);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #20202c);
-  --line: color-mix(in srgb, var(--accent) 12%, #1f2733);
-  --panel-line: color-mix(in srgb, var(--accent) 10%, #242936);
+  --bg-base: #17131b;
+  --desk-bg-base: #0e0b11;
+  --bg-elev-base: #221c27;
+  --bg-elev-2-base: #2d2534;
+  --line-base: #3a3042;
+  --panel-line: #3a3042;
   --text: #f6eef3;
   --text-dim: #a495ad;
   --accent: #ff6fae;
@@ -3211,12 +3217,12 @@ a { color: inherit; }
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='brick']:not([data-theme='dark']) {
-    --bg: color-mix(in srgb, var(--accent) 5%, #fefffe);
-    --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2f0f2);
-    --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-    --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fefafb);
-    --line: color-mix(in srgb, var(--accent) 12%, #f0f0f1);
-    --panel-line: color-mix(in srgb, var(--accent) 10%, #f2eff2);
+    --bg-base: #fdf6f9;
+    --desk-bg-base: #f2e6ec;
+    --bg-elev-base: #ffffff;
+    --bg-elev-2-base: #fdf0f5;
+    --line-base: #f0dce6;
+    --panel-line: #f2dfe8;
     --text: #2a1f27;
     --text-dim: #8a7580;
     --accent: #ef4d92;
@@ -3242,12 +3248,12 @@ a { color: inherit; }
 }
 
 :root[data-skin='brick'][data-theme='light'] {
-  --bg: color-mix(in srgb, var(--accent) 5%, #fefffe);
-  --desk-bg: color-mix(in srgb, var(--accent) 6%, #f2f0f2);
-  --bg-elev: color-mix(in srgb, var(--accent) 3%, #ffffff);
-  --bg-elev-2: color-mix(in srgb, var(--accent) 6%, #fefafb);
-  --line: color-mix(in srgb, var(--accent) 12%, #f0f0f1);
-  --panel-line: color-mix(in srgb, var(--accent) 10%, #f2eff2);
+  --bg-base: #fdf6f9;
+  --desk-bg-base: #f2e6ec;
+  --bg-elev-base: #ffffff;
+  --bg-elev-2-base: #fdf0f5;
+  --line-base: #f0dce6;
+  --panel-line: #f2dfe8;
   --text: #2a1f27;
   --text-dim: #8a7580;
   --accent: #ef4d92;
