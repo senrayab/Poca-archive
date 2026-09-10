@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Header } from '@/components/AppShell'
 import { CardDetail } from '@/components/CardDetail'
@@ -48,6 +49,15 @@ export function HistoryPage() {
     () => (cards ?? []).filter((card) => filter === 'all' || card.status === filter),
     [cards, filter],
   )
+
+  /*
+   * 자세히보기로 넘길 수 있는 것들.
+   *
+   * 사진을 지운 기록은 열어봐야 흐린 썸네일을 크게 늘린 것뿐이라 알아보기
+   * 어렵다. 목록에 붙은 작은 썸네일만으로 무엇인지 알 수 있으니 거기서
+   * 끝낸다. 좌우로 넘길 목록에서도 빼야, 옆으로 넘기다 빈 화면에 닿지 않는다.
+   */
+  const openable = useMemo(() => list.filter((card) => card.photoGone !== 1), [list])
 
   /*
    * 기록을 지우는 일은 되돌릴 수 없다.
@@ -117,7 +127,7 @@ export function HistoryPage() {
                 member={memberName(card.memberId)}
                 category={categoryName(card.categoryId)}
                 editing={editing}
-                onOpen={() => setOpenCard(card)}
+                onOpen={card.photoGone === 1 ? undefined : () => setOpenCard(card)}
                 onErase={() => void erase(card)}
               />
             ))}
@@ -128,7 +138,7 @@ export function HistoryPage() {
       {openCard && (
         <CardDetail
           card={openCard}
-          siblings={list}
+          siblings={openable}
           onNavigate={setOpenCard}
           onClose={() => setOpenCard(null)}
         />
@@ -149,7 +159,8 @@ function HistoryRow({
   member?: string
   category?: string
   editing: boolean
-  onOpen: () => void
+  /** 없으면 누를 수 없는 줄이다 — 사진을 지운 기록 */
+  onOpen?: () => void
   onErase: () => void
 }) {
   const url = useObjectUrl(card.thumb, card.id)
@@ -160,7 +171,7 @@ function HistoryRow({
    */
   return (
     <div className="history__item" data-editing={editing || undefined}>
-      <button className="history__row" onClick={onOpen}>
+      <Row onOpen={onOpen}>
         <span className="history__thumb">{url && <img src={url} alt="" loading="lazy" />}</span>
 
         <span className="history__body">
@@ -178,7 +189,7 @@ function HistoryRow({
           </span>
           <span className="history__date">{formatDate(card.deletedAt ?? card.updatedAt)}</span>
         </span>
-      </button>
+      </Row>
 
       {editing && (
         <button className="history__erase" onClick={onErase} aria-label="기록 지우기">
@@ -186,5 +197,20 @@ function HistoryRow({
         </button>
       )}
     </div>
+  )
+}
+
+/*
+ * 같은 줄이지만 누를 수 있을 때만 단추다.
+ *
+ * 누를 수 없는 것을 disabled 단추로 두면 글자까지 흐려져 읽기 힘들어지고,
+ * 그냥 단추로 두면 눌리는 시늉만 하고 아무 일도 없다. 태그를 바꾼다.
+ */
+function Row({ onOpen, children }: { onOpen?: () => void; children: ReactNode }) {
+  if (!onOpen) return <div className="history__row">{children}</div>
+  return (
+    <button className="history__row" onClick={onOpen}>
+      {children}
+    </button>
   )
 }
