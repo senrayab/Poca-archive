@@ -1273,6 +1273,11 @@ a { color: inherit; }
   gap: 10px;
   flex-shrink: 0;
   padding: 0 8px;
+  /*
+   * 사진과 단추 사이에서 숨 쉴 자리를 준다. 손잡이가 동그랗고 눈금자가
+   * 가로로 길어, 위아래가 붙으면 세 덩어리가 한 덩어리로 뭉쳐 보인다.
+   */
+  margin: 8px 0;
 }
 .dial__knobs {
   display: flex;
