@@ -541,16 +541,12 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
         <div className="detail__info">
           {editing ? (
             <>
-              <label className="field">
-                <span>제목</span>
-                <input
-                  type="text"
-                  value={draft.title}
-                  onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-                  placeholder="비워두셔도 됩니다"
-                  autoFocus
-                />
-              </label>
+              {/*
+                고치러 들어서자마자 자판이 올라오지 않게 두었다.
+                열자마자 커서가 깜빡이면 자판이 화면 반을 덮어, 무엇을 고치러
+                왔는지 보기도 전에 적을 자리부터 들이미는 꼴이 된다. 손댈
+                칸은 눌러서 고르는 편이 낫다.
+              */}
               <div className="row">
                 <label className="field">
                   <span>멤버</span>
@@ -588,6 +584,20 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
                   value={draft.memo}
                   onChange={(e) => setDraft({ ...draft, memo: e.target.value })}
                   placeholder="구매처, 교환 상대, 상태 등"
+                />
+              </label>
+              {/*
+                제목이 맨 아래인 건 가장 나중에 정하는 것이기 때문이다.
+                비워둬도 되는 유일한 칸이라, 위에서 길을 막고 서 있으면
+                안 적어도 되는 것을 적어야 할 것처럼 보인다.
+              */}
+              <label className="field">
+                <span>제목</span>
+                <input
+                  type="text"
+                  value={draft.title}
+                  onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                  placeholder="비워두셔도 됩니다"
                 />
               </label>
             </>

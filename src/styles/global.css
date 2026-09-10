@@ -3261,13 +3261,13 @@ a { color: inherit; }
      *
      * 조각 위에 흰 글씨와 흰 아이콘이 올라앉는데, 환한 노랑 위에서는 그게
      * 녹아 없어진다. 밝기를 내리면 흰 것이 살아나지만 너무 내리면 장난감이
-     * 아니라 놋쇠가 된다. 그 사이에서, 흰 것이 겨우 아니라 또렷이 보이는
+     * 아니라 놋쇠가 된다. 그 사이에서, 흰 것이 처음 자리만큼 또렷이 보이는
      * 자리까지만 올려 잡은 값이다. 파랑을 더 걷어 채도를 벌어놓은 것도
      * 같은 이유다 — 채도는 밝기를 거의 올리지 않으면서 색을 살린다.
      */
-    --accent: #c2860a;
+    --accent: #c67c05;
     --accent-ink: #fffaef;
-    --accent-soft: rgba(194, 134, 10, .14);
+    --accent-soft: rgba(198, 124, 5, .14);
     --sky: #2fae87;
     --violet: #e8558f;
     --danger: #d43a2f;
@@ -3276,7 +3276,7 @@ a { color: inherit; }
     --shadow-lg: 4px 4px 0 rgba(120, 95, 40, .18);
     --shadow-xl: 7px 7px 0 rgba(120, 95, 40, .22);
     --glow-spread: 3px 3px 0;
-    --glow: 3px 3px 0 rgba(194, 134, 10, .32);
+    --glow: 3px 3px 0 rgba(198, 124, 5, .32);
     --wash:
       repeating-linear-gradient(90deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
       repeating-linear-gradient(0deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
@@ -3297,9 +3297,9 @@ a { color: inherit; }
   --text: #2a2119;
   --text-dim: #8a7d6d;
   /* 흰 것이 또렷이 보이는 자리까지만 올려 잡은 금빛 — 위 주석을 보라 */
-  --accent: #c2860a;
+  --accent: #c67c05;
   --accent-ink: #fffaef;
-  --accent-soft: rgba(194, 134, 10, .14);
+  --accent-soft: rgba(198, 124, 5, .14);
   --sky: #2fae87;
   --violet: #e8558f;
   --danger: #d43a2f;
@@ -3308,7 +3308,7 @@ a { color: inherit; }
   --shadow-lg: 4px 4px 0 rgba(120, 95, 40, .18);
   --shadow-xl: 7px 7px 0 rgba(120, 95, 40, .22);
   --glow-spread: 3px 3px 0;
-  --glow: 3px 3px 0 rgba(194, 134, 10, .32);
+  --glow: 3px 3px 0 rgba(198, 124, 5, .32);
   --wash:
     repeating-linear-gradient(90deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
     repeating-linear-gradient(0deg, rgba(120, 95, 40, .06) 0 1px, transparent 1px 26px),
@@ -3516,4 +3516,4 @@ a { color: inherit; }
 }
 .skin[data-preview='brick'] i:nth-child(1) { background: #fff; border-radius: 3px; }
 .skin[data-preview='brick'] i:nth-child(2) { background: #fff; border-radius: 3px; }
-.skin[data-preview='brick'] i:nth-child(3) { background: #c2860a; border-radius: 3px; }
+.skin[data-preview='brick'] i:nth-child(3) { background: #c67c05; border-radius: 3px; }
