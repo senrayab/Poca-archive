@@ -18,6 +18,7 @@ import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
 import { useCategories, useCards } from '@/hooks/useData'
 import { backfillPrints, findLike, fingerprintOf } from '@/lib/duplicates'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { useAppName } from '@/lib/appName'
 
@@ -226,7 +227,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
             onAddMember={() => openMemberEditor()}
           />
 
-          {categories.length > 0 && (
+          {SHOW_CATEGORY && categories.length > 0 && (
             <div className="subtabs" role="tablist" aria-label="카테고리">
               <button
                 role="tab"
@@ -328,7 +329,7 @@ function EmptyState({ mode, filtered }: { mode: ArchiveMode; filtered: boolean }
     return (
       <div className="empty">
         <strong>조건에 맞는 카드가 없어요</strong>
-        <p>멤버·분류 탭이나 검색어를 바꿔 보세요.</p>
+        <p>{SHOW_CATEGORY ? '멤버·분류 탭이나 검색어를 바꿔 보세요.' : '멤버 탭이나 검색어를 바꿔 보세요.'}</p>
       </div>
     )
   }

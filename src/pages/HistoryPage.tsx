@@ -4,6 +4,7 @@ import { Header } from '@/components/AppShell'
 import { CardDetail } from '@/components/CardDetail'
 import { db } from '@/db/db'
 import type { Card, CardStatus } from '@/db/types'
+import { SHOW_CATEGORY } from '@/lib/features'
 import { useCategories, useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { formatDate } from '@/lib/format'
@@ -123,7 +124,7 @@ function HistoryRow({
         <span className="history__title">{card.title}</span>
         <span className="history__meta">
           {member && <b>{member}</b>}
-          {category && <span>{category}</span>}
+          {SHOW_CATEGORY && category && <span>{category}</span>}
         </span>
       </span>
 

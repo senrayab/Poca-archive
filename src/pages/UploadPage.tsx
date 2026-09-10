@@ -19,6 +19,7 @@ import {
 } from '@/lib/image'
 import { takePendingFiles } from '@/lib/pendingFiles'
 import { backfillPrints, findOverlaps, fingerprintOf, type Overlap } from '@/lib/duplicates'
+import { SHOW_CATEGORY } from '@/lib/features'
 
 interface QueueItem {
   key: string
@@ -290,17 +291,19 @@ export function UploadPage() {
                   ))}
                 </select>
               </label>
-              <label className="field" style={{ marginBottom: 0 }}>
-                <span>카테고리</span>
-                <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                  <option value="">없음</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {SHOW_CATEGORY && (
+                <label className="field" style={{ marginBottom: 0 }}>
+                  <span>카테고리</span>
+                  <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+                    <option value="">없음</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
             </div>
           </div>
 
@@ -479,6 +482,7 @@ export function UploadPage() {
                             </option>
                           ))}
                         </select>
+                        {SHOW_CATEGORY && (
                         <select
                           value={item.categoryId}
                           onChange={(e) =>
@@ -496,6 +500,7 @@ export function UploadPage() {
                             </option>
                           ))}
                         </select>
+                        )}
                       </div>
                       <span className="queue__meta">
                         {item.processed.full.width}×{item.processed.full.height} ·{' '}
