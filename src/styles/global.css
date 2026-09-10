@@ -2260,6 +2260,68 @@ a { color: inherit; }
 
 .chart__center span { font-size: 10px; color: var(--text-dim); }
 
+/*
+ * 가로 누적 막대. 합쳐서 전체가 되는 값들을 한 줄에 토막 내어 보여준다.
+ * 숫자를 원 안에 가두지 않으니 자릿수가 늘어도 자리 걱정이 없다.
+ */
+.bar { display: block; }
+.bar__head {
+  margin: 0 0 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.bar__head strong {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+.bar__head span { font-size: 11px; color: var(--text-dim); }
+
+.bar__track {
+  display: flex;
+  height: 14px;
+  border-radius: var(--pill);
+  overflow: hidden;
+  background: var(--bg-elev-2);
+}
+.bar__fill {
+  /* 한 장뿐인 토막도 눈에 보이게 — 비율만 따르면 실처럼 얇아져 사라진다 */
+  min-width: 4px;
+  animation: bar-in .42s var(--ease) both;
+}
+@keyframes bar-in {
+  from { transform: scaleX(0); transform-origin: left; }
+}
+
+.bar__keys {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.bar__keys li { display: flex; align-items: center; gap: 6px; }
+.bar__keys b {
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.bar__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar__fill { animation: none; }
+}
+
 .legend {
   flex: 1;
   min-width: 0;
