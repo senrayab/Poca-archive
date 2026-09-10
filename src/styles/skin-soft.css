@@ -192,7 +192,8 @@
 
 .softmembers {
   display: flex;
-  gap: 8px;
+  /* 이름들이 한 줄로 읽히게 바짝 붙인다 — 알약이 이미 서로를 가른다 */
+  gap: 6px;
   padding: 14px 20px 0;
   overflow-x: auto;
   scrollbar-width: none;
@@ -207,7 +208,7 @@
   align-items: center;
   gap: 6px;
   height: 38px;
-  padding: 0 16px;
+  padding: 0 14px;
   border-radius: var(--pill);
   background: var(--bg-elev);
   color: var(--text);
