@@ -323,7 +323,13 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
   }
 
   return (
-    <Modal onClose={requestClose} panel={false} label={card.title}>
+    <Modal
+      onClose={requestClose}
+      panel={false}
+      // 고치는 중에는 딤을 눌러도 아무 일이 없다 — 나갈 길은 취소와 저장이 낸다
+      closeOnScrim={!editing}
+      label={card.title}
+    >
       {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
       <div
         className="detail"

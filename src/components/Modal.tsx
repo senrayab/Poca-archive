@@ -6,6 +6,14 @@ interface ModalProps {
   children: ReactNode
   /** 상세 팝업처럼 패널 스타일을 직접 그릴 때는 false */
   panel?: boolean
+  /**
+   * 바깥 딤을 눌러 닫을 수 있는지.
+   *
+   * 뭔가 고치는 중이라면 끄는 게 낫다. 딤은 넓어서 스치듯 눌리기 쉬운데,
+   * 그 한 번에 고치던 것이 걸린 물음으로 이어지면 성가시다. 나갈 길은
+   * 취소·저장 단추가 이미 분명하게 내주고 있다.
+   */
+  closeOnScrim?: boolean
   label?: string
 }
 
@@ -49,7 +57,13 @@ function unlockScroll() {
 }
 
 /** 스크림 클릭·ESC로 닫히는 레이어 팝업의 공통 껍데기. */
-export function Modal({ onClose, children, panel = true, label }: ModalProps) {
+export function Modal({
+  onClose,
+  children,
+  panel = true,
+  closeOnScrim = true,
+  label,
+}: ModalProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -69,7 +83,7 @@ export function Modal({ onClose, children, panel = true, label }: ModalProps) {
       aria-modal="true"
       aria-label={label}
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose()
+        if (closeOnScrim && e.target === e.currentTarget) onClose()
       }}
     >
       {panel ? <div className="modal__panel">{children}</div> : children}
