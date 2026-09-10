@@ -1783,6 +1783,38 @@ a { color: inherit; }
  * 정보 영역은 판때기 없이 딤 위에 바로 얹는다.
  * 딤은 라이트 테마에서도 어두우므로 이 안쪽 색은 테마와 무관하게 고정한다.
  */
+/*
+ * 자세히보기를 페이지로 열 때의 껍데기.
+ *
+ * 안에 놓이는 것은 팝업일 때와 똑같다. 달라지는 건 두 가지다 — 딤이
+ * 없으니 페이지 바탕 위에 놓이고, 그래서 '딤 위의 색'들이 더 이상 맞지
+ * 않는다. 흰 글씨는 밝은 페이지에서 사라진다.
+ *
+ * 그래서 규칙을 고치는 대신 색의 뜻을 여기서 다시 정한다. .detail 안쪽은
+ * 예전 그대로 --on-scrim을 쓰고, 그 값이 페이지의 글자색을 가리킬 뿐이다.
+ * 팝업과 페이지 두 벌을 만들지 않아도 되는 이유가 이것이다.
+ */
+.detail-page {
+  --on-scrim: var(--text);
+  --on-scrim-ink: var(--bg);
+  --on-scrim-dim: var(--text-dim);
+  --on-scrim-shadow: none;
+  --on-scrim-danger: var(--danger);
+  --glass: var(--bg-elev);
+  --glass-line: var(--line);
+  --glass-hover: var(--bg-elev-2);
+  /* 네이티브 위젯은 페이지의 밝기를 그대로 따른다 */
+  --scrim-scheme: normal;
+
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+}
+/* 페이지에서는 높이를 제한할 딤이 없으므로 화면 높이에서 여백만 뺀다 */
+.detail-page .detail { max-height: calc(100svh - 32px); }
+
 .detail {
   /* 사진 높이에서 실물 비율로 폭이 정해진다. 레일이 이 폭을 그대로 쓴다. */
   --stage-h: min(52dvh, 460px);

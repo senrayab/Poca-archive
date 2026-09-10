@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useShell } from '@/components/shell'
 import { CardDetail } from '@/components/CardDetail'
 import { CameraIcon, CloseIcon, ImageIcon, SearchIcon } from '@/components/Icons'
@@ -37,6 +38,8 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openCard, setOpenCard] = useState<Card | null>(null)
+  const navigate = useNavigate()
+  const location = useLocation()
   /*
    * 사진으로 찾은 결과. 지문이 닮은 카드의 id만 가까운 순으로 담는다.
    * null이면 사진 검색을 쓰지 않는 상태다.
@@ -73,6 +76,21 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   useEffect(() => {
     setSelected(new Set())
   }, [mode, memberId, categoryId])
+
+  /*
+   * 아래 탭바의 검색은 화면을 옮기는 게 아니라 이 화면의 시트를 여는 일이다.
+   * 그래서 보관함으로 오면서 state에 표시를 남기고, 여기서 그걸 받아 연다.
+   * 주소에는 흔적이 없으므로 새로고침하면 그냥 보관함이다.
+   *
+   * 표시를 지우는 건 같은 자리에서 또 눌렀을 때를 위해서다 — 값이 남아
+   * 있으면 두 번째 누름이 아무 일도 일으키지 못한다.
+   */
+  const findAt = (location.state as { find?: number } | null)?.find
+  useEffect(() => {
+    if (!findAt) return
+    setSearchOpen(true)
+    navigate(location.pathname, { replace: true, state: null })
+  }, [findAt, location.pathname, navigate])
 
   /*
    * 사진 한 장을 받아 닮은 카드를 찾는다.
@@ -155,7 +173,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
    * 열인지도, 머리가 어떻게 생겼는지도 모른다 — 대신 어떤 카드가 있고
    * 무엇을 누르면 무슨 일이 나는지만 안다.
    */
-  const { Archive } = useLayout()
+  const { Archive, detailAsPage } = useLayout()
 
   const view: ArchiveView = {
     mode,
@@ -172,7 +190,11 @@ export function ArchivePage({ mode }: ArchivePageProps) {
 
     selected,
     selectMode,
-    onOpen: setOpenCard,
+    /*
+     * 스킨이 자세히보기를 페이지로 열면 주소를 옮기고, 아니면 지금처럼
+     * 목록 위에 층을 얹는다. 어느 쪽인지는 화면이 아니라 레이아웃이 안다.
+     */
+    onOpen: (card: Card) => (detailAsPage ? navigate(`/card/${card.id}`) : setOpenCard(card)),
     onToggleSelect: toggleSelect,
     onSweep: sweepCards,
     onSelectAll: () => setSelected(new Set(list.map((c) => c.id))),
@@ -217,7 +239,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
         />
       )}
 
-      {openCard && (
+      {openCard && !detailAsPage && (
         <CardDetail
           card={openCard}
           siblings={list}

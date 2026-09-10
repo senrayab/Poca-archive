@@ -346,6 +346,8 @@
 
 .softnav__item {
   display: grid;
+  /* 링크로 그려지는 자리가 섞여 있어 밑줄이 딸려 온다 */
+  text-decoration: none;
   justify-items: center;
   gap: 3px;
   padding: 8px 0;

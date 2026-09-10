@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { ToastProvider, useToast } from '@/components/Toast'
 import { ArchivePage } from '@/pages/ArchivePage'
+import { CardPage } from '@/pages/CardPage'
 import { HistoryPage } from '@/pages/HistoryPage'
 import { MembersPage } from '@/pages/MembersPage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -30,6 +31,8 @@ export function App() {
           <Route path="/" element={<ArchivePage mode="all" />} />
           <Route path="/favorites" element={<ArchivePage mode="favorites" />} />
           <Route path="/trash" element={<ArchivePage mode="trash" />} />
+          {/* 자세히보기를 페이지로 여는 스킨이 쓰는 자리 */}
+          <Route path="/card/:id" element={<CardPage />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/members" element={<MembersPage />} />
           <Route path="/history" element={<HistoryPage />} />
