@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@/db/db'
@@ -119,6 +119,26 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
     categoryId: card.categoryId ?? '',
     memo: card.memo,
   })
+
+  /*
+   * 메모 칸은 적은 만큼만 자란다.
+   *
+   * 한 줄로 시작해 줄이 늘면 그만큼 키를 키운다. 처음부터 서너 줄을 비워두면
+   * 대개 한 줄이나 비워두는 칸이 화면을 크게 차지하고, 그 아래 제목과 단추가
+   * 접힌 자리까지 밀려난다.
+   *
+   * 재는 순서가 요점이다. 먼저 키를 auto로 되돌려야 scrollHeight가 '지금 글에
+   * 필요한 키'를 말해준다. 그러지 않으면 한 번 커진 칸은 글을 지워도 줄지
+   * 않는다 — 이미 큰 칸에는 넘칠 것이 없기 때문이다.
+   */
+  const memoBoxRef = useRef<HTMLTextAreaElement>(null)
+  const memoText = draft.memo
+  useLayoutEffect(() => {
+    const el = memoBoxRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [memoText, editing])
 
   const index = siblings.findIndex((c) => c.id === card.id)
   const prev = index > 0 ? siblings[index - 1] : null
@@ -581,6 +601,8 @@ export function CardDetail({ card, siblings, onNavigate, onClose }: CardDetailPr
               <label className="field">
                 <span>메모</span>
                 <textarea
+                  ref={memoBoxRef}
+                  rows={1}
                   value={draft.memo}
                   onChange={(e) => setDraft({ ...draft, memo: e.target.value })}
                   placeholder="구매처, 교환 상대, 상태 등"
