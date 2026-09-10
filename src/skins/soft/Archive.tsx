@@ -1,11 +1,9 @@
 import { memo } from 'react'
-import { useShell } from '@/components/shell'
 import {
   CameraIcon,
   CheckIcon,
   CloseIcon,
   HeartIcon,
-  MenuIcon,
   PlusIcon,
   RestoreIcon,
   SearchIcon,
@@ -31,7 +29,6 @@ import type { ArchiveView } from '../types'
  * 몇 장인지 한 줄로 붙는다 — 참고한 그림의 '큰 제목 + 회색 한 줄'이다.
  */
 export function Archive(view: ArchiveView) {
-  const { openDrawer } = useShell()
   const members = useMembers()
   const {
     mode,
@@ -63,15 +60,19 @@ export function Archive(view: ArchiveView) {
   return (
     <div className="content soft">
       <header className="softhead">
+        {/*
+          위층은 할 일이 있을 때만 선다.
+          서랍을 여는 단추는 두지 않는다 — 아래 탭바의 '더보기'가 이미 그
+          일을 하므로, 위에도 두면 같은 문을 두 곳에서 여는 셈이다. 그래서
+          고르는 중이거나 비울 것이 있을 때만 이 줄이 나타나고, 평소에는
+          이름이 맨 위에 혼자 선다.
+        */}
+        {(selectMode || (mode === 'trash' && cards.length > 0)) && (
         <div className="softhead__row">
-          {selectMode ? (
+          {selectMode && (
             <button className="softbtn" onClick={onClearSelection}>
               <CloseIcon size={17} />
               그만 고르기
-            </button>
-          ) : (
-            <button className="softbtn softbtn--round" onClick={openDrawer} aria-label="메뉴 열기">
-              <MenuIcon size={19} />
             </button>
           )}
 
@@ -106,6 +107,7 @@ export function Archive(view: ArchiveView) {
             )}
           </div>
         </div>
+        )}
 
         <h1 className="softhead__title">{title}</h1>
         {!selectMode && (
