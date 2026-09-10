@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useShell } from '@/components/shell'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -9,7 +8,7 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 좋지만, 실제로 손이 자주 가는 것은 셋뿐이다 — 보관함, 좋아요, 검색.
  * 셋을 손가락이 닿는 아래쪽에 늘 꺼내두면 서랍을 열 일이 거의 없어진다.
  *
- * 내역은 여기 두지 않았다. 하루에 몇 번씩 여는 곳이 아니고, 서랍에서도
+ * 내역은 여기 두지 않았다. 하루에 몇 번씩 여는 곳이 아니고, 더보기에서도
  * 한 번에 닿는다. 자리는 다섯뿐이니 자주 쓰는 것에 내준다.
  *
  * 지금 있는 자리는 색이 아니라 '검은 알약'으로 알린다. 알약 안에서만
@@ -20,7 +19,6 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 나머지 갈 곳(멤버·통계·설정)은 오른쪽 끝에서 서랍으로 이어진다.
  */
 export function Nav() {
-  const { openDrawer } = useShell()
   const navigate = useNavigate()
 
   return (
@@ -57,10 +55,15 @@ export function Nav() {
         <SearchIcon size={21} />
         <span>검색</span>
       </button>
-      <button className="softnav__item" onClick={openDrawer}>
+      {/*
+        서랍이 아니라 페이지로 간다. 자주 가는 곳은 이미 이 줄에 나와
+        있으므로 남은 것은 '가끔 가는 나머지'뿐인데, 그걸 보자고 화면을
+        덮을 이유가 없다. 페이지면 여기가 지금 어디인지도 그대로 보인다.
+      */}
+      <NavLink className="softnav__item" to="/more">
         <MenuIcon size={21} />
         <span>더보기</span>
-      </button>
+      </NavLink>
     </nav>
   )
 }
