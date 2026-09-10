@@ -2332,23 +2332,50 @@ a { color: inherit; }
 .history__item {
   display: flex;
   align-items: stretch;
-  gap: 8px;
 }
 .history__item > .history__row { min-width: 0; }
 
+/*
+ * 지우는 단추는 늘 자리에 있고 폭만 여닫는다.
+ *
+ * 편집을 켤 때마다 붙였다 떼면 밀려나는 모습을 보여줄 수가 없다. 그래서
+ * 두고, 접힐 때 폭과 왼쪽 여백을 함께 0으로 보낸다 — 줄은 남는 폭을 다
+ * 쓰므로 그만큼 스스로 늘어나고, 열 때는 밀려난다.
+ *
+ * 여백을 gap이 아니라 margin으로 둔 건 gap은 접을 수 없기 때문이다.
+ * 테두리도 border 대신 안쪽 선으로 그린다 — border는 폭이 0이어도 2px이
+ * 남아 완전히 접히지 않는다.
+ */
 .history__erase {
-  flex-shrink: 0;
+  flex: 0 0 auto;
   width: 46px;
+  margin-left: 8px;
+  overflow: hidden;
   display: grid;
   place-items: center;
   border-radius: var(--panel-radius);
   background: var(--bg-elev);
-  border: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--panel-line);
   color: var(--danger);
-  transition: transform .15s var(--ease);
+  transition:
+    width .26s var(--ease),
+    margin-left .26s var(--ease),
+    opacity .18s ease,
+    transform .15s var(--ease);
 }
+.history__erase svg { flex-shrink: 0; }
 .history__erase:active { transform: scale(.94); }
+
+.history__item:not([data-editing]) .history__erase {
+  width: 0;
+  margin-left: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history__erase { transition: opacity .18s ease; }
+}
 
 .history__row {
   display: flex;
