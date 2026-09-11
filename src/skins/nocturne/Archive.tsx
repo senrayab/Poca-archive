@@ -62,7 +62,7 @@ export function Archive(view: ArchiveView) {
       <Backdrop card={cards[0]} />
 
       <header className="nocthead">
-        <span className="noctpill nocthead__name">
+        <span className="nocthead__name">
           {title}
           {!loading && cards.length > 0 && <b>{cards.length}</b>}
         </span>
@@ -154,7 +154,7 @@ export function Archive(view: ArchiveView) {
       ) : (
         <>
           {/*
-            석 장씩. 액자도 그림자도 없이 사진끼리 바짝 붙인다 — 어두운
+            넉 장씩. 액자도 그림자도 없이 사진끼리 바짝 붙인다 — 어두운
             바탕에서는 사진이 저마다 빛나므로 사이를 벌리지 않아도 서로
             섞이지 않는다. 밝은 스킨에서 흰 테가 하던 일을 어둠이 한다.
           */}
