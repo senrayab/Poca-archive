@@ -1808,14 +1808,35 @@ a { color: inherit; }
   /* 네이티브 위젯은 페이지의 밝기를 그대로 따른다 */
   --scrim-scheme: normal;
 
+  position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+  /* 위쪽은 돌아가는 단추가 앉을 자리만큼 미리 비워둔다 */
+  padding: calc(var(--safe-top) + 64px) 16px calc(16px + var(--safe-bottom));
 }
+
+/*
+ * 돌아가는 단추는 맨 위에 붙박아 둔다.
+ *
+ * 흐름에 두면 가운데 모인 덩어리를 따라 같이 내려와 사진 바로 위에
+ * 붙는다. 나가는 길은 내용이 길든 짧든 늘 같은 자리에 있어야 눈이
+ * 찾지 않는다 — 화면 왼쪽 위, 어느 카드를 열어도 그 자리다.
+ *
+ * 흐름에서 빼는 만큼 위쪽 여백을 그 높이만큼 미리 비워, 가운데 모인
+ * 내용이 단추 밑으로 파고들지 않게 한다.
+ */
+.detail-page .detail__top {
+  position: absolute;
+  top: calc(var(--safe-top) + 14px);
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 /* 페이지에서는 높이를 제한할 딤이 없으므로 화면 높이에서 여백만 뺀다 */
-.detail-page .detail { max-height: calc(100svh - 32px); }
+.detail-page .detail { max-height: calc(100svh - var(--safe-top) - 96px); }
 
 .detail {
   /* 사진 높이에서 실물 비율로 폭이 정해진다. 레일이 이 폭을 그대로 쓴다. */
