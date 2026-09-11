@@ -1107,19 +1107,27 @@ a { color: inherit; }
   padding: 8px 13px;
   border-radius: 14px;
   /*
-   * 알림(.toast)보다 옅다. 알림은 화면 위에 잠깐 떴다 사라지는 것이라 뒤를
-   * 가려도 되지만, 이 상자는 사진 위에 계속 앉아 있다. 상자가 덮은 만큼
-   * 사진이 줄어드는 것이니, 글자가 읽히는 선까지만 짙게 두고 나머지는
-   * 사진에 돌려준다.
+   * 상자는 포인트 색으로 채운다.
+   *
+   * 처음에는 알림(.toast)처럼 검게 뒀는데, 여섯 스킨이 저마다 다른 색을
+   * 쓰는데 이 상자만 어느 스킨에서나 검으니 붙는 스킨과 겉도는 스킨이
+   * 갈렸다. 포인트 색으로 채우면 상자가 그 스킨의 물건이 된다.
+   *
+   * 글자색은 --accent-ink가 갖고 있다. 사람이 고른 색이든 스킨이 정한
+   * 색이든 그 위에서 읽히는 쪽(검정 또는 흰색)이 함께 정해지므로, 여기서
+   * 다시 따질 것이 없다.
+   *
+   * 조금 비친다. 알림은 화면 위에 잠깐 떴다 사라지는 것이라 뒤를 가려도
+   * 되지만, 이 상자는 사진 위에 계속 앉아 있다 — 덮은 만큼 사진이 줄어드는
+   * 것이니 글자가 읽히는 선까지만 채운다.
    */
-  background: rgba(22, 21, 28, .72);
+  background: color-mix(in srgb, var(--accent) 86%, transparent);
   box-shadow: var(--shadow-md);
   border: none;
-  /* 짙은 바탕 위라 스킨·테마를 가리지 않고 흰 글자다 */
-  --on-scrim: #fff;
-  --on-scrim-ink: #17161d;
-  --on-scrim-dim: rgba(255, 255, 255, .68);
-  --on-scrim-danger: #ff9aa6;
+  --on-scrim: var(--accent-ink);
+  --on-scrim-ink: var(--accent);
+  --on-scrim-dim: color-mix(in srgb, var(--accent-ink) 72%, transparent);
+  --on-scrim-danger: var(--accent-ink);
   --on-scrim-shadow: none;
   color: var(--on-scrim);
 }
