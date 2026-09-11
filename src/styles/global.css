@@ -571,11 +571,12 @@ a { color: inherit; }
 /* ---------- grid ---------- */
 
 /* 폰에서는 한 줄에 4장 고정, 화면이 넓어지면 칸 수를 늘린다. */
+/* 사이 여백과 바깥 여백은 녹턴과 같은 값을 쓴다 — 칸 크기까지 그대로 맞는다 */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-  padding: 8px 10px;
+  gap: 6px;
+  padding: 14px 16px 0;
 }
 /* 쓸어서 고르는 동안에는 목록이 손가락을 따라 움직이면 안 된다 */
 /*
@@ -2892,8 +2893,8 @@ a { color: inherit; }
   /* 컬럼이 좁아졌으니 넓은 화면용 그리드가 아니라 폰과 같은 4열을 쓴다 */
   .grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 14px 16px 0;
   }
 
 }
