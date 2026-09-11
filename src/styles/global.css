@@ -249,6 +249,21 @@ button {
 
 a { color: inherit; }
 
+/*
+ * 보관함 이름만 기기의 글꼴로.
+ *
+ * 앱의 글꼴 목록은 Pretendard부터 훑어 내려가므로, 폰에 그 글꼴이 없어도
+ * 결국 'Noto Sans KR' 같은 특정 글꼴에 먼저 걸린다. 쓰는 사람이 폰에
+ * 골라둔 글꼴이 아니다. system-ui를 맨 앞에 두면 그제야 기기가 지금 쓰는
+ * 글꼴로 적힌다.
+ *
+ * 이름 한 줄에만 건다. 앱 전체를 기기 글꼴에 맡기면 폰마다 줄 길이와
+ * 글자 높이가 달라져 짜임이 흔들린다.
+ */
+.appname {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
 /* ---------- shell ---------- */
 
 .shell { min-height: 100%; display: flex; flex-direction: column; }

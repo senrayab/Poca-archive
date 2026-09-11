@@ -21,7 +21,7 @@ export type ArchiveMode = 'all' | 'favorites' | 'trash'
 export interface ArchiveView {
   mode: ArchiveMode
   /** 화면 이름. 고르는 중이면 '3장 선택'처럼 바뀐다. */
-  title: string
+  title: ReactNode
   /** 아직 읽어오는 중. 빈 화면과 구별해야 한 번 깜빡이지 않는다. */
   loading: boolean
   cards: Card[]
@@ -63,7 +63,7 @@ export interface ArchiveView {
 }
 
 export interface HeaderView {
-  title: string
+  title: ReactNode
   /** 흐름을 빠져나오는 화면(등록)만 뒤로가기를 쓴다 */
   back?: boolean
   /** 아래 붙는 층이 헤더 자리까지 덮는 배경을 직접 그릴 때 켠다 */
