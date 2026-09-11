@@ -56,12 +56,12 @@
   --rail-bg: transparent;
   --rail-fade: var(--bg);
 
-  /* 아래 떠 있는 캡슐이 먹는 높이 */
-  --nav-h: 66px;
+  /* 위에 붙박은 줄이 먹는 높이 */
+  --nav-h: 52px;
   /* 한 줄에 몇 장 */
   --cols: 3;
   /* 슬리브가 사진을 덮는 깊이 */
-  --sleeve: 20%;
+  --sleeve: 33%;
   /* 슬리브의 흰 기운 */
   --frost: rgba(255, 255, 255, .16);
   --frost-rim: rgba(255, 255, 255, .30);
@@ -138,9 +138,10 @@
   color-scheme: light;
 }
 
-/* 아래 캡슐이 가리지 않도록 발치를 비운다 */
+/* 위 줄이 가리지 않도록 머리맡을 비운다 */
 :root[data-skin='prism'] .content {
-  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
+  padding-top: calc(var(--safe-top) + var(--nav-h) + 12px);
+  padding-bottom: calc(var(--safe-bottom) + 24px);
 }
 
 /* ---------- 유리의 공통 결 ---------- */
@@ -170,7 +171,8 @@
 
 /* ---------- 머리 ---------- */
 
-.przhead { padding: calc(14px + var(--safe-top)) 20px 0; }
+/* 노치 비켜주는 일은 .content가 이미 했다 */
+.przhead { padding: 6px 20px 0; }
 .przhead__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .przhead__title {
   margin: 0;
@@ -255,11 +257,11 @@
 }
 
 /*
- * 슬리브. 아래 한 자락만 덮는다.
+ * 슬리브. 아래 1/3을 덮는다.
  *
- * 실제 탑로더는 훨씬 많이 가리지만, 얼굴이 아래쪽에 있는 사진이 적지 않아
- * 크게 덮으면 무엇인지 알아볼 수 없다. 유리에 꽂혀 있다는 것만 말해주면
- * 그걸로 충분하다.
+ * 1/5로 얕게 두었더니 유리에 꽂혀 있다는 게 잘 읽히지 않았다. 실제
+ * 탑로더에 가까운 깊이까지 올린다. 얼굴이 아래쪽에 있는 사진은 그만큼
+ * 가려지지만, 위쪽이 선명하면 누구인지는 알아볼 수 있다.
  *
  * 위쪽 가장자리의 밝은 실선이 요점이다. 흰 기운만 덮으면 그냥 흐릿한
  * 그라데이션인데, 선이 하나 그어지면 거기서부터 유리가 시작한다고 읽힌다.
@@ -321,36 +323,50 @@
   font-weight: 700;
 }
 
-/* ---------- 아래 캡슐 ---------- */
+/* ---------- 위 한 줄 ---------- */
 
+/*
+ * 위에 붙박은 한 줄.
+ *
+ * 아래에 두면 자리가 소프트·녹턴과 같아진다. 위로 올리면 손은 조금 멀지만,
+ * 이 스킨에서 아래쪽은 카드가 슬리브에서 이어지는 자리라 비워두는 편이
+ * 진열장답다.
+ *
+ * 한 줄에 다섯을 넣으면서 이름을 다 붙이면 글자만 남는다. 그래서 지금 있는
+ * 자리에만 이름이 따라 나온다 — 나머지는 아이콘만 남아 줄이 조용하다.
+ */
 .prznav {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(var(--safe-bottom) + 12px);
+  top: calc(var(--safe-top) + 10px);
   z-index: 30;
   width: min(calc(100% - 32px), calc(var(--app-w) - 32px));
   height: var(--nav-h);
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
   align-items: center;
-  padding: 0 6px;
+  gap: 2px;
+  padding: 0 7px;
   border-radius: var(--pill);
 }
 
 .prznav__item {
-  display: grid;
-  justify-items: center;
-  gap: 3px;
-  padding: 7px 0;
-  border-radius: var(--radius-sm);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: var(--pill);
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   transition: color .15s, background .15s;
 }
-.prznav__item span { line-height: 1; }
+/* 이름은 지금 있는 자리에만 따라 나온다 */
+.prznav__item span { display: none; line-height: 1; }
+.prznav__item.active span { display: inline; }
 /*
  * 지금 있는 자리는 맑은 유리 알약이 한 겹 앞으로 나온다. 소프트는 검게
  * 채우고 녹턴은 옅게 밝히는데, 유리는 무엇이 앞에 있는지를 두께로 말하는
@@ -358,15 +374,17 @@
  */
 .prznav__item.active {
   color: var(--text);
-  font-weight: 800;
+  font-weight: 700;
+  padding: 0 14px;
   background: var(--bg-elev-2);
   box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-sm);
 }
 
+/* 등록은 줄 오른쪽 끝에 채워진 원으로 — 다른 것과 생김새가 달라야 한다 */
 .prznav__add {
-  justify-self: center;
-  width: 46px;
-  height: 46px;
+  margin-left: auto;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   border-radius: 50%;
