@@ -1068,74 +1068,43 @@ a { color: inherit; }
  * 유리 시트는 글자만 얹혀 있고 누를 것이 없다. 손을 안 타게 해두어야
  * 사진 아래쪽을 두드려도 그 아래 사진까지 닿는다 (두 번 두드리면 찜).
  */
+/*
+ * 사진 아래에 얹히는 알림 상자.
+ *
+ * 처음에는 사진 위에 유리를 깔았다. 윗 경계가 선으로 보이지 않게 마스크를
+ * smoothstep으로 열 토막 내어 깔 만큼 공을 들였는데, 공을 들일수록 드러난
+ * 것은 '사진 위에 뭘 덮는 일' 자체가 사진을 깎는다는 점이었다. 아래쪽
+ * 4분의 1이 늘 뿌옇게 눌려 있었다.
+ *
+ * 덮지 않고 얹는다. 토스트 알림이 화면에 얹히듯, 짙은 네모 하나를 사진
+ * 안쪽에 한 뼘 띄워 놓는다. 상자 바깥의 사진은 한 점도 건드리지 않고,
+ * 상자 안은 짙으니 글자는 어느 스킨·어느 테마에서든 흰색이면 된다.
+ *
+ * 알림과 같은 값을 쓴다(.toast). 같은 일을 하는 것은 같은 얼굴이어야 한다.
+ *
+ * 손은 그대로 통과시킨다 — 사진 아래쪽을 두드려도 그 아래 사진까지 닿는다
+ * (두 번 두드리면 찜). 다만 메모를 펼치는 단추는 눌려야 하므로 그 자리만
+ * 다시 켠다.
+ */
 .detail__sheet {
   pointer-events: none;
   position: absolute;
-  /* 사진 가로폭에 꽉 채우고 아래도 딱 맞춘다 */
-  inset: auto 0 0 0;
-  /* 글자는 유리가 거의 다 켜진 뒤부터 — 켜지는 구간 자체는 그보다 훨씬 길다 */
-  padding: 84px 15px 13px;
-  /* 스테이지가 더 이상 잘라주지 않으니 아래 모서리는 직접 맞춘다 */
-  border-radius: 0 0 var(--stage-radius) var(--stage-radius);
+  inset: auto 10px 10px;
+  padding: 10px 13px;
+  border-radius: 14px;
+  background: rgba(22, 21, 28, .94);
+  box-shadow: var(--shadow-md);
   border: none;
+  /* 짙은 바탕 위라 스킨·테마를 가리지 않고 흰 글자다 */
+  --on-scrim: #fff;
+  --on-scrim-ink: #17161d;
+  --on-scrim-dim: rgba(255, 255, 255, .68);
+  --on-scrim-danger: #ff9aa6;
+  --on-scrim-shadow: none;
   color: var(--on-scrim);
-  --sheet-fade: 150px;
 }
+.detail__sheet button { pointer-events: auto; }
 
-/*
- * 유리의 윗 경계를 흐린다. 층 하나에 마스크를 걸어 위로 갈수록 꺼뜨린다.
- *
- * 얕게 흐리는 층을 하나 더 겹쳐 '징검다리'로 삼아 봤는데, 그게 오히려
- * 경계를 만들었다. 두 층의 마스크가 서로 다른 속도로 켜지고 꺼지는 바람에
- * 흐림의 총량이 아래로 갈수록 단조롭게 늘지 않고, 중간에서 한 번 도로
- * 줄었다가 다시 늘었다. 흐려졌다 또렷해졌다 하는 그 반환점이 눈에는
- * 직선 하나로 보인다. 한 겹으로 두면 흐림이 끝까지 단조롭게 는다.
- *
- * 마스크는 backdrop-filter에도 그대로 먹으니(부모에 걸면 안 된다 — 그러면
- * 자식의 배경 자체가 사라진다) 층 하나로 충분하다.
- *
- * 경계가 남아 보이는 건 길이보다 곡선 탓이다. 직선으로 오르내리면 시작과
- * 끝에서 기울기가 뚝 꺾이고, 그 꺾인 두 자리가 선으로 읽힌다. 그래서
- * smoothstep(3t² - 2t³)을 열 토막으로 끊어 깔았다 — 양 끝의 기울기가 0이라
- * 어디서 시작하고 끝나는지 짚을 수 없다.
- */
-.detail__glass {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-}
-.detail__glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--glass);
-  backdrop-filter: blur(20px) saturate(140%);
-  --ramp: linear-gradient(
-    to bottom,
-    transparent 0,
-    rgba(0, 0, 0, 0.028) calc(var(--sheet-fade) * .1),
-    rgba(0, 0, 0, 0.104) calc(var(--sheet-fade) * .2),
-    rgba(0, 0, 0, 0.216) calc(var(--sheet-fade) * .3),
-    rgba(0, 0, 0, 0.352) calc(var(--sheet-fade) * .4),
-    rgba(0, 0, 0, 0.500) calc(var(--sheet-fade) * .5),
-    rgba(0, 0, 0, 0.648) calc(var(--sheet-fade) * .6),
-    rgba(0, 0, 0, 0.784) calc(var(--sheet-fade) * .7),
-    rgba(0, 0, 0, 0.896) calc(var(--sheet-fade) * .8),
-    rgba(0, 0, 0, 0.972) calc(var(--sheet-fade) * .9),
-    #000 var(--sheet-fade)
-  );
-  -webkit-mask-image: var(--ramp);
-  mask-image: var(--ramp);
-}
-/*
- * 유리 층은 position: absolute라 z-index를 안 줘도 흐름 속 글자보다 늦게 칠해진다.
- * 그 층에 backdrop-filter가 걸려 있어, 그냥 두면 밑에 깔린 글자까지 blur(20px)로
- * 뭉개 놓는다. 글자도 positioned로 올려 유리 위에 오게 한다.
- */
-.detail__who,
-.detail__title { position: relative; }
 .detail__who {
   display: flex;
   align-items: center;
