@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { cls, useHere } from '../nav'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -13,28 +14,28 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 이유이기도 하다 — 지금 있는 자리, 그리고 더하는 단추.
  */
 export function Nav() {
-  const navigate = useNavigate()
+  const here = useHere()
 
   return (
     <nav className="blnknav" aria-label="길찾기">
       <div className="blnknav__pages">
-        <NavLink className="blnknav__item" to="/" end aria-label="보관함">
+        <NavLink className={cls('blnknav__item', here.archive)} to="/" end aria-label="보관함">
           <GridIcon size={16} />
         </NavLink>
-        <NavLink className="blnknav__item" to="/favorites" aria-label="좋아요">
+        <NavLink className={cls('blnknav__item', here.favorites)} to="/favorites" aria-label="좋아요">
           <HeartIcon size={16} />
         </NavLink>
-        <NavLink className="blnknav__item" to="/search" aria-label="검색">
+        <NavLink className={cls('blnknav__item', here.search)} to="/search" aria-label="검색">
           <SearchIcon size={16} />
         </NavLink>
-        <NavLink className="blnknav__item" to="/more" aria-label="더보기">
+        <NavLink className={cls('blnknav__item', here.more)} to="/more" aria-label="더보기">
           <MenuIcon size={16} />
         </NavLink>
       </div>
 
-      <button className="blnknav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+      <NavLink className={cls('blnknav__add', here.upload)} to="/upload" aria-label="등록하기">
         <PlusIcon size={16} />
-      </button>
+      </NavLink>
     </nav>
   )
 }

@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { cls, useHere } from '../nav'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -15,26 +16,26 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 켜진다 — 어두운 화면에서는 칠하는 것보다 밝히는 쪽이 자연스럽다.
  */
 export function Nav() {
-  const navigate = useNavigate()
+  const here = useHere()
 
   return (
     <nav className="noctnav" aria-label="길찾기">
-      <NavLink className="noctnav__item" to="/" end aria-label="보관함">
+      <NavLink className={cls('noctnav__item', here.archive)} to="/" end aria-label="보관함">
         <GridIcon size={21} />
       </NavLink>
-      <NavLink className="noctnav__item" to="/favorites" aria-label="좋아요">
+      <NavLink className={cls('noctnav__item', here.favorites)} to="/favorites" aria-label="좋아요">
         <HeartIcon size={21} />
       </NavLink>
 
       {/* 등록만 채워진 원이다. 생김새가 달라야 다른 일로 읽힌다. */}
-      <button className="noctnav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+      <NavLink className={cls('noctnav__add', here.upload)} to="/upload" aria-label="등록하기">
         <PlusIcon size={22} />
-      </button>
+      </NavLink>
 
-      <NavLink className="noctnav__item" to="/search" aria-label="검색">
+      <NavLink className={cls('noctnav__item', here.search)} to="/search" aria-label="검색">
         <SearchIcon size={21} />
       </NavLink>
-      <NavLink className="noctnav__item" to="/more" aria-label="더보기">
+      <NavLink className={cls('noctnav__item', here.more)} to="/more" aria-label="더보기">
         <MenuIcon size={21} />
       </NavLink>
     </nav>

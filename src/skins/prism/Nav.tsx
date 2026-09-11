@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { cls, useHere } from '../nav'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -15,32 +16,32 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 말하는 물건이라, '지금 이것'도 한 겹 앞으로 나오는 것이 맞다.
  */
 export function Nav() {
-  const navigate = useNavigate()
+  const here = useHere()
 
   return (
     <nav className="prznav" aria-label="길찾기">
-      <NavLink className="prznav__item" to="/" end>
+      <NavLink className={cls('prznav__item', here.archive)} to="/" end>
         <GridIcon size={19} />
         <span>보관함</span>
       </NavLink>
-      <NavLink className="prznav__item" to="/favorites">
+      <NavLink className={cls('prznav__item', here.favorites)} to="/favorites">
         <HeartIcon size={19} />
         <span>좋아요</span>
       </NavLink>
 
-      <NavLink className="prznav__item" to="/search">
+      <NavLink className={cls('prznav__item', here.search)} to="/search">
         <SearchIcon size={19} />
         <span>검색</span>
       </NavLink>
-      <NavLink className="prznav__item" to="/more">
+      <NavLink className={cls('prznav__item', here.more)} to="/more">
         <MenuIcon size={19} />
         <span>더보기</span>
       </NavLink>
 
       {/* 등록만 채워진 원이고 줄 끝에 선다. 생김새도 자리도 달라야 한다. */}
-      <button className="prznav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+      <NavLink className={cls('prznav__add', here.upload)} to="/upload" aria-label="등록하기">
         <PlusIcon size={19} />
-      </button>
+      </NavLink>
     </nav>
   )
 }

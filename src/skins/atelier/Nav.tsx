@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { cls, useHere } from '../nav'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -12,28 +13,28 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * '무엇을 더할까'. 붙여 두되 틈 하나로 갈라 놓으면 두 일이라는 게 보인다.
  */
 export function Nav() {
-  const navigate = useNavigate()
+  const here = useHere()
 
   return (
     <nav className="atlnav" aria-label="길찾기">
       <div className="atlnav__go">
-        <NavLink className="atlnav__item" to="/" end aria-label="보관함">
+        <NavLink className={cls('atlnav__item', here.archive)} to="/" end aria-label="보관함">
           <GridIcon size={19} />
         </NavLink>
-        <NavLink className="atlnav__item" to="/favorites" aria-label="좋아요">
+        <NavLink className={cls('atlnav__item', here.favorites)} to="/favorites" aria-label="좋아요">
           <HeartIcon size={19} />
         </NavLink>
-        <NavLink className="atlnav__item" to="/search" aria-label="검색">
+        <NavLink className={cls('atlnav__item', here.search)} to="/search" aria-label="검색">
           <SearchIcon size={19} />
         </NavLink>
-        <NavLink className="atlnav__item" to="/more" aria-label="더보기">
+        <NavLink className={cls('atlnav__item', here.more)} to="/more" aria-label="더보기">
           <MenuIcon size={19} />
         </NavLink>
       </div>
 
-      <button className="atlnav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+      <NavLink className={cls('atlnav__add', here.upload)} to="/upload" aria-label="등록하기">
         <PlusIcon size={19} />
-      </button>
+      </NavLink>
     </nav>
   )
 }
