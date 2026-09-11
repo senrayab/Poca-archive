@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { CardDetail } from '@/components/CardDetail'
+import { useLayout } from '@/skins'
 import { db } from '@/db/db'
 
 /**
@@ -17,6 +18,7 @@ import { db } from '@/db/db'
 export function CardPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { Backdrop } = useLayout()
 
   const card = useLiveQuery(() => (id ? db.cards.get(id) : undefined), [id])
   // 버린 카드는 버린 것끼리, 가진 카드는 가진 것끼리 넘긴다
@@ -33,13 +35,17 @@ export function CardPage() {
   if (!card) return <Navigate to="/" replace />
 
   return (
-    <CardDetail
-      page
-      card={card}
-      siblings={siblings}
-      /* 넘길 때는 자리를 갈아끼운다 — 뒤로가기 한 번에 목록으로 돌아가야 한다 */
-      onNavigate={(next) => navigate(`/card/${next.id}`, { replace: true })}
-      onClose={() => navigate(-1)}
-    />
+    <>
+      {/* 뒤에 까는 것이 있는 스킨이면 지금 보고 있는 그 카드를 깐다 */}
+      {Backdrop && <Backdrop card={card} />}
+      <CardDetail
+        page
+        card={card}
+        siblings={siblings}
+        /* 넘길 때는 자리를 갈아끼운다 — 뒤로가기 한 번에 목록으로 돌아가야 한다 */
+        onNavigate={(next) => navigate(`/card/${next.id}`, { replace: true })}
+        onClose={() => navigate(-1)}
+      />
+    </>
   )
 }
