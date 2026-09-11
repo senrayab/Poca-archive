@@ -3108,18 +3108,16 @@ a { color: inherit; }
 }
 .skin[data-preview='nocturne'] .skin__pvnav { background: rgba(255, 255, 255, .16); }
 
-/* 프리즘 — 민트 유리. 길찾기가 위에 있고 카드가 겹쳐 쌓인다. */
+/* 프리즘 — 상아빛 위의 무색 유리. 카드가 겹쳐 쌓이고 길찾기는 아래 한 줄. */
 .skin[data-preview='prism'] .skin__shot {
-  --pv-bg: linear-gradient(140deg, #d8f4ef, #f1f6f6 50%, #e3ecfa);
-  --pv-ink: rgba(20, 38, 42, .30);
-  --pv-cell: rgba(255, 255, 255, .92);
+  --pv-bg: linear-gradient(140deg, #faf6ef, #f4f3ef 50%, #eef1f7);
+  --pv-ink: rgba(26, 26, 30, .28);
+  --pv-cell: rgba(255, 255, 255, .95);
   --pv-cols: 3;
-  padding-top: 22px;
 }
-.skin[data-preview='prism'] .skin__pvhead { display: none; }
-.skin[data-preview='prism'] .skin__pvgrid { row-gap: 0; margin-top: 0; }
+.skin[data-preview='prism'] .skin__pvgrid { row-gap: 0; margin-top: 7px; }
 .skin[data-preview='prism'] .skin__pvgrid i:nth-child(n + 4) { margin-top: -20%; }
-.skin[data-preview='prism'] .skin__pvnav { top: 7px; bottom: auto; height: 10px; }
+.skin[data-preview='prism'] .skin__pvnav { height: 10px; }
 
 /* 아틀리에 — 크림 종이. 층을 선으로 가르고, 아래 검은 알약 둘. */
 .skin[data-preview='atelier'] .skin__shot {

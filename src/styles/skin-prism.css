@@ -4,34 +4,40 @@
  * 일곱 번째 스킨. 유리 진열장이다.
  *
  * 다른 스킨이 '사진을 어떻게 놓을까'를 풀었다면 여기는 '사진을 무엇에
- * 담을까'를 푼다. 카드 한 장 한 장이 서리유리 슬리브에 꽂혀 있고, 뒤에는
- * 민트와 하늘빛 덩어리가 크게 번져 있다.
+ * 담을까'를 푼다. 카드 한 장 한 장이 서리유리 슬리브에 꽂혀 있다.
+ *
+ * 색은 쓰지 않는다. 처음에는 민트에서 하늘로 가는 덩어리를 뒤에 깔았는데,
+ * 유리는 제 색이 없는 물건이라 색을 입히는 순간 유리가 아니라 색유리가
+ * 된다. 상아빛 바탕에 무색 유리만 두고, 뒤에 도는 기운은 색이라고 부르기
+ * 어려울 만큼만 남겼다 — 빛이 비끼며 언뜻 도는 것이지 칠한 것이 아니다.
+ *
+ * 채워진 것은 흑연 하나뿐이다. 무색 사이에서 단 하나 짙은 것이 있으면
+ * 그것이 곧 '지금 이것'이 된다.
  *
  * 흐림은 아껴 쓴다. 떠 있는 층(아래 캡슐·멤버 그릇·단추)에만 걸고, 목록의
  * 카드에는 걸지 않는다. 한 화면에 서른 장이 깔리는 자리라 폰에서 값이 너무
  * 크다. 카드의 슬리브는 흰 기운을 얇게 덮고 위쪽 가장자리에 밝은 실선을
  * 긋는 것으로 대신한다 — 작은 크기에서는 같은 그림이 된다.
  *
- * 오로라와 색이 겹치지 않게 갈라 두었다. 오로라는 라벤더에서 분홍으로,
- * 프리즘은 민트에서 하늘로 간다.
  */
 
 :root[data-skin='prism'],
 :root[data-skin='prism'][data-theme='dark'] {
-  --bg-base: #0c1417;
-  --desk-bg-base: #070d0f;
+  --bg-base: #121316;
+  --desk-bg-base: #0a0b0d;
   --bg-elev-base: rgba(255, 255, 255, .08);
   --bg-elev-2-base: rgba(255, 255, 255, .13);
   --line-base: rgba(255, 255, 255, .14);
   /* 유리의 가장자리. 이 스킨에서 선은 경계가 아니라 빛이 닿은 자리다. */
-  --panel-line: rgba(255, 255, 255, .16);
-  --text: #eef6f6;
-  --text-dim: rgba(238, 246, 246, .55);
-  --accent: #5fe0cd;
-  --accent-ink: #06211f;
-  --accent-soft: rgba(95, 224, 205, .16);
-  --sky: #7cc4f5;
-  --violet: #a79bf0;
+  --panel-line: rgba(255, 255, 255, .18);
+  --text: #f0f1f4;
+  --text-dim: rgba(240, 241, 244, .55);
+  /* 어두운 데서 가장 밝은 것은 유리다 — 채운 것도 유리 빛으로 둔다 */
+  --accent: #dfe3ea;
+  --accent-ink: #15161a;
+  --accent-soft: rgba(223, 227, 234, .14);
+  --sky: #9cb6d8;
+  --violet: #b3aac8;
   --danger: #ff6f7d;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4);
@@ -39,12 +45,15 @@
   --shadow-lg: 0 16px 44px rgba(0, 0, 0, .5);
   --shadow-xl: 0 28px 72px rgba(0, 0, 0, .58);
   --glow-spread: 0 8px 26px;
-  --glow: 0 8px 26px rgba(95, 224, 205, .26);
-  /* 뒤에 번지는 덩어리. 움직이지는 않는다 — 폰에서 값이 비싸다. */
+  --glow: 0 8px 26px rgba(223, 227, 234, .18);
+  /*
+   * 뒤에 번지는 덩어리. 색이라고 부르기 어려울 만큼 옅다 — 유리에 빛이
+   * 비끼며 언뜻 도는 기운이지 칠한 색이 아니다. 움직이지는 않는다.
+   */
   --wash:
-    radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .20), transparent 70%),
-    radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .18), transparent 72%),
-    radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .16), transparent 72%);
+    radial-gradient(62% 42% at 8% 2%, rgba(255, 246, 236, .07), transparent 70%),
+    radial-gradient(58% 40% at 96% 12%, rgba(206, 224, 255, .09), transparent 72%),
+    radial-gradient(66% 44% at 88% 96%, rgba(234, 214, 240, .07), transparent 72%);
 
   --radius: 26px;
   --radius-sm: 20px;
@@ -78,7 +87,7 @@
   /* 슬리브의 흰 기운. 고르게 덮어야 유리로 읽힌다. */
   --frost: rgba(255, 255, 255, .10);
   /* 유리가 시작하는 자리 — 밝은 실선과 그 위의 옅은 그림자 한 줄 */
-  --frost-rim: rgba(255, 255, 255, .26);
+  --frost-rim: rgba(255, 255, 255, .30);
   --frost-shade: rgba(0, 0, 0, .38);
 
   color-scheme: dark;
@@ -86,71 +95,82 @@
 
 @media (prefers-color-scheme: light) {
   :root[data-skin='prism']:not([data-theme='dark']) {
-    --bg-base: #f1f6f6;
-    --desk-bg-base: #e5edee;
-    --bg-elev-base: rgba(255, 255, 255, .58);
-    --bg-elev-2-base: rgba(255, 255, 255, .80);
-    --line-base: rgba(18, 48, 48, .10);
-    --panel-line: rgba(255, 255, 255, .85);
-    --text: #14262a;
-    --text-dim: rgba(20, 38, 42, .55);
-    /* 흰 종이 위에서 글자가 되기도 하므로 한 단계 내려 앉힌 청록 */
-    --accent: #0f8e80;
+    --bg-base: #f4f3ef;
+    --desk-bg-base: #e8e7e2;
+    --bg-elev-base: rgba(255, 255, 255, .62);
+    --bg-elev-2-base: rgba(255, 255, 255, .86);
+    --line-base: rgba(26, 26, 30, .09);
+    /* 유리의 가장자리. 이 스킨에서 선은 경계가 아니라 빛이 닿은 자리다. */
+    --panel-line: rgba(255, 255, 255, .92);
+    --text: #18191c;
+    --text-dim: rgba(24, 25, 28, .52);
+    /* 진열장에서 단 하나 채워진 것은 색이 아니라 흑연이다 */
+    --accent: #23252b;
     --accent-ink: #ffffff;
-    --accent-soft: rgba(15, 142, 128, .12);
-    --sky: #3f9fe0;
-    --violet: #7b6ae0;
-    --danger: #d9434e;
+    --accent-soft: rgba(35, 37, 43, .09);
+    --sky: #5b7fa8;
+    --violet: #8a83a6;
+    --danger: #c0392b;
 
-    --shadow-sm: 0 1px 3px rgba(20, 60, 60, .07);
-    --shadow-md: 0 8px 26px rgba(20, 60, 60, .09);
-    --shadow-lg: 0 16px 44px rgba(20, 60, 60, .12);
-    --shadow-xl: 0 28px 72px rgba(20, 60, 60, .17);
+    --shadow-sm: 0 1px 3px rgba(30, 28, 24, .07);
+    --shadow-md: 0 8px 26px rgba(30, 28, 24, .10);
+    --shadow-lg: 0 16px 44px rgba(30, 28, 24, .13);
+    --shadow-xl: 0 28px 72px rgba(30, 28, 24, .18);
     --glow-spread: 0 8px 26px;
-    --glow: 0 8px 26px rgba(15, 142, 128, .22);
+    --glow: 0 8px 26px rgba(30, 28, 24, .20);
+    /*
+     * 뒤에 번지는 덩어리. 색이라고 부르기 어려울 만큼 옅다 — 유리에 빛이
+     * 비끼며 언뜻 도는 기운이지 칠한 색이 아니다. 움직이지는 않는다.
+     */
     --wash:
-      radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .34), transparent 70%),
-      radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .30), transparent 72%),
-      radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .24), transparent 72%);
+      radial-gradient(62% 42% at 8% 2%, rgba(255, 243, 230, .60), transparent 70%),
+      radial-gradient(58% 40% at 96% 12%, rgba(224, 231, 246, .62), transparent 72%),
+      radial-gradient(66% 44% at 88% 96%, rgba(241, 229, 241, .48), transparent 72%);
 
-    --frost: rgba(255, 255, 255, .34);
-    --frost-rim: rgba(255, 255, 255, .62);
-    --frost-shade: rgba(18, 48, 48, .12);
+    --frost: rgba(255, 255, 255, .42);
+    --frost-rim: rgba(255, 255, 255, .92);
+    --frost-shade: rgba(26, 26, 30, .10);
 
     color-scheme: light;
   }
 }
 
 :root[data-skin='prism'][data-theme='light'] {
-  --bg-base: #f1f6f6;
-  --desk-bg-base: #e5edee;
-  --bg-elev-base: rgba(255, 255, 255, .58);
-  --bg-elev-2-base: rgba(255, 255, 255, .80);
-  --line-base: rgba(18, 48, 48, .10);
-  --panel-line: rgba(255, 255, 255, .85);
-  --text: #14262a;
-  --text-dim: rgba(20, 38, 42, .55);
-  --accent: #0f8e80;
+  --bg-base: #f4f3ef;
+  --desk-bg-base: #e8e7e2;
+  --bg-elev-base: rgba(255, 255, 255, .62);
+  --bg-elev-2-base: rgba(255, 255, 255, .86);
+  --line-base: rgba(26, 26, 30, .09);
+  /* 유리의 가장자리. 이 스킨에서 선은 경계가 아니라 빛이 닿은 자리다. */
+  --panel-line: rgba(255, 255, 255, .92);
+  --text: #18191c;
+  --text-dim: rgba(24, 25, 28, .52);
+  /* 진열장에서 단 하나 채워진 것은 색이 아니라 흑연이다 */
+  --accent: #23252b;
   --accent-ink: #ffffff;
-  --accent-soft: rgba(15, 142, 128, .12);
-  --sky: #3f9fe0;
-  --violet: #7b6ae0;
-  --danger: #d9434e;
+  --accent-soft: rgba(35, 37, 43, .09);
+  --sky: #5b7fa8;
+  --violet: #8a83a6;
+  --danger: #c0392b;
 
-  --shadow-sm: 0 1px 3px rgba(20, 60, 60, .07);
-  --shadow-md: 0 8px 26px rgba(20, 60, 60, .09);
-  --shadow-lg: 0 16px 44px rgba(20, 60, 60, .12);
-  --shadow-xl: 0 28px 72px rgba(20, 60, 60, .17);
+  --shadow-sm: 0 1px 3px rgba(30, 28, 24, .07);
+  --shadow-md: 0 8px 26px rgba(30, 28, 24, .10);
+  --shadow-lg: 0 16px 44px rgba(30, 28, 24, .13);
+  --shadow-xl: 0 28px 72px rgba(30, 28, 24, .18);
   --glow-spread: 0 8px 26px;
-  --glow: 0 8px 26px rgba(15, 142, 128, .22);
+  --glow: 0 8px 26px rgba(30, 28, 24, .20);
+  /*
+   * 뒤에 번지는 덩어리. 색이라고 부르기 어려울 만큼 옅다 — 유리에 빛이
+   * 비끼며 언뜻 도는 기운이지 칠한 색이 아니다. 움직이지는 않는다.
+   */
   --wash:
-    radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .34), transparent 70%),
-    radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .30), transparent 72%),
-    radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .24), transparent 72%);
+    radial-gradient(62% 42% at 8% 2%, rgba(255, 243, 230, .60), transparent 70%),
+    radial-gradient(58% 40% at 96% 12%, rgba(224, 231, 246, .62), transparent 72%),
+    radial-gradient(66% 44% at 88% 96%, rgba(241, 229, 241, .48), transparent 72%);
 
-  --frost: rgba(255, 255, 255, .34);
-  --frost-rim: rgba(255, 255, 255, .62);
-  --frost-shade: rgba(18, 48, 48, .12);
+  --frost: rgba(255, 255, 255, .42);
+  --frost-rim: rgba(255, 255, 255, .92);
+  --frost-shade: rgba(26, 26, 30, .10);
 
   color-scheme: light;
 }
@@ -161,12 +181,29 @@
 
 /* ---------- 유리의 공통 결 ---------- */
 
+/*
+ * 유리 조각의 결.
+ *
+ * 두께가 있는 유리는 가장자리가 한 줄이 아니다. 바깥으로 밝은 테가 한 줄
+ * 돌고, 그 안쪽 윗날에 빛이 한 번 더 얹히고, 아랫날에서 되비친 빛이 옅게
+ * 남는다. 세 줄이 같이 있어야 '두꺼운 것'으로 읽힌다 — 한 줄만 그으면
+ * 그건 그냥 테두리다.
+ *
+ * 위에서 비스듬히 들어온 빛이 왼쪽 위에 넓게 번지는 것도 한 겹 얹는다.
+ * 유리가 유리로 보이는 건 이 번짐 때문이지 투명도 때문이 아니다.
+ */
 .przbtn,
 .prznav,
 .przmembers__inner {
-  background: var(--bg-elev);
-  box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-md);
-  backdrop-filter: blur(20px) saturate(150%);
+  background:
+    linear-gradient(148deg, rgba(255, 255, 255, .50) 0 22%, rgba(255, 255, 255, 0) 54%),
+    var(--bg-elev);
+  box-shadow:
+    inset 0 0 0 1px var(--panel-line),
+    inset 0 1.5px 0 rgba(255, 255, 255, .85),
+    inset 0 -1px 0 rgba(255, 255, 255, .40),
+    var(--shadow-md);
+  backdrop-filter: blur(20px) saturate(120%);
 }
 
 .przbtn {
@@ -376,10 +413,14 @@
  *
  * 유리 무늬(::after)보다 뒤에 있으면 서리에 묻히므로 한 겹 앞에 세운다.
  */
+/*
+ * 자리는 슬리브의 윗자락이다. 아랫자락은 다음 줄 카드가 파고들어 덮으므로
+ * 거기 두면 보이지 않는다.
+ */
 .przcard__no {
   position: absolute;
-  left: 7px;
-  bottom: 5px;
+  left: 8px;
+  top: 5px;
   z-index: 1;
   font-size: 8px;
   font-weight: 700;

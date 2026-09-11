@@ -186,7 +186,8 @@ export function Archive(view: ArchiveView) {
               <Sleeve
                 key={card.id}
                 card={card}
-                no={index + 1}
+                /* 목록은 새것부터 내려오므로 번호도 큰 것부터 내려간다 */
+                no={cards.length - index}
                 showFav={mode !== 'favorites'}
                 selectable={selectMode}
                 selected={selected.has(card.id)}
@@ -304,6 +305,9 @@ const Sleeve = memo(function Sleeve({
           슬리브에 새겨 넣은 번호. 진열장의 물건에는 번호표가 붙어 있다.
           세 자리로 맞춰 자릿수가 흔들리지 않게 한다 — 흔들리면 줄마다 끝이
           어긋나 번호가 아니라 글자처럼 읽힌다.
+
+          맨 위가 가장 큰 수다. 목록이 새것부터 내려오니 번호도 같이
+          내려가야, 늘어난 만큼 앞의 번호가 밀리지 않는다.
         */}
         <i className="przcard__no">{String(no).padStart(3, '0')}</i>
       </span>
