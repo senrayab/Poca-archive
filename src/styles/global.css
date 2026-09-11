@@ -3180,11 +3180,12 @@ a { color: inherit; }
 }
 .skin[data-preview='soft'] .skin__pvnav { background: #ffffff; }
 
-/* 녹턴 — 검은 바탕에 넉 장, 아래 어두운 유리 바 */
+/* 녹턴 — 검은 바탕에 석 장, 아래 어두운 유리 바 */
 .skin[data-preview='nocturne'] .skin__shot {
   --pv-bg: radial-gradient(120% 80% at 30% 0%, #2a2435, #07070a 70%);
   --pv-ink: rgba(255, 255, 255, .42);
   --pv-cell: rgba(255, 255, 255, .30);
+  --pv-cols: 3;
 }
 .skin[data-preview='nocturne'] .skin__pvnav { background: rgba(255, 255, 255, .16); }
 
