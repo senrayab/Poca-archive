@@ -35,7 +35,7 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   {
     id: 'prism',
     name: '프리즘',
-    hint: '민트빛 유리 진열장, 카드가 서리유리 슬리브에 꽂혀 있는 세 열',
+    hint: '상아빛 위의 무색 유리 진열장, 카드가 서리유리 슬리브에 꽂혀 있는 세 열',
   },
   {
     id: 'nocturne',
