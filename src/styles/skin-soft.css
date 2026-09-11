@@ -3,7 +3,10 @@
 /*
  * 다섯 번째 스킨. 처음으로 색이 아니라 짜임이 다른 스킨이다.
  *
- * 결은 하나다 — 옅은 회색 바탕 위에 흰 판이 떠 있다. 그래서 이 스킨은
+ * 결은 하나다 — 옅은 회색 바탕 위에 흰 판이 떠 있다. 떠 있다는 것을
+ * 그림자 한 줄로 말하지 않는다. 바닥에 닿는 자리의 짧고 진한 것, 멀리까지
+ * 퍼지는 넓고 옅은 것, 윗날에 닿은 빛과 아랫날에 고인 그늘 — 넷이 같이
+ * 있어야 판이 바탕에서 밀려 올라온 것으로 보인다. 그래서 이 스킨은
  * 무엇이든 '판 위에 얹는' 방식으로 놓는다. 단추도 알약, 멤버도 알약,
  * 사진도 흰 액자에 끼운 한 장이다. 경계선은 거의 쓰지 않는다 — 선 대신
  * 넓고 옅은 그림자가 층을 가른다.
@@ -44,8 +47,29 @@
   --shadow-xl: 0 28px 72px rgba(0, 0, 0, .58);
   --glow-spread: 0 10px 26px;
   --glow: 0 10px 26px rgba(0, 0, 0, .5);
-  /* 바탕은 고르게 둔다. 얼룩이 지면 떠 있는 판의 그림자가 흐려진다. */
-  --wash: none;
+  /*
+   * 떠 있는 흰 판의 결.
+   *
+   * 그림자를 하나만 걸면 판이 '붙어 있는' 것으로 보인다. 실제로 떠 있는
+   * 물건은 그림자가 둘이다 — 바닥에 닿는 자리의 짧고 진한 것, 그리고
+   * 멀리까지 퍼지는 넓고 옅은 것. 둘을 겹쳐야 거리가 생긴다.
+   *
+   * 윗날의 밝은 실선과 아랫날의 그늘은 판의 두께다. 판을 얹은 것이 아니라
+   * 바탕에서 밀어 올린 것처럼 보이게 한다.
+   */
+  --lift-top: rgba(255, 255, 255, .07);
+  --lift-foot: rgba(0, 0, 0, .32);
+  --lift-1: 0 1px 2px rgba(0, 0, 0, .40), 0 6px 16px rgba(0, 0, 0, .34);
+  --lift-2: 0 2px 5px rgba(0, 0, 0, .44), 0 14px 34px rgba(0, 0, 0, .40);
+  --lift-3: 0 3px 7px rgba(0, 0, 0, .46), 0 26px 56px rgba(0, 0, 0, .46);
+  /* 판 밑으로 새는 빛 */
+  --spill: rgba(255, 255, 255, .05);
+  /*
+   * 바탕에 아주 옅은 빛의 기울기를 준다. 고르게 두면 판이 놓인 자리가
+   * 어디든 같아 보이는데, 빛이 한쪽에서 오면 위아래가 갈리면서 판의
+   * 그림자가 훨씬 그럴듯해진다. 얼룩으로 보이지 않을 만큼만 준다.
+   */
+  --wash: radial-gradient(130% 74% at 50% -12%, rgba(255, 255, 255, .05), transparent 62%);
 
   --radius: 28px;
   --radius-sm: 20px;
@@ -86,7 +110,13 @@
     --shadow-xl: 0 28px 72px rgba(22, 26, 34, .14);
     --glow-spread: 0 10px 26px;
     --glow: 0 10px 26px rgba(22, 26, 34, .18);
-    --wash: none;
+    --lift-top: rgba(255, 255, 255, .92);
+    --lift-foot: rgba(22, 26, 34, .05);
+    --lift-1: 0 1px 2px rgba(22, 26, 34, .05), 0 6px 16px rgba(22, 26, 34, .06);
+    --lift-2: 0 2px 5px rgba(22, 26, 34, .06), 0 14px 34px rgba(22, 26, 34, .09);
+    --lift-3: 0 3px 7px rgba(22, 26, 34, .07), 0 26px 56px rgba(22, 26, 34, .12);
+    --spill: rgba(255, 255, 255, .85);
+    --wash: radial-gradient(130% 74% at 50% -12%, rgba(255, 255, 255, .95), transparent 62%);
 
     color-scheme: light;
   }
@@ -114,7 +144,13 @@
   --shadow-xl: 0 28px 72px rgba(22, 26, 34, .14);
   --glow-spread: 0 10px 26px;
   --glow: 0 10px 26px rgba(22, 26, 34, .18);
-  --wash: none;
+  --lift-top: rgba(255, 255, 255, .92);
+  --lift-foot: rgba(22, 26, 34, .05);
+  --lift-1: 0 1px 2px rgba(22, 26, 34, .05), 0 6px 16px rgba(22, 26, 34, .06);
+  --lift-2: 0 2px 5px rgba(22, 26, 34, .06), 0 14px 34px rgba(22, 26, 34, .09);
+  --lift-3: 0 3px 7px rgba(22, 26, 34, .07), 0 26px 56px rgba(22, 26, 34, .12);
+  --spill: rgba(255, 255, 255, .85);
+  --wash: radial-gradient(130% 74% at 50% -12%, rgba(255, 255, 255, .95), transparent 62%);
 
   color-scheme: light;
 }
@@ -137,8 +173,12 @@
   color: var(--text);
   font-size: 13px;
   font-weight: 700;
-  box-shadow: var(--shadow-sm);
-  transition: transform .15s var(--ease), background .15s;
+  box-shadow: inset 0 1px 0 var(--lift-top), inset 0 -1px 0 var(--lift-foot), var(--lift-1);
+  transition: transform .15s var(--ease), background .15s, box-shadow .15s;
+}
+/* 누르면 떠 있던 것이 바탕으로 가라앉는다 — 그림자가 밖에서 안으로 뒤집힌다 */
+.softbtn:active {
+  box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
 }
 .softbtn:active { transform: scale(.95); }
 .softbtn--round { width: 40px; padding: 0; justify-content: center; }
@@ -214,10 +254,13 @@
   color: var(--text);
   font-size: 13px;
   font-weight: 700;
-  box-shadow: var(--shadow-sm);
-  transition: transform .15s var(--ease), background .15s, color .15s;
+  box-shadow: inset 0 1px 0 var(--lift-top), inset 0 -1px 0 var(--lift-foot), var(--lift-1);
+  transition: transform .15s var(--ease), background .15s, color .15s, box-shadow .15s;
 }
-.softchip:active { transform: scale(.94); }
+.softchip:active {
+  transform: scale(.94);
+  box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
+}
 /* 이 스킨에서 '지금 이것'은 늘 검게 채워진다 — 탭바도 같은 말을 쓴다 */
 .softchip[aria-selected='true'],
 .softchip--on {
@@ -248,7 +291,8 @@
   padding: 6px;
   border-radius: calc(var(--thumb-radius) + 6px);
   background: var(--bg-elev);
-  box-shadow: var(--shadow-md);
+  /* 흰 테는 그대로. 바뀐 것은 그 아래로 지는 그림자뿐이다. */
+  box-shadow: inset 0 1px 0 var(--lift-top), inset 0 -1px 0 var(--lift-foot), var(--lift-2);
   transition: transform .18s var(--ease), box-shadow .18s;
   /* 길게 누르면 폰이 사진 저장 메뉴를 띄운다 — 고르기 손짓과 부딪힌다 */
   -webkit-touch-callout: none;
@@ -264,7 +308,7 @@
 }
 .softcard__shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .softcard[data-selected='true'] {
-  box-shadow: var(--shadow-md), inset 0 0 0 2.5px var(--accent);
+  box-shadow: var(--lift-2), inset 0 0 0 2.5px var(--accent);
 }
 
 .softcard__fav {
@@ -332,7 +376,16 @@
   padding: 0 6px;
   border-radius: var(--pill);
   background: var(--bg-elev);
-  box-shadow: var(--shadow-lg);
+  /*
+   * 맨 끝의 한 겹은 판 밑으로 새는 빛이다. 떠 있는 것 아래에는 그늘만
+   * 지는 게 아니라 바닥에서 되비친 빛도 함께 고인다 — 그 한 겹이 있어야
+   * 판이 바닥에 얹힌 것이 아니라 떠 있는 것으로 보인다.
+   */
+  box-shadow:
+    inset 0 1px 0 var(--lift-top),
+    inset 0 -1px 0 var(--lift-foot),
+    var(--lift-3),
+    0 12px 26px -8px var(--spill);
 }
 
 .softnav__item {
@@ -349,7 +402,13 @@
   transition: color .15s;
 }
 .softnav__item span { line-height: 1; }
-.softnav__item.active { color: var(--text); font-weight: 800; }
+/* 지금 있는 자리만 판 안으로 눌러 앉는다 — 떠 있는 것들 사이에서 하나만 눌린다 */
+.softnav__item.active {
+  color: var(--text);
+  font-weight: 800;
+  background: var(--bg-elev-2);
+  box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
+}
 
 /*
  * 가운데 등록 단추. 다른 것과 생김새가 아예 달라 '이건 다른 일'이라고
