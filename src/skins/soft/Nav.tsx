@@ -43,19 +43,10 @@ export function Nav() {
         <PlusIcon size={26} />
       </button>
 
-      {/*
-        검색은 화면이 아니라 보관함 위에 뜨는 시트다. 그래서 자리를
-        옮기는 게 아니라 '보관함으로 가서 시트를 연다'고 일러준다.
-        주소에 흔적을 남기지 않으려고 state로 보낸다 — 새로고침하면
-        그냥 보관함이지 검색이 열린 채로 되살아나지 않는다.
-      */}
-      <button
-        className="softnav__item"
-        onClick={() => navigate('/', { state: { find: Date.now() } })}
-      >
+      <NavLink className="softnav__item" to="/search">
         <span className="softnav__well"><SearchIcon size={21} /></span>
         <span>검색</span>
-      </button>
+      </NavLink>
       {/*
         서랍이 아니라 페이지로 간다. 자주 가는 곳은 이미 이 줄에 나와
         있으므로 남은 것은 '가끔 가는 나머지'뿐인데, 그걸 보자고 화면을

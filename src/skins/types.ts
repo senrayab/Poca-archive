@@ -45,12 +45,6 @@ export interface ArchiveView {
   categoryId: string | null
   onSelectCategory: (id: string | null) => void
 
-  query: string
-  onClearQuery: () => void
-  /** 사진으로 찾은 결과. null이면 그 기능을 쓰지 않는 상태다. */
-  byImage: string[] | null
-  onClearByImage: () => void
-  onOpenSearch: () => void
 
   /*
    * 고른 카드에 하는 일. 화면 성격에 따라 없을 수 있어 물음표를 달았다 —
@@ -79,9 +73,30 @@ export interface HeaderView {
  * '훅이 모자란다'며 화면을 통째로 놓친다. <Archive {...view} />로 세워두면
  * 부품마다 제 훅 줄을 갖는다.
  */
+/**
+ * 카드를 늘어놓는 격자가 받는 것.
+ *
+ * 보관함만 카드를 늘어놓는 것이 아니다. 검색도 같은 카드를 같은 모양으로
+ * 늘어놓아야 스킨이 화면마다 달라 보이지 않는다. 그래서 격자는 보관함
+ * 안에 박아두지 않고 스킨이 따로 내준다.
+ */
+export interface GridView {
+  cards: Card[]
+  /** 좋아요만 모아둔 자리에서는 하트를 그리지 않는다 */
+  showFav: boolean
+  selectMode: boolean
+  selected: Set<string>
+  onOpen: (card: Card) => void
+  onToggleSelect: (card: Card) => void
+  /** 꾹 눌러 쓸어 고를 때 한 번에 넘겨받는다 */
+  onSweep?: (next: Set<string>) => void
+}
+
 export interface Layout {
   Header: ComponentType<HeaderView>
   Archive: ComponentType<ArchiveView>
+  /** 카드를 늘어놓는 격자. 보관함 밖의 화면도 이것을 쓴다. */
+  Grid: ComponentType<GridView>
   /**
    * 스킨이 제 길찾기를 갖는 경우.
    *

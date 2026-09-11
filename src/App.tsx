@@ -7,6 +7,7 @@ import { CardPage } from '@/pages/CardPage'
 import { HistoryPage } from '@/pages/HistoryPage'
 import { ManagePage } from '@/pages/ManagePage'
 import { MembersPage } from '@/pages/MembersPage'
+import { SearchPage } from './pages/SearchPage'
 import { MorePage } from '@/pages/MorePage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { StatsPage } from '@/pages/StatsPage'
@@ -38,6 +39,7 @@ export function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/members" element={<MembersPage />} />
           {/* 서랍 대신 갈 곳을 한 화면에 펼치는 스킨이 쓰는 자리 */}
+          <Route path="/search" element={<SearchPage />} />
           <Route path="/more" element={<MorePage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/stats" element={<StatsPage />} />

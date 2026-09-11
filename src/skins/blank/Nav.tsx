@@ -24,13 +24,9 @@ export function Nav() {
         <NavLink className="blnknav__item" to="/favorites" aria-label="좋아요">
           <HeartIcon size={16} />
         </NavLink>
-        <button
-          className="blnknav__item"
-          onClick={() => navigate('/', { state: { find: Date.now() } })}
-          aria-label="검색"
-        >
+        <NavLink className="blnknav__item" to="/search" aria-label="검색">
           <SearchIcon size={16} />
-        </button>
+        </NavLink>
         <NavLink className="blnknav__item" to="/more" aria-label="더보기">
           <MenuIcon size={16} />
         </NavLink>

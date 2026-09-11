@@ -28,13 +28,10 @@ export function Nav() {
         <span>좋아요</span>
       </NavLink>
 
-      <button
-        className="prznav__item"
-        onClick={() => navigate('/', { state: { find: Date.now() } })}
-      >
+      <NavLink className="prznav__item" to="/search">
         <SearchIcon size={19} />
         <span>검색</span>
-      </button>
+      </NavLink>
       <NavLink className="prznav__item" to="/more">
         <MenuIcon size={19} />
         <span>더보기</span>

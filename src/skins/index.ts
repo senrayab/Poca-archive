@@ -32,4 +32,4 @@ export function useLayout(): Layout {
   return LAYOUTS[OF_SKIN[useSkin()]]
 }
 
-export type { ArchiveMode, ArchiveView, HeaderView, Layout } from './types'
+export type { ArchiveMode, ArchiveView, GridView, HeaderView, Layout } from './types'

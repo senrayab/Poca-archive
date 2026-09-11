@@ -26,17 +26,9 @@ export function Nav() {
         <NavLink className="pstnav__item" to="/favorites" aria-label="좋아요">
           <HeartIcon size={20} />
         </NavLink>
-        {/*
-          검색은 가는 곳이 아니라 보관함에서 여는 것이라 NavLink가 아니다.
-          state에 시각을 실어 보내면 같은 자리에 있어도 매번 새로 열린다.
-        */}
-        <button
-          className="pstnav__item"
-          onClick={() => navigate('/', { state: { find: Date.now() } })}
-          aria-label="검색"
-        >
+        <NavLink className="pstnav__item" to="/search" aria-label="검색">
           <SearchIcon size={20} />
-        </button>
+        </NavLink>
         <NavLink className="pstnav__item" to="/more" aria-label="더보기">
           <MenuIcon size={20} />
         </NavLink>

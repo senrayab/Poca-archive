@@ -1,10 +1,8 @@
 import { CardGrid } from '@/components/CardGrid'
 import {
-  CameraIcon,
   CheckIcon,
   CloseIcon,
   RestoreIcon,
-  SearchIcon,
   TrashIcon,
 } from '@/components/Icons'
 import { MemberTabs } from '@/components/MemberTabs'
@@ -39,11 +37,6 @@ export function Archive(view: ArchiveView) {
     categories,
     categoryId,
     onSelectCategory,
-    query,
-    onClearQuery,
-    byImage,
-    onClearByImage,
-    onOpenSearch,
     onTrash,
     onRestore,
     onPurge,
@@ -88,9 +81,6 @@ export function Archive(view: ArchiveView) {
                 버튼까지 포인트색으로 켜두면, 검색 시트가 전체화면 딤으로
                 열려 있는 동안 그 색만 딤 뒤에서 떠 보인다.
               */}
-              <button className="icon-btn" onClick={onOpenSearch} aria-label="검색">
-                <SearchIcon />
-              </button>
             </>
           )
         }
@@ -127,25 +117,6 @@ export function Archive(view: ArchiveView) {
             </div>
           )}
         </div>
-
-        {(query || byImage) && (
-          <div className="active-query">
-            {query && (
-              <button className="tag" onClick={onClearQuery}>
-                <SearchIcon size={13} />
-                {query}
-                <CloseIcon size={13} />
-              </button>
-            )}
-            {byImage && (
-              <button className="tag" onClick={onClearByImage}>
-                <CameraIcon size={13} />
-                사진으로 찾은 {byImage.length}장
-                <CloseIcon size={13} />
-              </button>
-            )}
-          </div>
-        )}
 
         {loading ? null : cards.length === 0 ? (
           empty

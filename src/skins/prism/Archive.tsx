@@ -1,19 +1,17 @@
 import { memo, type CSSProperties } from 'react'
 import {
-  CameraIcon,
   CheckIcon,
   CloseIcon,
   HeartIcon,
   PlusIcon,
   RestoreIcon,
-  SearchIcon,
   TrashIcon,
 } from '@/components/Icons'
 import type { Card } from '@/db/types'
 import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { useSweepSelect } from '@/hooks/useSweepSelect'
-import type { ArchiveView } from '../types'
+import type { ArchiveView, GridView } from '../types'
 
 /**
  * 프리즘의 보관함 — 유리 진열장.
@@ -45,20 +43,14 @@ export function Archive(view: ArchiveView) {
     memberId,
     onSelectMember,
     onAddMember,
-    query,
-    onClearQuery,
-    byImage,
-    onClearByImage,
     onTrash,
     onRestore,
     onPurge,
     onEmptyTrash,
   } = view
 
-  const filtered = Boolean(query || byImage)
-
-  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
-  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+  /* 좁혀 보고 있는데 비었다면, 비었다는 말과 안 맞는다는 말은 다르다 */
+  const filtered = memberId !== null
 
   return (
     <div className="content prz">
@@ -112,25 +104,6 @@ export function Archive(view: ArchiveView) {
         )}
       </header>
 
-      {(query || byImage) && (
-        <div className="przfind">
-          {query && (
-            <button className="przbtn przbtn--on" onClick={onClearQuery}>
-              <SearchIcon size={13} />
-              {query}
-              <CloseIcon size={13} />
-            </button>
-          )}
-          {byImage && (
-            <button className="przbtn przbtn--on" onClick={onClearByImage}>
-              <CameraIcon size={13} />
-              닮은 카드 {byImage.length}장
-              <CloseIcon size={13} />
-            </button>
-          )}
-        </div>
-      )}
-
       {/*
         담는 그릇이 있는 세그먼트. 지금 고른 것만 한 겹 앞으로 나온다 —
         유리는 무엇이 앞에 있는지를 두께로 말하는 물건이다.
@@ -176,30 +149,61 @@ export function Archive(view: ArchiveView) {
             </p>
           )}
 
-          <div
-            className="przgrid"
-            ref={sweep.ref}
-            data-dragging={sweep.dragging || undefined}
-            {...sweep.handlers}
-          >
-            {cards.map((card, index) => (
-              <Sleeve
-                key={card.id}
-                card={card}
-                /* 목록은 새것부터 내려오므로 번호도 큰 것부터 내려간다 */
-                no={cards.length - index}
-                showFav={mode !== 'favorites'}
-                selectable={selectMode}
-                selected={selected.has(card.id)}
-                onOpen={onOpen}
-                onToggleSelect={onToggleSelect}
-                handledByPress={sweep.handledByPress}
-              />
-            ))}
-          </div>
+          <Grid
+            cards={cards}
+            showFav={mode !== 'favorites'}
+            selectMode={selectMode}
+            selected={selected}
+            onOpen={onOpen}
+            onToggleSelect={onToggleSelect}
+            onSweep={onSweep}
+          />
         </>
       )}
     </div>
+  )
+}
+
+/**
+ * 카드가 깔리는 격자.
+ *
+ * 보관함에서 떼어 따로 둔다. 검색처럼 '카드를 늘어놓는' 다른 화면도 같은
+ * 격자를 써야 스킨이 화면마다 달라 보이지 않는다. 꾹 눌러 쓸어 고르는
+ * 손짓도 격자가 갖는 것이 맞다 — 고르는 것은 카드이지 화면이 아니다.
+ */
+export function Grid({
+  cards,
+  showFav,
+  selectMode,
+  selected,
+  onOpen,
+  onToggleSelect,
+  onSweep,
+}: GridView) {
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+
+  return (
+    <div
+              className="przgrid"
+              ref={sweep.ref}
+              data-dragging={sweep.dragging || undefined}
+              {...sweep.handlers}
+            >
+              {cards.map((card, index) => (
+                <Sleeve
+                  key={card.id}
+                  card={card}
+                  /* 목록은 새것부터 내려오므로 번호도 큰 것부터 내려간다 */
+                  no={cards.length - index}
+                  showFav={showFav}
+                  selectable={selectMode}
+                  selected={selected.has(card.id)}
+                  onOpen={onOpen}
+                  onToggleSelect={onToggleSelect}
+                  handledByPress={sweep.handledByPress}
+                />
+              ))}
+            </div>
   )
 }
 

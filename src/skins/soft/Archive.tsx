@@ -1,19 +1,17 @@
 import { memo } from 'react'
 import {
-  CameraIcon,
   CheckIcon,
   CloseIcon,
   HeartIcon,
   PlusIcon,
   RestoreIcon,
-  SearchIcon,
   TrashIcon,
 } from '@/components/Icons'
 import type { Card } from '@/db/types'
 import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { useSweepSelect } from '@/hooks/useSweepSelect'
-import type { ArchiveView } from '../types'
+import type { ArchiveView, GridView } from '../types'
 
 /**
  * 소프트의 보관함.
@@ -47,20 +45,14 @@ export function Archive(view: ArchiveView) {
     memberId,
     onSelectMember,
     onAddMember,
-    query,
-    onClearQuery,
-    byImage,
-    onClearByImage,
     onTrash,
     onRestore,
     onPurge,
     onEmptyTrash,
   } = view
 
-  const filtered = Boolean(query || byImage)
-
-  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
-  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+  /* 좁혀 보고 있는데 비었다면, 비었다는 말과 안 맞는다는 말은 다르다 */
+  const filtered = memberId !== null
 
   return (
     <div className="content soft">
@@ -128,33 +120,7 @@ export function Archive(view: ArchiveView) {
         )}
       </header>
 
-      {/*
-        찾는 자리는 아래 탭바가 맡는다. 여기에 입력 칸을 하나 더 두면
-        같은 일을 두 곳에서 시작하는 셈이고, 늘 자리를 차지해 카드가
-        그만큼 밀린다. 걸린 것이 있을 때만 그 말을 알약으로 보여준다 —
-        무엇에 걸려 있는지 알리고, 눌러 푸는 자리다.
-      */}
-      {(query || byImage) && (
-        <div className="softfind">
-          <div className="softfind__on">
-            {query && (
-              <button className="softchip softchip--on" onClick={onClearQuery}>
-                <SearchIcon size={14} />
-                {query}
-                <CloseIcon size={14} />
-              </button>
-            )}
-            {byImage && (
-              <button className="softchip softchip--on" onClick={onClearByImage}>
-                <CameraIcon size={14} />
-                닮은 카드 {byImage.length}장
-                <CloseIcon size={14} />
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
+      
       {/*
         멤버는 담는 레일 없이 알약 하나하나가 떠 있다. 지금 고른 것만
         검은 알약이 되어, 아래 탭바에서 지금 자리를 알리는 방식과 같은
@@ -199,28 +165,59 @@ export function Archive(view: ArchiveView) {
             </div>
           )}
 
-          <div
-            className="softgrid"
-            ref={sweep.ref}
-            data-dragging={sweep.dragging || undefined}
-            {...sweep.handlers}
-          >
-            {cards.map((card) => (
-              <Frame
-                key={card.id}
-                card={card}
-                showFav={mode !== 'favorites'}
-                selectable={selectMode}
-                selected={selected.has(card.id)}
-                onOpen={onOpen}
-                onToggleSelect={onToggleSelect}
-                handledByPress={sweep.handledByPress}
-              />
-            ))}
-          </div>
+          <Grid
+            cards={cards}
+            showFav={mode !== 'favorites'}
+            selectMode={selectMode}
+            selected={selected}
+            onOpen={onOpen}
+            onToggleSelect={onToggleSelect}
+            onSweep={onSweep}
+          />
         </>
       )}
     </div>
+  )
+}
+
+/**
+ * 카드가 깔리는 격자.
+ *
+ * 보관함에서 떼어 따로 둔다. 검색처럼 '카드를 늘어놓는' 다른 화면도 같은
+ * 격자를 써야 스킨이 화면마다 달라 보이지 않는다. 꾹 눌러 쓸어 고르는
+ * 손짓도 격자가 갖는 것이 맞다 — 고르는 것은 카드이지 화면이 아니다.
+ */
+export function Grid({
+  cards,
+  showFav,
+  selectMode,
+  selected,
+  onOpen,
+  onToggleSelect,
+  onSweep,
+}: GridView) {
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+
+  return (
+    <div
+              className="softgrid"
+              ref={sweep.ref}
+              data-dragging={sweep.dragging || undefined}
+              {...sweep.handlers}
+            >
+              {cards.map((card) => (
+                <Frame
+                  key={card.id}
+                  card={card}
+                  showFav={showFav}
+                  selectable={selectMode}
+                  selected={selected.has(card.id)}
+                  onOpen={onOpen}
+                  onToggleSelect={onToggleSelect}
+                  handledByPress={sweep.handledByPress}
+                />
+              ))}
+            </div>
   )
 }
 
