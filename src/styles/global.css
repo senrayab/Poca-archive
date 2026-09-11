@@ -735,6 +735,31 @@ a { color: inherit; }
 }
 
 /*
+ * 이름에 넣을 문자 꺼내두기.
+ *
+ * 장식 문자는 자판에서 꺼내기가 번거롭다. 자주 쓸 만한 것만 몇 개 꺼내두고
+ * 눌러서 넣게 한다. 칸을 작게 두고 여러 줄로 흘려, 자리를 많이 먹지 않으면서
+ * 한눈에 다 보이게 한다.
+ */
+.glyphs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.glyphs button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  background: var(--bg-elev-2);
+  font-size: 16px;
+  line-height: 1;
+  transition: transform .12s var(--ease), background .12s;
+}
+.glyphs button:active { transform: scale(.9); background: var(--accent-soft); }
+
+/*
  * 이름에 쓸 글꼴 고르기.
  *
  * 글꼴은 이름만 보고 고르기 어렵다. 폰마다 같은 이름이 다른 글꼴로 풀리기도
