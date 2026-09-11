@@ -425,15 +425,16 @@
  * 그러면 채워진 하나가 저절로 앞으로 나온다 — 이 스킨에서 '검은 것이 지금
  * 이것'이다.
  *
- * 네모를 굴린 모양인 건 담는 바가 알약이어서다. 안에 또 알약을 넣으면 담는
- * 것과 담기는 것이 겹쳐 보이고, 정원으로 두면 판이 아니라 자국으로 읽힌다.
+ * 정원이다. 등록이 흰 동그라미로 떠오른 뒤로 줄에 놓인 것이 모두
+ * 동그라미라, 채워진 것과 떠 있는 것이 같은 모양으로 짝을 이룬다 —
+ * 다른 것은 색뿐이고 그것이 곧 '가는 곳'과 '더하는 일'의 차이다.
  */
 .softnav__well {
   width: 40px;
   height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 13px;
+  border-radius: 50%;
   transition: background .15s, color .15s;
 }
 .softnav__item.active { color: var(--text); }
