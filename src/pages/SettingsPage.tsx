@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Header } from '@/components/AppShell'
 import {
   AutoThemeIcon,
@@ -42,6 +43,19 @@ const THEME_OPTIONS: Array<{ mode: ThemeMode; label: string; icon: JSX.Element }
  * 이름, 스킨, 하트 자리, 테마, 포인트 색 — 전부 '어떻게 보일까'다.
  * 데이터를 다루는 일(백업·정리·초기화)은 백업 · 관리로 갈라 나갔다.
  */
+/*
+ * 이름에 넣을 만한 문자들.
+ *
+ * 폰이 늘 갖고 있는 것만 골랐다. 앞쪽은 글꼴이 그리는 기호라 이름의 글자
+ * 색을 그대로 따라가고, 뒤쪽 그림문자는 폰의 그림문자 글꼴이 따로 그리므로
+ * 늘 제 색으로 나온다. 둘의 결이 다르니 섞어 두지 않고 앞뒤로 나눠 둔다.
+ */
+const NAME_GLYPHS = [
+  '♡', '♥', '☆', '★', '✦', '✧', '❀', '✿', '☾', '♪',
+  '·', '—', '｜', '˚', '⟡',
+  '🩷', '🎀', '✨', '📸', '💌',
+]
+
 export function SettingsPage() {
   const [themeMode, resolved] = useThemeMode()
   const skin = useSkin()
@@ -50,6 +64,29 @@ export function SettingsPage() {
   const appNameInput = useAppNameInput()
   const appName = useAppName()
   const nameFont = useNameFont()
+  const nameRef = useRef<HTMLInputElement>(null)
+
+  /*
+   * 고른 문자를 커서 자리에 끼워 넣는다.
+   *
+   * 값을 그냥 뒤에 붙이면 이름 가운데에 넣고 싶을 때 길이 없다. 칸을
+   * 건드리지 않은 상태(커서가 없는 상태)에서는 끝에 붙는다.
+   *
+   * 넣은 뒤 커서를 옮기는 일은 다음 그림이 그려진 다음에 해야 한다.
+   * 리액트가 값을 다시 칠하면서 커서를 되돌려 놓기 때문이다.
+   */
+  const insertGlyph = (glyph: string) => {
+    const el = nameRef.current
+    const at = el?.selectionStart ?? appNameInput.length
+    const to = el?.selectionEnd ?? at
+    const next = appNameInput.slice(0, at) + glyph + appNameInput.slice(to)
+    if (next.length > 40) return
+    setAppName(next)
+    requestAnimationFrame(() => {
+      el?.focus()
+      el?.setSelectionRange(at + glyph.length, at + glyph.length)
+    })
+  }
 
   return (
     <>
@@ -66,9 +103,10 @@ export function SettingsPage() {
               보관함 화면 제목과 더보기 머리에 쓰이는 이름입니다. 비워두면
               <b> {DEFAULT_APP_NAME}</b>로 돌아갑니다.
             </p>
-            <label className="field">
+            <label className="field" style={{ marginBottom: 10 }}>
               <span>보관함 이름</span>
               <input
+                ref={nameRef}
                 type="text"
                 value={appNameInput}
                 onChange={(e) => setAppName(e.target.value)}
@@ -76,6 +114,19 @@ export function SettingsPage() {
                 maxLength={40}
               />
             </label>
+
+            {/*
+              장식 문자는 자판에서 꺼내기가 번거롭다. 자주 쓸 만한 것만
+              몇 개 꺼내두고 눌러서 넣게 한다 — 커서가 있던 자리에 들어가고,
+              커서는 넣은 것 바로 뒤로 옮겨 이어서 칠 수 있다.
+            */}
+            <div className="glyphs" aria-label="이름에 넣을 문자">
+              {NAME_GLYPHS.map((glyph) => (
+                <button key={glyph} onClick={() => insertGlyph(glyph)} aria-label={`${glyph} 넣기`}>
+                  {glyph}
+                </button>
+              ))}
+            </div>
 
             {/*
               글꼴은 이름만 보고 고르기 어렵다. 폰마다 같은 이름이 다른
