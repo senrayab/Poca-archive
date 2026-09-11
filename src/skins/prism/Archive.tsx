@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, type CSSProperties } from 'react'
 import {
   CameraIcon,
   CheckIcon,
@@ -166,6 +166,16 @@ export function Archive(view: ArchiveView) {
         empty
       ) : (
         <>
+          {!selectMode && (
+            <p className="przhint">
+              길게 누르면 여러 장을 고를 수 있어요
+              <button onClick={onSelectAll}>
+                <CheckIcon size={13} />
+                전체 선택
+              </button>
+            </p>
+          )}
+
           <div
             className="przgrid"
             ref={sweep.ref}
@@ -185,20 +195,48 @@ export function Archive(view: ArchiveView) {
               />
             ))}
           </div>
-
-          {!selectMode && (
-            <p className="przfoot">
-              길게 누르면 여러 장을 고를 수 있어요
-              <button onClick={onSelectAll}>
-                <CheckIcon size={13} />
-                전체 선택
-              </button>
-            </p>
-          )}
         </>
       )}
     </div>
   )
+}
+
+/*
+ * 카드가 놓이는 각도.
+ *
+ * 줄끼리 겹치게 하고 나니 겹친 자리가 자로 잰 듯 일직선이라, 세 줄이
+ * 한 뭉텅이로 보였다. 손으로 끼운 것은 그렇게 가지런하지 않다.
+ *
+ * 무작위로 뽑으면 다시 그릴 때마다 카드가 들썩인다. 그래서 카드 id에서
+ * 뽑는다 — 같은 카드는 언제 봐도 같은 각도로 누워 있고, 목록을 걸러도
+ * 제 각도를 데리고 다닌다.
+ */
+const MAX_TILT = 2.6
+const MAX_NUDGE = 4
+
+function looseOf(id: string) {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) | 0
+
+  /*
+   * 섞는 일이 꼭 필요하다.
+   *
+   * 그냥 더해 나가기만 하면 끝자리 한 글자 차이가 결과의 끝자리 하나만
+   * 바꾼다. 한 번에 올린 카드들은 앞부분이 같고 뒤만 다르므로, 나란히
+   * 놓인 카드들이 죄다 같은 각도로 눕는다. 아래 몇 줄은 그 한 비트가
+   * 전체에 퍼지게 하는 일이다.
+   */
+  h ^= h >>> 16
+  h = Math.imul(h, 0x2c1b3c6d)
+  h ^= h >>> 13
+  h = Math.imul(h, 0x297a2d39)
+  h ^= h >>> 16
+  const n = h >>> 0
+
+  // 서로 다른 자리의 비트를 써야 각도와 높이가 같이 움직이지 않는다
+  const tilt = ((n & 0xffff) / 0xffff - 0.5) * 2 * MAX_TILT
+  const nudge = ((n >>> 16) / 0xffff - 0.5) * 2 * MAX_NUDGE
+  return { tilt, nudge }
 }
 
 /**
@@ -232,10 +270,12 @@ const Sleeve = memo(function Sleeve({
   handledByPress: () => boolean
 }) {
   const url = useObjectUrl(card.thumb, card.id)
+  const loose = looseOf(card.id)
 
   return (
     <button
       className="przcard"
+      style={{ '--tilt': `${loose.tilt}deg`, '--nudge': `${loose.nudge}px` } as CSSProperties}
       data-card-id={card.id}
       data-selected={selected}
       onClick={() => (selectable ? onToggleSelect(card) : onOpen(card))}
