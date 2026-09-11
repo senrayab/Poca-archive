@@ -249,7 +249,8 @@
 .przmembers { padding: 16px 20px 0; }
 .przmembers__inner {
   display: flex;
-  gap: 2px;
+  /* 조각끼리 물려야 하므로 사이를 벌리지 않는다 */
+  gap: 0;
   padding: 4px;
   border-radius: var(--pill);
   overflow-x: auto;
@@ -259,24 +260,46 @@
 }
 .przmembers__inner::-webkit-scrollbar { display: none; }
 
+/*
+ * 이름도 유리 조각이다.
+ *
+ * 격자에서 카드가 슬리브에 겹쳐 꽂히듯, 이름도 한 장씩 겹쳐 꽂힌다. 나란히
+ * 떨어뜨려 두면 여느 알약 줄과 같아지는데, 물려 있으면 '한 칸에 여러 장이
+ * 꽂혀 있는 것'으로 읽힌다 — 이 스킨이 카드를 두는 방식 그대로다.
+ *
+ * 겹치는 쪽이 위로 와야 꽂힌 것으로 보인다. 앞의 조각이 뒤의 것을 덮도록
+ * 왼쪽으로 당기고, 지금 고른 것만 한 겹 더 앞으로 나온다.
+ */
 .przseg {
+  position: relative;
   flex-shrink: 0;
   height: 32px;
-  padding: 0 14px;
+  padding: 0 15px;
+  margin-left: -10px;
   border-radius: var(--pill);
+  background: var(--frost);
+  box-shadow: inset 0 0 0 1px var(--panel-line);
   color: var(--text-dim);
   font-size: 13px;
   font-weight: 600;
   transition: color .15s, background .15s;
 }
-/* 지금 고른 것만 한 겹 앞으로 나온다 */
+.przseg:first-child { margin-left: 0; }
+/* 지금 고른 것만 맑아지고 한 겹 앞으로 나온다 */
 .przseg[aria-selected='true'] {
+  z-index: 1;
   background: var(--bg-elev-2);
   color: var(--text);
   font-weight: 700;
   box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-sm);
 }
-.przseg--add { padding: 0 12px; }
+.przseg--add {
+  padding: 0 12px;
+  /* 더하는 것은 꽂혀 있는 이름이 아니다 — 물리지 않고 떨어져 선다 */
+  margin-left: 6px;
+  background: none;
+  box-shadow: none;
+}
 
 /* ---------- 슬리브에 꽂힌 격자 ---------- */
 

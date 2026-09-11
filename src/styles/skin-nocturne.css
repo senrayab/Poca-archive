@@ -122,7 +122,6 @@
 
 /* ---------- 떠 있는 것들의 공통 결 ---------- */
 
-.noctpill,
 .noctbtn,
 .noctnav {
   background: var(--bg-elev);
@@ -130,28 +129,48 @@
   backdrop-filter: blur(18px) saturate(130%);
 }
 
+/*
+ * 멤버는 알약을 두르지 않는다.
+ *
+ * 이 스킨은 칠하지 않고 밝힌다. 어두운 화면에서 알약을 두르면 그 판이
+ * 사진 다음으로 밝은 것이 되어, 정작 보라고 만든 사진보다 먼저 눈에 든다.
+ * 이름은 이름대로 두고 밝기만 갈라 놓는다.
+ *
+ * 지금 고른 것은 희게 서고 글자 뒤로 빛이 옅게 번진다. 그 아래 실 같은
+ * 빛줄이 하나 그어져, 번짐만으로는 모자란 '여기'를 짚어준다.
+ */
 .noctpill {
+  position: relative;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 34px;
-  padding: 0 14px;
-  border-radius: var(--pill);
-  color: var(--text);
-  font-size: 13px;
+  padding: 0 8px;
+  color: var(--text-dim);
+  font-size: 14px;
   font-weight: 600;
-  transition: transform .15s var(--ease), background .15s, color .15s;
+  transition: transform .15s var(--ease), color .15s, text-shadow .15s;
 }
 .noctpill:active { transform: scale(.94); }
-/* 지금 고른 것은 칠하는 게 아니라 밝힌다 */
-.noctpill[aria-selected='true'],
-.noctpill--on {
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: inset 0 0 0 1px transparent, var(--shadow-md);
+.noctpill[aria-selected='true'] {
+  color: var(--text);
+  font-weight: 700;
+  text-shadow: 0 0 16px rgba(255, 255, 255, .45);
 }
-.noctpill--add { width: 34px; padding: 0; justify-content: center; color: var(--text-dim); }
+/* 이름 아래 그어지는 실 같은 빛줄. 양 끝이 꺼져야 그은 선이 아니라 빛이 된다. */
+.noctpill[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 4px;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  box-shadow: 0 0 8px rgba(255, 255, 255, .5);
+}
+.noctpill--add { width: 30px; padding: 0; justify-content: center; color: var(--text-dim); }
 
 .noctbtn {
   width: 36px;

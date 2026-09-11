@@ -257,33 +257,46 @@
 }
 .softmembers::-webkit-scrollbar { display: none; }
 
+/*
+ * 이름들 사이에 채워진 하나.
+ *
+ * 전에는 이름마다 흰 판을 하나씩 줬다. 길찾기에서 판을 지금 있는 자리
+ * 하나로 줄이고 나니 여기만 판이 줄줄이 남아, 같은 스킨 안에서 두 가지
+ * 말을 쓰고 있었다.
+ *
+ * 판은 지금 고른 이름 하나만 갖는다. 나머지는 바탕 위의 글자뿐이라,
+ * 검게 찬 하나가 저절로 앞으로 나온다.
+ */
 .softchip {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 38px;
-  padding: 0 14px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: var(--pill);
-  background: var(--bg-elev);
-  color: var(--text);
+  background: none;
+  color: var(--text-dim);
   font-size: 13px;
-  font-weight: 700;
-  box-shadow: inset 0 1px 0 var(--lift-top), inset 0 -1px 0 var(--lift-foot), var(--lift-1);
-  transition: transform .15s var(--ease), background .15s, color .15s, box-shadow .15s;
+  font-weight: 600;
+  transition: transform .15s var(--ease), background .15s, color .15s;
 }
-.softchip:active {
-  transform: scale(.94);
-  box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
-}
-/* 이 스킨에서 '지금 이것'은 늘 검게 채워진다 — 탭바도 같은 말을 쓴다 */
-.softchip[aria-selected='true'],
-.softchip--on {
+.softchip:active { transform: scale(.94); }
+.softchip[aria-selected='true'] {
   background: var(--accent);
   color: var(--accent-ink);
-  box-shadow: var(--glow);
+  font-weight: 700;
+  box-shadow: var(--lift-1);
 }
-.softchip--add { width: 38px; padding: 0; justify-content: center; color: var(--text-dim); }
+/* 더하는 것은 이름이 아니다 — 동그란 빈 판으로 성격을 가른다 */
+.softchip--add {
+  width: 36px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-elev-2);
+  color: var(--text-dim);
+}
 
 /* ---------- 세 열 격자 ---------- */
 
