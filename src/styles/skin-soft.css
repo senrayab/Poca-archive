@@ -373,7 +373,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   align-items: center;
-  padding: 0 6px;
+  padding: 0 9px;
   border-radius: var(--pill);
   background: var(--bg-elev);
   /*
@@ -395,7 +395,12 @@
   justify-items: center;
   gap: 3px;
   padding: 8px 0;
-  border-radius: var(--radius-sm);
+  /*
+   * 담는 것과 같은 알약이다. 안에 네모가 들어앉으면 바의 둥근 끝과 어긋나
+   * 둘이 다른 물건으로 보인다 — 눌려 들어가는 자리는 판이 파인 자국이므로
+   * 판의 생김새를 따라야 한다.
+   */
+  border-radius: var(--pill);
   color: var(--text-dim);
   font-size: 10px;
   font-weight: 600;
