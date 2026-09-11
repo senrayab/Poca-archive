@@ -189,6 +189,16 @@ export function Archive(view: ArchiveView) {
         empty
       ) : (
         <>
+          {!selectMode && (
+            <div className="softhint">
+              <span>길게 누르면 여러 장을 고를 수 있어요</span>
+              <button className="softbtn softbtn--sm" onClick={onSelectAll}>
+                <CheckIcon size={15} />
+                전체 선택
+              </button>
+            </div>
+          )}
+
           <div
             className="softgrid"
             ref={sweep.ref}
@@ -208,16 +218,6 @@ export function Archive(view: ArchiveView) {
               />
             ))}
           </div>
-
-          {!selectMode && (
-            <div className="softfoot">
-              <span>길게 누르면 여러 장을 고를 수 있어요</span>
-              <button className="softbtn softbtn--sm" onClick={onSelectAll}>
-                <CheckIcon size={15} />
-                전체 선택
-              </button>
-            </div>
-          )}
         </>
       )}
     </div>
