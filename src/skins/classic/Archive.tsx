@@ -46,7 +46,6 @@ export function Archive(view: ArchiveView) {
   return (
     <>
       <Header
-        bare
         title={title}
         actions={
           selectMode ? (
