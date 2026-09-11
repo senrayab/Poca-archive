@@ -87,7 +87,7 @@
   /* 슬리브의 흰 기운. 고르게 덮어야 유리로 읽힌다. */
   --frost: rgba(255, 255, 255, .10);
   /* 유리가 시작하는 자리 — 밝은 실선과 그 위의 옅은 그림자 한 줄 */
-  --frost-rim: rgba(255, 255, 255, .30);
+  --frost-rim: rgba(255, 255, 255, .20);
   --frost-shade: rgba(0, 0, 0, .38);
 
   color-scheme: dark;
@@ -128,7 +128,7 @@
       radial-gradient(66% 44% at 88% 96%, rgba(241, 229, 241, .48), transparent 72%);
 
     --frost: rgba(255, 255, 255, .42);
-    --frost-rim: rgba(255, 255, 255, .92);
+    --frost-rim: rgba(255, 255, 255, .50);
     --frost-shade: rgba(26, 26, 30, .10);
 
     color-scheme: light;
@@ -169,7 +169,7 @@
     radial-gradient(66% 44% at 88% 96%, rgba(241, 229, 241, .48), transparent 72%);
 
   --frost: rgba(255, 255, 255, .42);
-  --frost-rim: rgba(255, 255, 255, .92);
+  --frost-rim: rgba(255, 255, 255, .50);
   --frost-shade: rgba(26, 26, 30, .10);
 
   color-scheme: light;
@@ -401,15 +401,14 @@
 }
 
 /*
- * 슬리브에 새긴 번호.
+ * 슬리브에 적은 번호.
  *
  * 진열장의 물건에는 번호표가 붙어 있다. 다만 읽으라고 붙인 것이 아니라
  * 있다는 걸 알아채라고 붙인 것이라, 아주 작고 아주 옅게 둔다. 눈에 먼저
  * 띄면 그건 번호표가 아니라 딱지다.
  *
- * 유리에 새긴 것처럼 보이려면 글자 위쪽에 밝은 선이 한 줄 있어야 한다.
- * 파낸 자리의 위쪽 벽이 빛을 받는 것이라, 이 한 줄이 없으면 글자가 유리
- * 위에 얹혀 있는 것으로 보인다.
+ * 새긴 것처럼 보이라고 글자 위에 흰 선을 한 줄 깔아봤는데, 이만한 크기에서
+ * 그 한 줄은 깊이가 아니라 흐릿함으로 보였다. 걷고 글자만 남긴다.
  *
  * 유리 무늬(::after)보다 뒤에 있으면 서리에 묻히므로 한 겹 앞에 세운다.
  */
@@ -428,7 +427,6 @@
   letter-spacing: .12em;
   font-variant-numeric: tabular-nums;
   color: color-mix(in srgb, var(--text) 42%, transparent);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .45);
 }
 
 .przcard__fav {
