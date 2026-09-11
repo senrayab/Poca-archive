@@ -12,6 +12,7 @@ import {
 import type { Card } from '@/db/types'
 import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
+import { useSweepSelect } from '@/hooks/useSweepSelect'
 import type { ArchiveView } from '../types'
 
 /**
@@ -40,6 +41,7 @@ export function Archive(view: ArchiveView) {
     selectMode,
     onOpen,
     onToggleSelect,
+    onSweep,
     onSelectAll,
     onClearSelection,
     memberId,
@@ -56,6 +58,9 @@ export function Archive(view: ArchiveView) {
   } = view
 
   const filtered = Boolean(query || byImage)
+
+  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
 
   return (
     <div className="content soft">
@@ -184,7 +189,12 @@ export function Archive(view: ArchiveView) {
         empty
       ) : (
         <>
-          <div className="softgrid">
+          <div
+            className="softgrid"
+            ref={sweep.ref}
+            data-dragging={sweep.dragging || undefined}
+            {...sweep.handlers}
+          >
             {cards.map((card) => (
               <Frame
                 key={card.id}
@@ -194,6 +204,7 @@ export function Archive(view: ArchiveView) {
                 selected={selected.has(card.id)}
                 onOpen={onOpen}
                 onToggleSelect={onToggleSelect}
+                handledByPress={sweep.handledByPress}
               />
             ))}
           </div>
@@ -227,6 +238,7 @@ const Frame = memo(function Frame({
   selected,
   onOpen,
   onToggleSelect,
+  handledByPress,
 }: {
   card: Card
   showFav: boolean
@@ -234,6 +246,8 @@ const Frame = memo(function Frame({
   selected: boolean
   onOpen: (card: Card) => void
   onToggleSelect: (card: Card) => void
+  /** 길게 눌러 이미 골라졌다면 여기서 또 뒤집지 않는다 */
+  handledByPress: () => boolean
 }) {
   const url = useObjectUrl(card.thumb, card.id)
 
@@ -244,7 +258,9 @@ const Frame = memo(function Frame({
       data-selected={selected}
       onClick={() => (selectable ? onToggleSelect(card) : onOpen(card))}
       onContextMenu={(e) => {
+        // 길게 누르면 폰이 사진 저장 메뉴를 띄우므로 어느 경우든 막는다
         e.preventDefault()
+        if (handledByPress()) return
         onToggleSelect(card)
       }}
       aria-label={card.title || card.memo || '포토카드'}
