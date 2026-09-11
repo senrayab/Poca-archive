@@ -20,9 +20,6 @@ type LayoutId = keyof typeof LAYOUTS
 
 const OF_SKIN: Record<SkinId, LayoutId> = {
   pastel: 'classic',
-  mono: 'classic',
-  aurora: 'classic',
-  brick: 'classic',
   soft: 'soft',
   nocturne: 'nocturne',
   prism: 'prism',
