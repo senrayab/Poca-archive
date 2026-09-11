@@ -11,8 +11,9 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 내역은 여기 두지 않았다. 하루에 몇 번씩 여는 곳이 아니고, 더보기에서도
  * 한 번에 닿는다. 자리는 다섯뿐이니 자주 쓰는 것에 내준다.
  *
- * 지금 있는 자리는 색이 아니라 '검은 알약'으로 알린다. 알약 안에서만
- * 이름이 나오므로, 나머지는 아이콘만 남아 줄이 조용하다.
+ * 지금 있는 자리는 색이 아니라 '파인 자국'으로 알린다. 그림 자리만
+ * 동그랗게 판 안으로 눌려 들어가고, 이름은 그 아래 그대로 남는다 —
+ * 떠 있는 것들 사이에서 하나만 가라앉아 있으면 그것이 지금 이것이다.
  *
  * 가운데 검은 동그라미는 등록이다. 다섯 자리 중 가운데라 어느 손으로도
  * 닿고, 다른 것과 생김새가 아예 달라 '이건 다른 일'이라고 말한다.
@@ -24,11 +25,11 @@ export function Nav() {
   return (
     <nav className="softnav" aria-label="길찾기">
       <NavLink className="softnav__item" to="/" end>
-        <GridIcon size={21} />
+        <span className="softnav__well"><GridIcon size={21} /></span>
         <span>보관함</span>
       </NavLink>
       <NavLink className="softnav__item" to="/favorites">
-        <HeartIcon size={21} />
+        <span className="softnav__well"><HeartIcon size={21} /></span>
         <span>좋아요</span>
       </NavLink>
 
@@ -52,7 +53,7 @@ export function Nav() {
         className="softnav__item"
         onClick={() => navigate('/', { state: { find: Date.now() } })}
       >
-        <SearchIcon size={21} />
+        <span className="softnav__well"><SearchIcon size={21} /></span>
         <span>검색</span>
       </button>
       {/*
@@ -61,7 +62,7 @@ export function Nav() {
         덮을 이유가 없다. 페이지면 여기가 지금 어디인지도 그대로 보인다.
       */}
       <NavLink className="softnav__item" to="/more">
-        <MenuIcon size={21} />
+        <span className="softnav__well"><MenuIcon size={21} /></span>
         <span>더보기</span>
       </NavLink>
     </nav>
