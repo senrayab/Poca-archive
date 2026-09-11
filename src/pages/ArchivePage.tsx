@@ -1,16 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useShell } from '@/components/shell'
 import { CardDetail } from '@/components/CardDetail'
-import { CameraIcon, CloseIcon, ImageIcon, SearchIcon } from '@/components/Icons'
-import { Modal } from '@/components/Modal'
 import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
 import { useCategories, useCards } from '@/hooks/useData'
-import { backfillPrints, findLike, fingerprintOf } from '@/lib/duplicates'
 import { SHOW_CATEGORY } from '@/lib/features'
-import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { useAppName } from '@/lib/appName'
 import { useLayout } from '@/skins'
 import type { ArchiveMode, ArchiveView } from '@/skins/types'
@@ -35,35 +31,20 @@ export function ArchivePage({ mode }: ArchivePageProps) {
 
   const [memberId, setMemberId] = useState<string | null>(null)
   const [categoryId, setCategoryId] = useState<string | null>(null)
-  const [query, setQuery] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
   const [openCard, setOpenCard] = useState<Card | null>(null)
   const navigate = useNavigate()
-  const location = useLocation()
-  /*
-   * 사진으로 찾은 결과. 지문이 닮은 카드의 id만 가까운 순으로 담는다.
-   * null이면 사진 검색을 쓰지 않는 상태다.
-   */
-  const [byImage, setByImage] = useState<string[] | null>(null)
-  const [looking, setLooking] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
   const cards = useCards({
+    query: '',
     memberId,
     categoryId,
-    query,
     favoriteOnly: mode === 'favorites',
     deleted: mode === 'trash' ? 1 : 0,
   })
 
   const loading = cards === undefined
-  const list = useMemo(() => {
-    const all = cards ?? []
-    if (!byImage) return all
-    // 닮은 순서를 그대로 살린다 — 가장 비슷한 것이 맨 앞이라야 눈에 먼저 든다
-    const rank = new Map(byImage.map((id, i) => [id, i]))
-    return all.filter((c) => rank.has(c.id)).sort((a, b) => rank.get(a.id)! - rank.get(b.id)!)
-  }, [cards, byImage])
+  const list = useMemo(() => cards ?? [], [cards])
   const selectMode = selected.size > 0
 
   // 목록이 바뀌면(필터 변경, 삭제 등) 열려 있던 카드를 최신 상태로 다시 잡아준다.
@@ -76,41 +57,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   useEffect(() => {
     setSelected(new Set())
   }, [mode, memberId, categoryId])
-
-  /*
-   * 아래 탭바의 검색은 화면을 옮기는 게 아니라 이 화면의 시트를 여는 일이다.
-   * 그래서 보관함으로 오면서 state에 표시를 남기고, 여기서 그걸 받아 연다.
-   * 주소에는 흔적이 없으므로 새로고침하면 그냥 보관함이다.
-   *
-   * 표시를 지우는 건 같은 자리에서 또 눌렀을 때를 위해서다 — 값이 남아
-   * 있으면 두 번째 누름이 아무 일도 일으키지 못한다.
-   */
-  const findAt = (location.state as { find?: number } | null)?.find
-  useEffect(() => {
-    if (!findAt) return
-    setSearchOpen(true)
-    navigate(location.pathname, { replace: true, state: null })
-  }, [findAt, location.pathname, navigate])
-
-  /*
-   * 사진 한 장을 받아 닮은 카드를 찾는다.
-   *
-   * 이미 가진 카드인지 손에 들고 확인하는 용도라, 받은 사진은 어디에도
-   * 저장하지 않는다 — 지문만 뽑고 그림은 그 자리에서 버린다.
-   */
-  const lookUp = async (file: Blob) => {
-    setLooking(true)
-    try {
-      await backfillPrints()
-      const fp = await fingerprintOf(file)
-      if (!fp) return toast('사진을 읽지 못했습니다.')
-      const hits = await findLike(fp)
-      setByImage(hits.map((h) => h.cardId))
-      toast(hits.length ? `닮은 카드 ${hits.length}장을 찾았어요.` : '닮은 카드가 없어요.')
-    } finally {
-      setLooking(false)
-    }
-  }
 
 
   /*
@@ -185,7 +131,7 @@ export function ArchivePage({ mode }: ArchivePageProps) {
     loading,
     cards: list,
     empty: (
-      <EmptyState mode={mode} filtered={Boolean(query || memberId || categoryId || byImage)} />
+      <EmptyState mode={mode} filtered={Boolean(memberId || categoryId)} />
     ),
 
     selected,
@@ -208,12 +154,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
     categoryId,
     onSelectCategory: setCategoryId,
 
-    query,
-    onClearQuery: () => setQuery(''),
-    byImage,
-    onClearByImage: () => setByImage(null),
-    onOpenSearch: () => setSearchOpen(true),
-
     // 휴지통에서만 되돌리기와 완전 삭제가 있고, 나머지에는 버리기만 있다
     onTrash: mode === 'trash' ? undefined : () => void bulk('trash'),
     onRestore: mode === 'trash' ? () => void bulk('restore') : undefined,
@@ -224,20 +164,6 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   return (
     <>
       <Archive {...view} />
-
-      {searchOpen && (
-        <SearchSheet
-          value={query}
-          onChange={setQuery}
-          resultCount={list.length}
-          looking={looking}
-          onByImage={(file) => {
-            setSearchOpen(false)
-            void lookUp(file)
-          }}
-          onClose={() => setSearchOpen(false)}
-        />
-      )}
 
       {openCard && !detailAsPage && (
         <CardDetail
@@ -285,137 +211,5 @@ function EmptyState({ mode, filtered }: { mode: ArchiveMode; filtered: boolean }
         올린 사진은 자동으로 WebP로 변환돼 용량을 크게 줄입니다.
       </p>
     </div>
-  )
-}
-
-/*
- * 검색은 목록 위에 얹는 팝업으로 연다.
- * 목록 맨 위에 붙여두면 한참 스크롤해 내려간 상태에서 검색하려고
- * 매번 맨 위까지 올라와야 한다.
- */
-function SearchSheet({
-  value,
-  onChange,
-  resultCount,
-  looking,
-  onByImage,
-  onClose,
-}: {
-  value: string
-  onChange: (next: string) => void
-  resultCount: number
-  looking: boolean
-  onByImage: (file: Blob) => void
-  onClose: () => void
-}) {
-  const pickRef = useRef<HTMLInputElement>(null)
-  const [shooting, setShooting] = useState(false)
-  const [camera] = useState(canUseCamera)
-
-  return (
-    <Modal onClose={onClose} panel={false} label="검색">
-      <form
-        className="search-sheet"
-        onSubmit={(e) => {
-          e.preventDefault()
-          onClose()
-        }}
-      >
-        <div className="search-sheet__top">
-          <button
-            type="button"
-            className="search-sheet__close"
-            onClick={onClose}
-            aria-label="닫기"
-          >
-            <CloseIcon size={20} />
-          </button>
-        </div>
-
-        <div className="search-sheet__field">
-          <SearchIcon size={20} />
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="제목 · 메모에서 검색"
-            autoFocus
-          />
-          {value && (
-            <button
-              type="button"
-              className="search-sheet__clear"
-              onClick={() => onChange('')}
-              aria-label="지우기"
-            >
-              <CloseIcon size={18} />
-            </button>
-          )}
-        </div>
-
-        {/* 입력하는 동안 뒤쪽 목록이 이미 걸러지고 있으므로 장수를 바로 보여준다 */}
-        <p className="search-sheet__hint">
-          {value ? `${resultCount}장 찾았어요` : '카드 제목과 메모에서 찾습니다'}
-        </p>
-
-        {/*
-          사진으로 찾기. 손에 든 카드를 이미 등록했는지 확인하는 용도라,
-          받은 사진은 지문만 뽑고 어디에도 저장하지 않는다.
-        */}
-        <div className="search-sheet__by-image">
-          {/* 둘은 같은 일을 하는 두 갈래라 한 줄에 나란히 둔다 */}
-          <div className="row">
-            {camera && (
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setShooting(true)}
-                disabled={looking}
-              >
-                <CameraIcon size={17} />
-                찍어서 찾기
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn"
-              onClick={() => pickRef.current?.click()}
-              disabled={looking}
-            >
-              <ImageIcon size={17} />
-              골라서 찾기
-            </button>
-          </div>
-          <p className="search-sheet__hint">
-            같은 그림을 찾습니다. 이미 등록한 카드인지 확인할 때 쓰세요.
-          </p>
-        </div>
-
-        <input
-          ref={pickRef}
-          type="file"
-          accept="image/*"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            e.target.value = ''
-            if (file) onByImage(file)
-          }}
-        />
-
-        {shooting && (
-          <CameraCapture
-            onShot={(file) => {
-              setShooting(false)
-              onByImage(file)
-            }}
-            onClose={() => setShooting(false)}
-          />
-        )}
-
-        {/* 엔터로 닫히도록 폼은 유지하되, 버튼은 화면에 두지 않는다 */}
-        <button type="submit" hidden />
-      </form>
-    </Modal>
   )
 }

@@ -1,12 +1,10 @@
 import { memo } from 'react'
 import {
-  CameraIcon,
   CheckIcon,
   CloseIcon,
   HeartIcon,
   PlusIcon,
   RestoreIcon,
-  SearchIcon,
   TrashIcon,
 } from '@/components/Icons'
 import type { Card } from '@/db/types'
@@ -14,7 +12,7 @@ import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { useSweepSelect } from '@/hooks/useSweepSelect'
 import { Backdrop } from './Backdrop'
-import type { ArchiveView } from '../types'
+import type { ArchiveView, GridView } from '../types'
 
 /**
  * 녹턴의 보관함 — 밤에 보는 사진첩.
@@ -45,18 +43,11 @@ export function Archive(view: ArchiveView) {
     memberId,
     onSelectMember,
     onAddMember,
-    query,
-    onClearQuery,
-    byImage,
-    onClearByImage,
     onTrash,
     onRestore,
     onPurge,
     onEmptyTrash,
   } = view
-
-  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
-  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
 
   return (
     <div className="content noct">
@@ -103,26 +94,6 @@ export function Archive(view: ArchiveView) {
           )}
         </div>
       </header>
-
-      {/* 걸린 것이 있을 때만. 없으면 사진이 그 자리까지 올라온다. */}
-      {(query || byImage) && (
-        <div className="noctfind">
-          {query && (
-            <button className="noctpill noctpill--on" onClick={onClearQuery}>
-              <SearchIcon size={13} />
-              {query}
-              <CloseIcon size={13} />
-            </button>
-          )}
-          {byImage && (
-            <button className="noctpill noctpill--on" onClick={onClearByImage}>
-              <CameraIcon size={13} />
-              닮은 카드 {byImage.length}장
-              <CloseIcon size={13} />
-            </button>
-          )}
-        </div>
-      )}
 
       {/*
         멤버는 위, 길찾기는 아래로 갈라 둔다. 위는 무엇을 볼지 고르는
@@ -173,29 +144,60 @@ export function Archive(view: ArchiveView) {
             </p>
           )}
 
-          <div
-            className="noctgrid"
-            ref={sweep.ref}
-            data-dragging={sweep.dragging || undefined}
-            {...sweep.handlers}
-          >
-            {cards.map((card) => (
-              <Shot
-                key={card.id}
-                card={card}
-                showFav={mode !== 'favorites'}
-                selectable={selectMode}
-                selected={selected.has(card.id)}
-                onOpen={onOpen}
-                onToggleSelect={onToggleSelect}
-                handledByPress={sweep.handledByPress}
-              />
-            ))}
-          </div>
+          <Grid
+            cards={cards}
+            showFav={mode !== 'favorites'}
+            selectMode={selectMode}
+            selected={selected}
+            onOpen={onOpen}
+            onToggleSelect={onToggleSelect}
+            onSweep={onSweep}
+          />
         </>
       )}
 
     </div>
+  )
+}
+
+/**
+ * 카드가 깔리는 격자.
+ *
+ * 보관함에서 떼어 따로 둔다. 검색처럼 '카드를 늘어놓는' 다른 화면도 같은
+ * 격자를 써야 스킨이 화면마다 달라 보이지 않는다. 꾹 눌러 쓸어 고르는
+ * 손짓도 격자가 갖는 것이 맞다 — 고르는 것은 카드이지 화면이 아니다.
+ */
+export function Grid({
+  cards,
+  showFav,
+  selectMode,
+  selected,
+  onOpen,
+  onToggleSelect,
+  onSweep,
+}: GridView) {
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+
+  return (
+    <div
+              className="noctgrid"
+              ref={sweep.ref}
+              data-dragging={sweep.dragging || undefined}
+              {...sweep.handlers}
+            >
+              {cards.map((card) => (
+                <Shot
+                  key={card.id}
+                  card={card}
+                  showFav={showFav}
+                  selectable={selectMode}
+                  selected={selected.has(card.id)}
+                  onOpen={onOpen}
+                  onToggleSelect={onToggleSelect}
+                  handledByPress={sweep.handledByPress}
+                />
+              ))}
+            </div>
   )
 }
 

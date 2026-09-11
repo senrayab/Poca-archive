@@ -1,19 +1,17 @@
 import { memo } from 'react'
 import {
-  CameraIcon,
   CheckIcon,
   CloseIcon,
   HeartIcon,
   PlusIcon,
   RestoreIcon,
-  SearchIcon,
   TrashIcon,
 } from '@/components/Icons'
 import type { Card } from '@/db/types'
 import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
 import { useSweepSelect } from '@/hooks/useSweepSelect'
-import type { ArchiveView } from '../types'
+import type { ArchiveView, GridView } from '../types'
 
 /**
  * 아틀리에의 보관함 — 작품 목록.
@@ -46,18 +44,11 @@ export function Archive(view: ArchiveView) {
     memberId,
     onSelectMember,
     onAddMember,
-    query,
-    onClearQuery,
-    byImage,
-    onClearByImage,
     onTrash,
     onRestore,
     onPurge,
     onEmptyTrash,
   } = view
-
-  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
-  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
 
   return (
     <div className="content atl">
@@ -109,25 +100,6 @@ export function Archive(view: ArchiveView) {
           </div>
         )}
 
-        {(query || byImage) && (
-          <div className="atlhead__actions">
-            {query && (
-              <button className="atlbtn" onClick={onClearQuery}>
-                <SearchIcon size={14} />
-                {query}
-                <CloseIcon size={14} />
-              </button>
-            )}
-            {byImage && (
-              <button className="atlbtn" onClick={onClearByImage}>
-                <CameraIcon size={14} />
-                닮은 카드 {byImage.length}장
-                <CloseIcon size={14} />
-              </button>
-            )}
-          </div>
-        )}
-
         <hr className="atlrule" />
       </header>
 
@@ -172,35 +144,66 @@ export function Archive(view: ArchiveView) {
             </p>
           )}
 
-          <div
-            className="atlgrid"
-            ref={sweep.ref}
-            data-dragging={sweep.dragging || undefined}
-            {...sweep.handlers}
-          >
-            {cards.map((card, index) => (
-              <Plate
-                key={card.id}
-                card={card}
-                /*
-                 * 먼저 들인 것이 01이다. 목록은 새것부터 내려오므로 위가
-                 * 가장 큰 수가 된다. 위에서부터 01을 매기면 한 장 들일
-                 * 때마다 모든 번호가 한 칸씩 밀려, 어제 본 번호가 오늘은
-                 * 다른 카드의 것이 된다.
-                 */
-                no={cards.length - index}
-                showFav={mode !== 'favorites'}
-                selectable={selectMode}
-                selected={selected.has(card.id)}
-                onOpen={onOpen}
-                onToggleSelect={onToggleSelect}
-                handledByPress={sweep.handledByPress}
-              />
-            ))}
-          </div>
+          <Grid
+            cards={cards}
+            showFav={mode !== 'favorites'}
+            selectMode={selectMode}
+            selected={selected}
+            onOpen={onOpen}
+            onToggleSelect={onToggleSelect}
+            onSweep={onSweep}
+          />
         </>
       )}
     </div>
+  )
+}
+
+/**
+ * 카드가 깔리는 격자.
+ *
+ * 보관함에서 떼어 따로 둔다. 검색처럼 '카드를 늘어놓는' 다른 화면도 같은
+ * 격자를 써야 스킨이 화면마다 달라 보이지 않는다. 꾹 눌러 쓸어 고르는
+ * 손짓도 격자가 갖는 것이 맞다 — 고르는 것은 카드이지 화면이 아니다.
+ */
+export function Grid({
+  cards,
+  showFav,
+  selectMode,
+  selected,
+  onOpen,
+  onToggleSelect,
+  onSweep,
+}: GridView) {
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
+
+  return (
+    <div
+              className="atlgrid"
+              ref={sweep.ref}
+              data-dragging={sweep.dragging || undefined}
+              {...sweep.handlers}
+            >
+              {cards.map((card, index) => (
+                <Plate
+                  key={card.id}
+                  card={card}
+                  /*
+                   * 먼저 들인 것이 01이다. 목록은 새것부터 내려오므로 위가
+                   * 가장 큰 수가 된다. 위에서부터 01을 매기면 한 장 들일
+                   * 때마다 모든 번호가 한 칸씩 밀려, 어제 본 번호가 오늘은
+                   * 다른 카드의 것이 된다.
+                   */
+                  no={cards.length - index}
+                  showFav={showFav}
+                  selectable={selectMode}
+                  selected={selected.has(card.id)}
+                  onOpen={onOpen}
+                  onToggleSelect={onToggleSelect}
+                  handledByPress={sweep.handledByPress}
+                />
+              ))}
+            </div>
   )
 }
 

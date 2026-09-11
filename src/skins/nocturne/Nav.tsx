@@ -31,13 +31,9 @@ export function Nav() {
         <PlusIcon size={22} />
       </button>
 
-      <button
-        className="noctnav__item"
-        onClick={() => navigate('/', { state: { find: Date.now() } })}
-        aria-label="검색"
-      >
+      <NavLink className="noctnav__item" to="/search" aria-label="검색">
         <SearchIcon size={21} />
-      </button>
+      </NavLink>
       <NavLink className="noctnav__item" to="/more" aria-label="더보기">
         <MenuIcon size={21} />
       </NavLink>
