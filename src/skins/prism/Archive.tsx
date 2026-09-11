@@ -217,7 +217,7 @@ export function Grid({
  * 뽑는다 — 같은 카드는 언제 봐도 같은 각도로 누워 있고, 목록을 걸러도
  * 제 각도를 데리고 다닌다.
  */
-const MAX_TILT = 2.6
+const MAX_TILT = 4.2
 const MAX_NUDGE = 4
 
 function looseOf(id: string) {
