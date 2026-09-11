@@ -562,7 +562,13 @@ a { color: inherit; }
   padding: 8px 10px;
 }
 /* 쓸어서 고르는 동안에는 목록이 손가락을 따라 움직이면 안 된다 */
-.grid[data-dragging] { touch-action: none; }
+/*
+ * 쓸고 있는 동안에는 화면이 따라 구르면 안 된다.
+ *
+ * 스킨마다 격자 이름이 다르므로 표시를 기준으로 건다 — 어느 스킨의
+ * 격자든 data-dragging이 서면 같은 규칙을 받는다.
+ */
+[data-dragging] { touch-action: none; }
 @media (min-width: 560px) {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));

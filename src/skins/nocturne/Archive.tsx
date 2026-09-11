@@ -12,6 +12,7 @@ import {
 import type { Card } from '@/db/types'
 import { useMembers } from '@/hooks/useData'
 import { useObjectUrl } from '@/hooks/useObjectUrl'
+import { useSweepSelect } from '@/hooks/useSweepSelect'
 import { Backdrop } from './Backdrop'
 import type { ArchiveView } from '../types'
 
@@ -38,6 +39,7 @@ export function Archive(view: ArchiveView) {
     selectMode,
     onOpen,
     onToggleSelect,
+    onSweep,
     onSelectAll,
     onClearSelection,
     memberId,
@@ -52,6 +54,9 @@ export function Archive(view: ArchiveView) {
     onPurge,
     onEmptyTrash,
   } = view
+
+  /* 꾹 눌러 쓸어 고르기는 스킨을 가리지 않는다 — 손짓은 앱이 하는 일이다 */
+  const sweep = useSweepSelect({ cards, selectedIds: selected, onSweep })
 
   return (
     <div className="content noct">
@@ -158,7 +163,12 @@ export function Archive(view: ArchiveView) {
             바탕에서는 사진이 저마다 빛나므로 사이를 벌리지 않아도 서로
             섞이지 않는다. 밝은 스킨에서 흰 테가 하던 일을 어둠이 한다.
           */}
-          <div className="noctgrid">
+          <div
+            className="noctgrid"
+            ref={sweep.ref}
+            data-dragging={sweep.dragging || undefined}
+            {...sweep.handlers}
+          >
             {cards.map((card) => (
               <Shot
                 key={card.id}
@@ -168,6 +178,7 @@ export function Archive(view: ArchiveView) {
                 selected={selected.has(card.id)}
                 onOpen={onOpen}
                 onToggleSelect={onToggleSelect}
+                handledByPress={sweep.handledByPress}
               />
             ))}
           </div>
@@ -195,6 +206,7 @@ const Shot = memo(function Shot({
   selected,
   onOpen,
   onToggleSelect,
+  handledByPress,
 }: {
   card: Card
   showFav: boolean
@@ -202,6 +214,8 @@ const Shot = memo(function Shot({
   selected: boolean
   onOpen: (card: Card) => void
   onToggleSelect: (card: Card) => void
+  /** 길게 눌러 이미 골라졌다면 여기서 또 뒤집지 않는다 */
+  handledByPress: () => boolean
 }) {
   const url = useObjectUrl(card.thumb, card.id)
 
@@ -212,7 +226,9 @@ const Shot = memo(function Shot({
       data-selected={selected}
       onClick={() => (selectable ? onToggleSelect(card) : onOpen(card))}
       onContextMenu={(e) => {
+        // 길게 누르면 폰이 사진 저장 메뉴를 띄우므로 어느 경우든 막는다
         e.preventDefault()
+        if (handledByPress()) return
         onToggleSelect(card)
       }}
       aria-label={card.title || card.memo || '포토카드'}
