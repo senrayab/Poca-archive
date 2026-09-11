@@ -7,6 +7,7 @@ import { CameraIcon, CloseIcon, ImageIcon, SearchIcon } from '@/components/Icons
 import { useToast } from '@/components/Toast'
 import type { Card } from '@/db/types'
 import { useCards } from '@/hooks/useData'
+import { useScrollMemory } from '@/hooks/useScrollMemory'
 import { backfillPrints, findLike, fingerprintOf } from '@/lib/duplicates'
 import { useLayout } from '@/skins'
 
@@ -77,6 +78,9 @@ export function SearchPage() {
   }
 
   const asking = Boolean(query) || byImage !== null
+
+  /* 찾아 놓은 것을 하나 열어보고 돌아와도 보던 자리 그대로다 */
+  useScrollMemory('search', asking && list.length > 0)
 
   return (
     <>

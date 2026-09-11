@@ -504,18 +504,23 @@ a { color: inherit; }
  * 분홍·파랑이 어린다. 길찾기에만 그 재료를 쓰고 멤버 줄은 여느 홈통으로
  * 두면, 한 화면에 다른 물건 둘이 놓인 것처럼 보인다.
  */
+/*
+ * 재료는 길찾기와 같되, 생김새는 반대다.
+ *
+ * 처음에 길찾기의 값을 그대로 옮겼더니 같은 물건이 위아래로 하나씩 놓인
+ * 꼴이 됐다. 재료가 같으면 그 다음은 '떠 있느냐 파여 있느냐'로 갈려야 한다.
+ *
+ * 길찾기는 떠 있다 — 아래로 그림자가 지고 윗 가장자리에 빛이 어린다.
+ * 이 줄은 파여 있다 — 안쪽으로 그늘이 지고 바깥 그림자가 없다. 이름들이
+ * 담겨 있는 홈이지 떠 있는 바가 아니다.
+ */
 .tabs {
   display: flex;
   padding: 5px;
   border-radius: var(--pill);
-  background: var(--milk);
-  backdrop-filter: var(--bar-blur);
+  background: var(--bg-elev-2);
   border: none;
-  box-shadow:
-    0 10px 22px var(--milk-cast),
-    0 -2px 12px rgba(255, 164, 200, .34),
-    0 -3px 18px rgba(168, 196, 255, .28),
-    inset 0 1px 0 var(--milk-lip);
+  box-shadow: inset 0 1px 3px var(--milk-cast), inset 0 -1px 0 var(--milk-lip);
   overflow-x: auto;
   scrollbar-width: none;
   /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
@@ -2021,7 +2026,7 @@ a { color: inherit; }
 }
 .detail__title {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.32;

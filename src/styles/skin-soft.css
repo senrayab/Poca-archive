@@ -282,11 +282,16 @@
   transition: transform .15s var(--ease), background .15s, color .15s;
 }
 .softchip:active { transform: scale(.94); }
+/*
+ * 고른 이름은 옆의 '전체 선택'과 같은 결로 솟는다 — 윗날에 빛이 얹히고
+ * 아래로 그림자가 두 겹 진다. 색만 뒤집혔을 뿐 같은 물건이라, 한 화면에
+ * 다른 만듦새가 둘 생기지 않는다.
+ */
 .softchip[aria-selected='true'] {
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 700;
-  box-shadow: var(--lift-1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), var(--lift-1);
 }
 /* 더하는 것은 이름이 아니다 — 동그란 빈 판으로 성격을 가른다 */
 .softchip--add {

@@ -6,6 +6,7 @@ import { useToast } from '@/components/Toast'
 import { db, purgeCards } from '@/db/db'
 import type { Card } from '@/db/types'
 import { useCategories, useCards } from '@/hooks/useData'
+import { useScrollMemory } from '@/hooks/useScrollMemory'
 import { SHOW_CATEGORY } from '@/lib/features'
 import { useLayout } from '@/skins'
 import type { ArchiveMode, ArchiveView } from '@/skins/types'
@@ -44,6 +45,9 @@ export function ArchivePage({ mode }: ArchivePageProps) {
   const loading = cards === undefined
   const list = useMemo(() => cards ?? [], [cards])
   const selectMode = selected.size > 0
+
+  /* 자세히보기에 갔다 오면 보던 자리로 돌아온다 */
+  useScrollMemory(`archive:${mode}`, !loading && list.length > 0)
 
   // 목록이 바뀌면(필터 변경, 삭제 등) 열려 있던 카드를 최신 상태로 다시 잡아준다.
   useEffect(() => {
