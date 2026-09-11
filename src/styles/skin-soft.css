@@ -82,13 +82,13 @@
   --rail-fade: var(--bg);
 
   /* 아래 탭바가 먹는 높이. 목록의 마지막 줄이 그 밑에 깔리지 않게 한다. */
-  --nav-h: 72px;
+  --nav-h: 62px;
   /*
    * 아래에 뜨는 것이 비켜야 하는 만큼. 이 스킨만 따로 적는 건 가운데 등록
    * 단추가 바보다 18px 솟아 있어서다 — 바 높이만 재면 그 단추 위로 알림이
    * 걸터앉는다.
    */
-  --nav-clear: calc(var(--nav-h) + var(--safe-bottom) + 40px);
+  --nav-clear: calc(var(--nav-h) + var(--safe-bottom) + 48px);
 
   color-scheme: dark;
 }
@@ -410,14 +410,10 @@
   /* 링크로 그려지는 자리가 섞여 있어 밑줄이 딸려 온다 */
   text-decoration: none;
   justify-items: center;
-  gap: 5px;
   padding: 5px 0;
   color: var(--text-dim);
-  font-size: 10px;
-  font-weight: 600;
   transition: color .15s;
 }
-.softnav__item span { line-height: 1; }
 /*
  * 그림이 앉는 자리.
  *
@@ -440,7 +436,7 @@
   border-radius: 13px;
   transition: background .15s, color .15s;
 }
-.softnav__item.active { color: var(--text); font-weight: 700; }
+.softnav__item.active { color: var(--text); }
 .softnav__item.active .softnav__well {
   background: var(--accent);
   color: var(--accent-ink);
@@ -449,25 +445,27 @@
 /*
  * 가운데 등록 단추.
  *
- * 지금 있는 자리도 채워진 판이라 채워진 것이 줄에 둘이다. 그래도 헷갈리지
- * 않는 건 모양이 다르기 때문이다 — 굴린 네모는 '가는 곳 중 지금 이것'이고,
- * 동그라미는 '가는 일이 아니라 더하는 일'이다. 줄보다 조금 솟은 것도 그
- * 말의 일부다.
+ * 지금 있는 자리와 같은 색으로 채웠더니 둘이 한패로 보였다. 모양만 다르고
+ * 색이 같으면 '가는 곳'과 '더하는 일'이 갈리지 않는다.
  *
- * 번지는 빛(--glow)은 걷었다. 포인트 색이 넓게 번지면 줄에서 가장 큰
- * 목소리가 되는데, 등록은 자주 쓰는 일이지 가장 중요한 일은 아니다.
+ * 그래서 뒤집는다 — 채우는 쪽은 지금 있는 자리가 갖고, 등록은 떠 있는 흰
+ * 판이 된다. 이 스킨이 처음부터 하던 말 그대로다: 회색 바탕 위에 흰 판이
+ * 떠 있고, 검은 것이 지금 이것이다.
+ *
+ * 줄 위로 크게 솟는다. 흰 판이 흰 바 위에 얹히면 경계가 없으므로, 몸의
+ * 절반쯤이 바 밖으로 나와 회색 바탕을 등져야 비로소 한 덩어리로 보인다.
  */
 .softnav__add {
   justify-self: center;
-  width: 52px;
-  height: 52px;
-  margin-top: -14px;
+  width: 54px;
+  height: 54px;
+  margin-top: -26px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: var(--lift-2);
+  background: var(--bg-elev);
+  color: var(--accent);
+  box-shadow: inset 0 1px 0 var(--lift-top), var(--lift-2);
   transition: transform .15s var(--ease);
 }
 .softnav__add:active { transform: scale(.92); }
