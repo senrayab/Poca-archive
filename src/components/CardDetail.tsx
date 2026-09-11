@@ -431,7 +431,7 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
 
           {/* 스테이지는 실물 카드 비율(54:86)로 고정 — 썸네일과 같은 프레임으로 보인다.
               원본이 디코드될 때까지는 썸네일을 흐리게 깔아 빈 화면을 보이지 않게 한다. */}
-          <div className="detail__stage">
+          <div className="detail__stage" data-cut={showFav || undefined}>
             {/* 사진만 이 층에서 잘린다. 하트와 조각은 밖에 있어야 구멍 밖으로 나갈 수 있다. */}
             <div
               className="detail__canvas"
