@@ -223,18 +223,7 @@
  */
 html { -webkit-tap-highlight-color: transparent; }
 
-/*
- * 스크롤은 문서가 아니라 앱 안쪽(.shell)이 한다.
- *
- * 폰 브라우저는 문서를 한참 내리면 제 위로가기 단추를 화면 아래에 띄운다.
- * 그게 하필 길찾기 바 위에 겹쳐 앉는데, 브라우저가 그리는 것이라 CSS로
- * 숨길 수가 없다. 다만 그 단추는 '문서'가 스크롤될 때만 나오므로, 문서를
- * 아예 움직이지 않게 하고 안쪽 상자가 스크롤하게 하면 나올 일이 없다.
- *
- * overflow는 html의 것이 뷰포트로 올라가므로 여기 한 줄이면 된다.
- */
 html, body, #root { height: 100%; }
-html { overflow: hidden; }
 
 body {
   margin: 0;
@@ -262,23 +251,7 @@ a { color: inherit; }
 
 /* ---------- shell ---------- */
 
-.shell {
-  height: 100%;
-  overflow-y: auto;
-  /* 끝까지 당겼을 때 뒤쪽이 딸려 움직이지 않게 */
-  overscroll-behavior-y: none;
-  display: flex;
-  flex-direction: column;
-}
-
-/*
- * 팝업이 떠 있는 동안 뒤쪽은 멈춘다.
- *
- * 문서가 스크롤하던 때는 body를 position: fixed로 띄워 붙잡아둬야 했다.
- * 스크롤이 안쪽 상자로 옮겨온 뒤로는 그 상자에 overflow: hidden 한 줄이면
- * 된다 — 문서와 달리 안쪽 상자는 멈춰도 있던 자리를 그대로 기억한다.
- */
-body[data-locked] .shell { overflow: hidden; }
+.shell { min-height: 100%; display: flex; flex-direction: column; }
 
 /* 헤더·탭은 경계선 대신 프로스티드 유리로 띄운다 */
 .header {
