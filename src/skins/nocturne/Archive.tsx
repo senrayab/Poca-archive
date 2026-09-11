@@ -119,12 +119,42 @@ export function Archive(view: ArchiveView) {
         </div>
       )}
 
+      {/*
+        멤버는 위, 길찾기는 아래로 갈라 둔다. 위는 무엇을 볼지 고르는
+        자리, 아래는 어디로 갈지 고르는 자리다. 둘을 한쪽에 몰면 그쪽이
+        답답해지고, 가운데에 남는 사진 자리가 그만큼 줄어든다.
+      */}
+      <div className="noctmembers" role="tablist" aria-label="멤버">
+        <button
+          className="noctpill"
+          role="tab"
+          aria-selected={memberId === null}
+          onClick={() => onSelectMember(null)}
+        >
+          전체
+        </button>
+        {members.map((m) => (
+          <button
+            key={m.id}
+            className="noctpill"
+            role="tab"
+            aria-selected={memberId === m.id}
+            onClick={() => onSelectMember(memberId === m.id ? null : m.id)}
+          >
+            {m.name}
+          </button>
+        ))}
+        <button className="noctpill noctpill--add" onClick={onAddMember} aria-label="멤버 추가">
+          <PlusIcon size={15} />
+        </button>
+      </div>
+
       {loading ? null : cards.length === 0 ? (
         empty
       ) : (
         <>
           {/*
-            넉 장씩. 액자도 그림자도 없이 사진끼리 바짝 붙인다 — 어두운
+            석 장씩. 액자도 그림자도 없이 사진끼리 바짝 붙인다 — 어두운
             바탕에서는 사진이 저마다 빛나므로 사이를 벌리지 않아도 서로
             섞이지 않는다. 밝은 스킨에서 흰 테가 하던 일을 어둠이 한다.
           */}
@@ -154,34 +184,6 @@ export function Archive(view: ArchiveView) {
         </>
       )}
 
-      {/*
-        멤버는 아래에 둔다. 오른쪽 기둥이 옆을 먹었으니 위까지 쓰면 사진이
-        사방으로 갇힌다. 아래라면 넘기기도 엄지로 하는 편이 자연스럽다.
-      */}
-      <div className="noctmembers" role="tablist" aria-label="멤버">
-        <button
-          className="noctpill"
-          role="tab"
-          aria-selected={memberId === null}
-          onClick={() => onSelectMember(null)}
-        >
-          전체
-        </button>
-        {members.map((m) => (
-          <button
-            key={m.id}
-            className="noctpill"
-            role="tab"
-            aria-selected={memberId === m.id}
-            onClick={() => onSelectMember(memberId === m.id ? null : m.id)}
-          >
-            {m.name}
-          </button>
-        ))}
-        <button className="noctpill noctpill--add" onClick={onAddMember} aria-label="멤버 추가">
-          <PlusIcon size={15} />
-        </button>
-      </div>
     </div>
   )
 }

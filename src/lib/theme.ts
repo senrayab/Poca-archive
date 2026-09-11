@@ -36,7 +36,7 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   {
     id: 'nocturne',
     name: '녹턴',
-    hint: '보고 있는 카드가 뒤에 흐려져 깔리는 밤, 넉 장 격자와 오른쪽 세로 기둥',
+    hint: '보고 있는 카드가 뒤에 흐려져 깔리는 밤. 늘 어둡게 간다',
   },
   {
     id: 'soft',
