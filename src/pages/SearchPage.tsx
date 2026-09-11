@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/AppShell'
 import { CameraCapture, canUseCamera } from '@/components/CameraCapture'
 import { CardDetail } from '@/components/CardDetail'
@@ -31,10 +31,25 @@ export function SearchPage() {
   const toast = useToast()
   const { Grid, detailAsPage } = useLayout()
 
-  const [query, setQuery] = useState('')
+  /*
+   * 찾던 것은 방문 기록 한 칸마다 적어 둔다.
+   *
+   * 자세히보기를 페이지로 여는 스킨에서는 카드를 여는 순간 이 화면이 내려간다.
+   * 찾던 말을 화면 안에만 들고 있으면 돌아왔을 때 빈 칸이 되고, 결과가 없으니
+   * 보던 자리로 돌아갈 곳도 없다. 기록 칸에 붙여 두면 뒤로 와서 닿는 칸에
+   * 그대로 남아 있고, 아래 바를 눌러 새로 들어오면 새 칸이라 빈 채로 시작한다.
+   */
+  const visit = useLocation().key
+  const [query, setQuery] = useState(() => asked.get(visit)?.query ?? '')
   const [openCard, setOpenCard] = useState<Card | null>(null)
   /* 사진으로 찾은 결과. 지문이 닮은 카드의 id만 가까운 순으로 담는다. */
-  const [byImage, setByImage] = useState<string[] | null>(null)
+  const [byImage, setByImage] = useState(() => asked.get(visit)?.byImage ?? null)
+  /* 돌아왔을 때 자판이 올라와 결과를 덮지 않게, 찾던 말이 있으면 칸을 잡지 않는다 */
+  const [returning] = useState(() => Boolean(asked.get(visit)?.query))
+
+  useEffect(() => {
+    asked.set(visit, { query, byImage })
+  }, [visit, query, byImage])
   const [looking, setLooking] = useState(false)
   const [shooting, setShooting] = useState(false)
   const [camera] = useState(canUseCamera)
@@ -100,7 +115,7 @@ export function SearchPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="제목 · 메모에서 검색"
-              autoFocus
+              autoFocus={!returning}
               // 찾는 칸에서 자판의 '완료'는 닫는 것이 아니라 자판만 내리는 일이다
               enterKeyHint="search"
             />
@@ -212,3 +227,13 @@ export function SearchPage() {
  */
 const EMPTY: Set<string> = new Set()
 const noop = () => {}
+
+/*
+ * 방문 기록 한 칸마다 찾던 것.
+ *
+ * 기록 자체(history.state)에 쓰지 않는 건 사파리 때문이다. 한 글자 칠
+ * 때마다 기록을 고쳐 쓰면 30초에 100번이라는 한도에 걸린다 — 한글은 자모
+ * 하나하나가 입력이라 금방이다. 보던 자리처럼 앱이 살아 있는 동안만 남으면
+ * 된다.
+ */
+const asked = new Map<string, { query: string; byImage: string[] | null }>()
