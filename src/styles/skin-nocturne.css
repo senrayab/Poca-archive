@@ -228,11 +228,16 @@
  * 저마다 빛나므로 사이를 벌리지 않아도 서로 섞이지 않는다 — 밝은 스킨에서
  * 흰 테가 하던 일을 여기서는 어둠이 한다.
  */
+/*
+ * 양옆은 아래 바보다 한 뼘 안쪽이다. 둘이 같은 폭이면 바가 목록 위에
+ * 덮인 한 겹으로만 보이는데, 목록이 조금 들어가 있으면 바가 양옆으로
+ * 삐져나와 넓게 받치는 것으로 읽힌다. 바로 위 안내 줄도 같이 들인다.
+ */
 .noctgrid {
   display: grid;
   grid-template-columns: repeat(var(--cols), 1fr);
   gap: 6px;
-  padding: 14px 16px 0;
+  padding: 14px 24px 0;
 }
 
 .noctshot {
@@ -297,7 +302,7 @@
   align-items: center;
   gap: 10px;
   margin: 0;
-  padding: 14px 16px 0;
+  padding: 14px 24px 0;
   font-size: 11px;
   color: var(--text-dim);
 }
