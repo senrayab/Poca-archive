@@ -234,7 +234,16 @@
   display: flex;
   /* 이름들이 한 줄로 읽히게 바짝 붙인다 — 알약이 이미 서로를 가른다 */
   gap: 6px;
-  padding: 14px 20px 0;
+  /*
+   * 발치의 14px은 알약이 드리우는 그림자의 자리다.
+   *
+   * 가로로 굴러가게 하면 세로도 함께 잘린다(브라우저가 한 축만 따로
+   * 굴릴 수 없다). 그래서 상자 안에 그림자만큼 미리 비워두지 않으면
+   * 알약의 아랫부분이 잘린 것처럼 보인다. 비운 만큼 다시 끌어올려
+   * 아래 격자와의 사이는 그대로 둔다.
+   */
+  padding: 14px 20px 14px;
+  margin-bottom: -14px;
   overflow-x: auto;
   scrollbar-width: none;
   /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
@@ -393,24 +402,34 @@
   /* 링크로 그려지는 자리가 섞여 있어 밑줄이 딸려 온다 */
   text-decoration: none;
   justify-items: center;
-  gap: 3px;
-  padding: 8px 0;
-  /*
-   * 담는 것과 같은 알약이다. 안에 네모가 들어앉으면 바의 둥근 끝과 어긋나
-   * 둘이 다른 물건으로 보인다 — 눌려 들어가는 자리는 판이 파인 자국이므로
-   * 판의 생김새를 따라야 한다.
-   */
-  border-radius: var(--pill);
+  gap: 4px;
+  padding: 6px 0;
   color: var(--text-dim);
   font-size: 10px;
   font-weight: 600;
   transition: color .15s;
 }
 .softnav__item span { line-height: 1; }
-/* 지금 있는 자리만 판 안으로 눌러 앉는다 — 떠 있는 것들 사이에서 하나만 눌린다 */
-.softnav__item.active {
-  color: var(--text);
-  font-weight: 800;
+/*
+ * 그림이 앉는 자리. 여기만 판 안으로 눌려 들어간다.
+ *
+ * 칸 전체를 눌리게 해봤더니 알약 바 안에 또 알약이 들어앉아, 담는 것과
+ * 담기는 것이 같은 모양으로 겹쳐 보였다. 파인 자국은 눌린 만큼만 파여야
+ * 한다 — 손가락 끝으로 누른 자국은 동그랗지 칸 모양이 아니다.
+ *
+ * 이름은 자국 밖에 남는다. 안에 넣으려면 자국이 이름만큼 길어져야 하고,
+ * 그러면 다시 알약이 된다.
+ */
+.softnav__well {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: background .15s, box-shadow .15s;
+}
+.softnav__item.active { color: var(--text); font-weight: 800; }
+.softnav__item.active .softnav__well {
   background: var(--bg-elev-2);
   box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
 }
