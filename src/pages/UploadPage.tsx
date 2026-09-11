@@ -283,7 +283,7 @@ export function UploadPage() {
 
   return (
     <>
-      <Header title="포토카드 등록" back />
+      <Header title="포토카드 등록" />
 
       <div className="content">
         <div className="page">
@@ -346,7 +346,9 @@ export function UploadPage() {
           >
             <ImageIcon size={30} />
             <strong>사진을 끌어다 놓거나 눌러서 선택</strong>
-            여러 장을 한 번에 올릴 수 있고, 다른 탭에서 이미지를 끌어와도 됩니다
+            여러 장을 한 번에 올릴 수 있고,
+            <br />
+            다른 탭에서 이미지를 끌어와도 됩니다
             <br />
             {canEncodeWebp()
               ? '업로드하면 자동으로 WebP로 변환됩니다'
