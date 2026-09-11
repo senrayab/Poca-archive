@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 export type ThemeMode = 'system' | 'light' | 'dark'
-export type SkinId = 'pastel' | 'mono' | 'aurora' | 'brick' | 'soft'
+export type SkinId = 'pastel' | 'mono' | 'aurora' | 'brick' | 'soft' | 'nocturne'
 export type FavCut = 'notch' | 'disc'
 
 const THEME_KEY = 'poca:theme'
@@ -32,6 +32,11 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
     id: 'aurora',
     name: '오로라',
     hint: '라벤더에서 분홍으로 갈리는 유리빛 배경, 방울처럼 떠 있는 탭',
+  },
+  {
+    id: 'nocturne',
+    name: '녹턴',
+    hint: '보고 있는 카드가 뒤에 흐려져 깔리는 밤, 넉 장 격자와 오른쪽 세로 기둥',
   },
   {
     id: 'soft',
