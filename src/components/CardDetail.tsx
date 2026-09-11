@@ -464,6 +464,14 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
             </div>
 
             {/*
+              카드가 드리우는 그림자. 스테이지에 box-shadow로 걸면 실루엣이
+              늘 온전한 네모라, 오른쪽 위를 베어낸 자리 바로 밖까지 그림자가
+              모서리를 그대로 그린다. 그래서 뚫린 자리가 뚫린 것으로 보이지
+              않는다 — 그림자만 따로 떼어 그 자리를 도려낸다.
+            */}
+            <div className="detail__shade" aria-hidden="true" />
+
+            {/*
               수정 중에는 사진 자체가 '사진 바꾸기' 버튼이 된다.
               누를 수 있다는 걸 알 수 있게 오른쪽 아래에 작은 배지를 띄운다 —
               배지만 누르게 하면 손가락으로는 너무 작아, 판정은 사진 전체로 둔다.

@@ -902,7 +902,6 @@ a { color: inherit; }
   max-width: 100%;
   border-radius: var(--stage-radius);
   transition: height .3s var(--ease);
-  box-shadow: var(--shadow-xl);
 
   /*
    * 오른쪽 위를 베어낸 자리의 중심 — 하트가 여기에 앉는다.
@@ -911,6 +910,8 @@ a { color: inherit; }
   --fav-x: 22px;
   --fav-y: 22px;
   --fav-size: 42px;
+  /* 파낸 원의 반지름. 그림자에서도 같은 자리를 도려내야 해서 따로 둔다. */
+  --fav-cut-r: 30px;
   --fav-shape: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><path d="M0 0H14.733A14 14 0 0 1 28.5 16.545A30 30 0 0 0 63.455 51.5A14 14 0 0 1 80 65.267V80H0Z" fill="%23fff"/><circle cx="58" cy="22" r="21" fill="%23fff"/></svg>');
 }
 /*
@@ -920,6 +921,7 @@ a { color: inherit; }
  */
 :root[data-favcut='notch'] .detail__stage {
   --fav-size: 38px;
+  --fav-cut-r: 27px;
   --fav-shape: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><path d="M0 0H17.788A14 14 0 0 1 31.519 16.732A27 27 0 0 0 63.268 48.481A14 14 0 0 1 80 62.212V80H0Z" fill="%23fff"/></svg>');
 }
 /*
@@ -969,6 +971,50 @@ a { color: inherit; }
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
 }
+/*
+ * 카드가 드리우는 그림자.
+ *
+ * 스테이지에 box-shadow로 걸면 실루엣이 늘 온전한 네모다. 오른쪽 위를
+ * 베어내도 그림자는 모서리를 그대로 그리므로, 뚫린 자리 바로 밖에 그림자가
+ * 붙어 서서 그 자리가 뚫린 것으로 보이지 않는다. 그래서 그림자만 따로 떼어
+ * 그 자리를 도려낸다.
+ *
+ * 마스크는 제 상자 밖을 잘라낸다. 그림자는 상자 밖으로 번지는 것이라
+ * 상자를 그림자가 닿는 만큼 넓혀두고(--shade-room), 그림자는 안쪽
+ * ::before가 카드 크기로 그린다.
+ *
+ * 사진 뒤가 아니라 위에 놓여 있다. 상자 안쪽에는 아무것도 그리지 않으니
+ * (테두리 밖 그림자뿐이다) 가릴 것이 없고, 대신 카드 다음에 놓여야
+ * data-cut을 형제 선택자로 집을 수 있다.
+ */
+.detail__shade {
+  --shade-room: 140px;
+  position: absolute;
+  inset: calc(-1 * var(--shade-room));
+  pointer-events: none;
+}
+.detail__shade::before {
+  content: '';
+  position: absolute;
+  inset: var(--shade-room);
+  border-radius: var(--stage-radius);
+  box-shadow: var(--shadow-xl);
+}
+/*
+ * 하트가 앉을 자리를 그림자에서 도려낸다. 파낸 반지름보다 조금 넓게 잡고
+ * 가장자리를 흐리게 풀어, 부드러운 그림자에 단단한 원호가 찍히지 않게 한다.
+ */
+.detail__canvas[data-cut] + .detail__shade {
+  -webkit-mask-image: radial-gradient(
+    circle calc(var(--fav-cut-r) + 14px)
+      at right calc(var(--shade-room) + var(--fav-x)) top calc(var(--shade-room) + var(--fav-y)),
+    transparent 0 62%, #000 100%);
+  mask-image: radial-gradient(
+    circle calc(var(--fav-cut-r) + 14px)
+      at right calc(var(--shade-room) + var(--fav-x)) top calc(var(--shade-room) + var(--fav-y)),
+    transparent 0 62%, #000 100%);
+}
+
 .detail__img {
   position: absolute;
   inset: 0;
@@ -2205,6 +2251,9 @@ a { color: inherit; }
   box-shadow: var(--shadow-sm);
   transition: border-color .15s, background .15s;
   width: 100%;
+  /* 안내는 주소로 가져오는 설명과 같은 크기로 — 굵은 첫 줄만 조금 크다 */
+  font-size: 13px;
+  line-height: 1.65;
 }
 .dropzone[data-over='true'] { border-color: var(--accent); background: var(--accent-soft); }
 .dropzone strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 14px; }
