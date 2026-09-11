@@ -13,7 +13,7 @@ import type { HeaderView } from '../types'
 export function Header({ title, actions }: HeaderView) {
   return (
     <header className="nocthead">
-      <span className="noctpill nocthead__name">{title}</span>
+      <span className="nocthead__name">{title}</span>
       {actions && <div className="nocthead__actions">{actions}</div>}
     </header>
   )

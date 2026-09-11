@@ -51,8 +51,7 @@
   --radius-sm: 18px;
   --radius-xs: 14px;
   --panel-radius: 22px;
-  /* 석 장씩이라 카드가 제법 크다 — 그만큼 굴린다 */
-  --thumb-radius: 13px;
+  --thumb-radius: 11px;
   --stage-radius: 20px;
 
   --rail-bg: transparent;
@@ -60,6 +59,15 @@
 
   /* 아래 떠 있는 바가 먹는 높이 */
   --nav-h: 62px;
+  /*
+   * 한 줄에 몇 장.
+   *
+   * 넉 장과 석 장을 둘 다 써보고 넉 장으로 잡았다. 사진이 상자를 꽉
+   * 채우게 된 뒤로는 촘촘해도 어수선하지 않고, 오히려 한 화면에 더 많이
+   * 담기는 쪽이 '사진첩'에 가깝다. 세 장으로 되돌리려면 이 숫자 하나만
+   * 바꾸면 사이와 둥글기는 그대로 어울린다.
+   */
+  --cols: 4;
   /* 뒤에 깔린 사진을 덮는 막 */
   --veil: rgba(7, 7, 10, .78);
   --veil-top: rgba(7, 7, 10, .55);
@@ -160,7 +168,7 @@
 /* ---------- 머리 ---------- */
 
 /*
- * 가로지르는 바가 아니라 알약 하나다. 줄을 두면 그 아래가 '내용 칸'으로
+ * 가로지르는 바가 아니라 글자 한 줄이다. 줄을 두면 그 아래가 '내용 칸'으로
  * 갈리는데, 이 스킨은 어두운 한 장을 그대로 두고 그 위에 뜬 것만 얹는다.
  */
 .nocthead {
@@ -169,8 +177,25 @@
   gap: 8px;
   padding: calc(12px + var(--safe-top)) 16px 0;
 }
-.nocthead__name b {
+/*
+ * 이름은 글자로만 둔다.
+ *
+ * 처음에는 알약에 담았는데, 그러면 옆의 멤버 알약과 똑같이 생겨 눌리는
+ * 것처럼 보인다. 누를 수 없는 것에 단추 옷을 입히면 한 번은 눌러보게
+ * 되고, 아무 일도 나지 않는다.
+ *
+ * 뒤에 사진이 깔려 있으므로 그림자를 한 겹 깔아 밝은 사진 위에서도
+ * 글자가 뜨게 한다 — 판을 두르는 것보다 조용하다.
+ */
+.nocthead__name {
+  font-size: 17px;
   font-weight: 700;
+  letter-spacing: -.01em;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, .55);
+}
+.nocthead__name b {
+  margin-left: 7px;
+  font-weight: 600;
   color: var(--text-dim);
   font-variant-numeric: tabular-nums;
 }
@@ -178,7 +203,7 @@
 
 .noctfind { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px 0; }
 
-/* ---------- 석 장씩 ---------- */
+/* ---------- 격자 ---------- */
 
 /*
  * 액자도 그림자도 없이 사진끼리 바짝 붙인다. 어두운 바탕에서는 사진이
@@ -187,8 +212,8 @@
  */
 .noctgrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 6px;
   padding: 14px 16px 0;
 }
 
