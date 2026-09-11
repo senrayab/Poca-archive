@@ -421,7 +421,7 @@ a { color: inherit; }
  * 흐린 바 하나로 서고, 이 줄은 목록과 함께 올라간다. 깔던 띠도, 띠를 위해
  * 머리의 배경을 걷던 것도 함께 걷는다.
  */
-.filters { padding: 6px 0 14px; }
+.filters { padding: 16px 0 16px; }
 
 /*
  * 알약 하나 안에 칩이 담긴 레일. 그림자는 레일이 지고 칩은 평평하게 둔다.
@@ -436,8 +436,9 @@ a { color: inherit; }
 
 .tabs-fade {
   position: absolute;
-  top: 1px;
-  bottom: 1px;
+  /* 알약이 놓인 띠만 덮는다 — 위아래로 비워둔 그림자 자리까지 덮을 일은 없다 */
+  top: 8px;
+  bottom: 8px;
   width: 36px;
   pointer-events: none;
   opacity: 0;
@@ -487,11 +488,20 @@ a { color: inherit; }
  */
 .tabs {
   display: flex;
-  padding: 0;
   border-radius: var(--pill);
   background: none;
   border: none;
   box-shadow: none;
+  /*
+   * 위아래 8px은 알약이 드리우는 그림자의 자리다.
+   *
+   * 가로로 굴러가게 하면 세로도 함께 잘린다 — 브라우저가 한 축만 따로
+   * 굴릴 수 없기 때문이다. 상자 안에 그림자만큼 미리 비워두지 않으면
+   * 알약의 아랫부분이 잘린 것처럼 보인다. 비운 만큼 되끌어 위아래
+   * 사이는 그대로 둔다.
+   */
+  padding: 8px 0;
+  margin-block: -8px;
   overflow-x: auto;
   scrollbar-width: none;
   /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
