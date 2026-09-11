@@ -14,7 +14,6 @@ import {
   UsersIcon,
 } from '@/components/Icons'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
-import { useAppName } from '@/lib/appName'
 import { SHOW_CATEGORY } from '@/lib/features'
 
 /**
@@ -34,7 +33,6 @@ import { SHOW_CATEGORY } from '@/lib/features'
 export function MorePage() {
   const { total } = useCountsByMember()
   const trash = useTrashCount()
-  const appName = useAppName()
 
   const row = (to: string, icon: ReactElement, label: string, badge?: number) => (
     <Link className="more__row" to={to}>
@@ -56,7 +54,6 @@ export function MorePage() {
             <strong className="brand">
               <span className="brand__thin">varies</span> <span className="brand__bold">gem.</span>
             </strong>
-            <span>{appName}</span>
           </div>
 
           <p className="more__group">보관함</p>
