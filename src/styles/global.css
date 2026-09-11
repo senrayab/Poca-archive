@@ -1835,6 +1835,20 @@ a { color: inherit; }
   z-index: 2;
 }
 
+/*
+ * 떠오르는 애니메이션은 페이지에서 끈다.
+ *
+ * 두 가지 이유가 겹친다. 하나는 뜻이다 — 그 움직임은 '위에 얹혔다'는
+ * 말이라 제 주소를 가진 화면에는 맞지 않는다.
+ *
+ * 다른 하나가 더 급했다. rise는 transform을 움직이고 fill-mode가 both라
+ * 끝난 뒤에도 그 값이 남는다. transform이 걸린 요소는 그 안의 absolute
+ * 자식에게 기준점이 되므로, 위에서 화면 맨 위에 붙박으려던 단추가
+ * 사진 덩어리의 왼쪽 위에 가서 붙었다. 검색 시트 안에서 카메라가
+ * 납작해졌던 것과 같은 뿌리다.
+ */
+.detail-page .detail { animation: none; }
+
 /* 페이지에서는 높이를 제한할 딤이 없으므로 화면 높이에서 여백만 뺀다 */
 .detail-page .detail { max-height: calc(100svh - var(--safe-top) - 96px); }
 
