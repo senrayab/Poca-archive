@@ -63,7 +63,7 @@ export function Archive(view: ArchiveView) {
           {!loading && cards.length > 0 && <b>{cards.length}</b>}
         </span>
 
-        <div className="nocthead__actions">
+        <div className="nocthead__actions" data-picking={selectMode || undefined}>
           {selectMode ? (
             <>
               {mode === 'trash' ? (

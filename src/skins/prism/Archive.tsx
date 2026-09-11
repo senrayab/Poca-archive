@@ -57,7 +57,7 @@ export function Archive(view: ArchiveView) {
       <header className="przhead">
         {/* 할 일이 있을 때만 위층이 선다. 평소에는 이름이 맨 위에 혼자다. */}
         {(selectMode || (mode === 'trash' && cards.length > 0)) && (
-          <div className="przhead__actions">
+          <div className="przhead__actions" data-picking={selectMode || undefined}>
             {selectMode ? (
               <>
                 <button className="przbtn" onClick={onClearSelection}>
