@@ -182,7 +182,13 @@ export function Archive(view: ArchiveView) {
               <Plate
                 key={card.id}
                 card={card}
-                no={index + 1}
+                /*
+                 * 먼저 들인 것이 01이다. 목록은 새것부터 내려오므로 위가
+                 * 가장 큰 수가 된다. 위에서부터 01을 매기면 한 장 들일
+                 * 때마다 모든 번호가 한 칸씩 밀려, 어제 본 번호가 오늘은
+                 * 다른 카드의 것이 된다.
+                 */
+                no={cards.length - index}
                 showFav={mode !== 'favorites'}
                 selectable={selectMode}
                 selected={selected.has(card.id)}
@@ -215,7 +221,7 @@ const Plate = memo(function Plate({
   handledByPress,
 }: {
   card: Card
-  /** 목록에서 몇 번째인지 */
+  /** 먼저 들인 것부터 센 번호 */
   no: number
   showFav: boolean
   selectable: boolean
