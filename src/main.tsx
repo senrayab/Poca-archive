@@ -10,6 +10,7 @@ import './styles/global.css'
 import './styles/skin-soft.css'
 import './styles/skin-nocturne.css'
 import './styles/skin-prism.css'
+import './styles/skin-atelier.css'
 
 initTheme()
 initAppName()
