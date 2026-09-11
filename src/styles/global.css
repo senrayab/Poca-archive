@@ -235,7 +235,7 @@ body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
   transition: background-color .2s ease, color .2s ease;
 }
 
@@ -270,8 +270,15 @@ a { color: inherit; }
 /* 아래 층이 배경을 통째로 그리는 화면에서는 헤더가 배경을 갖지 않는다 */
 .header[data-bare] { background: none; backdrop-filter: none; }
 
-/* 뒤로 갈 일이 없는 화면에서 왼쪽 자리만 잡아둔다 — 아이콘 단추와 같은 크기 */
-.header__gap { width: 38px; flex: 0 0 auto; }
+/* 지금 화면의 그림표. 누를 것이 아니므로 단추의 바탕과 눌림은 없다. */
+.header__icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
 
 .header__title {
   flex: 1;
@@ -729,8 +736,7 @@ a { color: inherit; }
   }
 }
 
-.pstnav__bar,
-.pstnav__add {
+.pstnav__bar {
   background: var(--milk);
   backdrop-filter: var(--bar-blur);
   box-shadow:
@@ -741,9 +747,7 @@ a { color: inherit; }
     0 -4px 24px rgba(168, 196, 255, .34),
     /* 위쪽 한 줄 흰 테 — 솟아 있는 면의 윗날이다 */
     inset 0 1px 0 var(--milk-lip);
-}
 
-.pstnav__bar {
   display: flex;
   align-items: center;
   gap: 2px;
@@ -766,13 +770,24 @@ a { color: inherit; }
   background: var(--accent-soft);
 }
 
+/*
+ * 등록만 젖빛이 아니라 포인트 색으로 찬다. 알약과 같은 흰 면으로 두면
+ * 옆에 하나 더 붙은 칸으로 보여서, 더하는 일이라는 게 드러나지 않는다.
+ */
 .pstnav__add {
   width: 56px;
   height: 56px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  /* 그림자와 어리는 빛은 알약과 같다 — 바탕만 다르다 */
+  box-shadow:
+    0 14px 30px var(--milk-cast),
+    0 -3px 16px rgba(255, 164, 200, .42),
+    0 -4px 24px rgba(168, 196, 255, .34),
+    inset 0 1px 0 rgba(255, 255, 255, .28);
   transition: transform .15s var(--ease);
 }
 .pstnav__add:active { transform: scale(.92); }
@@ -904,18 +919,8 @@ a { color: inherit; }
   border-radius: var(--stage-radius);
   transition: height .3s var(--ease);
 
-  /*
-   * 그림자가 번질 자리. 이 값이 그림자 층(.detail__shade)의 상자 크기이면서
-   * 여기서 잘라낼 자리이기도 하다.
-   *
-   * 자르지 않으면 그 상자가 화면보다 넓어져 페이지가 옆으로 끌린다. 폰에서
-   * 옆으로 당기면 화면이 통째로 밀려났다. clip은 hidden과 달리 스크롤 상자를
-   * 만들지 않고, clip-margin만큼은 남겨두므로 그림자와 터지는 조각(최대
-   * 34px)은 그대로 나간다.
-   */
+  /* 그림자 층(.detail__shade)이 사방으로 넓힐 자리. 그림자가 닿는 만큼이다. */
   --shade-room: 110px;
-  overflow: clip;
-  overflow-clip-margin: var(--shade-room);
 
   /*
    * 오른쪽 위를 베어낸 자리의 중심 — 하트가 여기에 앉는다.
@@ -1014,18 +1019,26 @@ a { color: inherit; }
   box-shadow: var(--shadow-xl);
 }
 /*
- * 하트가 앉을 자리를 그림자에서 도려낸다. 파낸 반지름보다 조금 넓게 잡고
- * 가장자리를 흐리게 풀어, 부드러운 그림자에 단단한 원호가 찍히지 않게 한다.
+ * 베어낸 모서리를 그림자에서도 걷어낸다.
+ *
+ * 처음에는 하트 한가운데를 중심으로 동그랗게 지웠다. 그런데 그 원의 한쪽이
+ * 카드 밖으로 나와 있어, 모서리 곁 그림자에 동그란 자국이 떠 있는 것처럼
+ * 보였다 — 빛이 동그랗게 번진 것 같다는 말이 그것이다.
+ *
+ * 중심을 카드의 오른쪽 위 꼭짓점으로 옮긴다. 그러면 지워지는 것이 떠 있는
+ * 원이 아니라 꼭짓점에 붙은 부채꼴이 되어, 모서리가 잘려 나간 것으로 읽힌다.
+ * 가운데는 완전히 비우고 바깥으로 길게 풀어, 그림자가 모서리 쪽으로 갈수록
+ * 옅어지다 사라지게 한다.
  */
 .detail__canvas[data-cut] + .detail__shade {
   -webkit-mask-image: radial-gradient(
-    circle calc(var(--fav-cut-r) + 14px)
-      at right calc(var(--shade-room) + var(--fav-x)) top calc(var(--shade-room) + var(--fav-y)),
-    transparent 0 62%, #000 100%);
+    circle calc(var(--fav-cut-r) + 26px)
+      at right var(--shade-room) top var(--shade-room),
+    transparent 0 38%, #000 100%);
   mask-image: radial-gradient(
-    circle calc(var(--fav-cut-r) + 14px)
-      at right calc(var(--shade-room) + var(--fav-x)) top calc(var(--shade-room) + var(--fav-y)),
-    transparent 0 62%, #000 100%);
+    circle calc(var(--fav-cut-r) + 26px)
+      at right var(--shade-room) top var(--shade-room),
+    transparent 0 38%, #000 100%);
 }
 
 .detail__img {
@@ -1905,6 +1918,17 @@ a { color: inherit; }
   justify-content: center;
   /* 위쪽은 돌아가는 단추가 앉을 자리만큼 미리 비워둔다 */
   padding: calc(var(--safe-top) + 64px) 16px calc(16px + var(--safe-bottom));
+
+  /*
+   * 카드 그림자는 상자 밖으로 번지는 것이라, 그림자를 그리는 층이 화면보다
+   * 넓다. 그대로 두면 페이지에 가로 스크롤이 생겨 옆으로 쓸면 화면이 통째로
+   * 밀려난다. 여기가 화면 폭과 같으므로 여기서 자르면 잘리는 자리가 곧
+   * 화면 끝이고, 보이던 것은 하나도 줄지 않는다.
+   *
+   * clip은 hidden과 달리 스크롤 상자를 만들지 않는다 — 만들면 세로 스크롤이
+   * 이 안으로 들어와 버린다.
+   */
+  overflow: clip;
 }
 
 /*
@@ -1939,8 +1963,16 @@ a { color: inherit; }
  */
 .detail-page .detail { animation: none; }
 
-/* 페이지에서는 높이를 제한할 딤이 없으므로 화면 높이에서 여백만 뺀다 */
-.detail-page .detail { max-height: calc(100svh - var(--safe-top) - 96px); }
+/*
+ * 페이지에서는 높이를 제한할 딤이 없으므로 화면 높이에서 여백만 뺀다.
+ *
+ * 위아래 여백을 정확히 빼는 게 중요하다. 페이지가 넘치는 것을 잘라내기
+ * 때문에(위의 overflow: clip) 여기서 한 뼘이라도 크게 잡으면 넘친 만큼이
+ * 잘려 손에 닿지 않는다.
+ */
+.detail-page .detail {
+  max-height: calc(100svh - var(--safe-top) - var(--safe-bottom) - 80px);
+}
 
 .detail {
   /* 사진 높이에서 실물 비율로 폭이 정해진다. 레일이 이 폭을 그대로 쓴다. */
