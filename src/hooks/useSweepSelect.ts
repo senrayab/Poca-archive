@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Card } from '@/db/types'
 
@@ -22,8 +22,8 @@ const EDGE = 88
 const MAX_SPEED = 20
 
 export interface SweepSelect {
-  /** 격자를 감싸는 요소에 건다 */
-  ref: React.RefObject<HTMLDivElement>
+  /** 격자를 감싸는 요소에 건다 (함수 ref라 요소가 늦게 생겨도 어긋나지 않는다) */
+  ref: (el: HTMLDivElement | null) => void
   /** 그 요소에 그대로 펼쳐 얹는다 */
   handlers: {
     onPointerDown: (e: ReactPointerEvent<HTMLDivElement>) => void
@@ -46,7 +46,7 @@ export function useSweepSelect({
   selectedIds?: Set<string>
   onSweep?: (next: Set<string>) => void
 }): SweepSelect {
-  const gridRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLDivElement | null>(null)
   const [dragging, setDragging] = useState(false)
 
   /*
@@ -169,14 +169,26 @@ export function useSweepSelect({
    * 쓸고 있는 동안에는 화면이 따라 스크롤되면 안 된다. touch-action만으로는
    * 이미 시작된 손짓을 되돌릴 수 없어, 브라우저에게 직접 하지 말라고 이른다.
    */
-  useEffect(() => {
-    const el = gridRef.current
-    if (!el) return
-    const hold = (e: TouchEvent) => {
-      if (draggingRef.current) e.preventDefault()
-    }
-    el.addEventListener('touchmove', hold, { passive: false })
-    return () => el.removeEventListener('touchmove', hold)
+  /*
+   * 격자가 나타나는 순간에 붙인다.
+   *
+   * 효과로 한 번만 붙이면 안 된다. 예전에는 이 손짓이 격자 컴포넌트 안에
+   * 있어서 붙는 시점에 격자도 함께 있었는데, 지금은 화면이 이 훅을 부르고
+   * 격자는 카드를 읽어온 뒤에야 생긴다. 그 사이에 효과가 먼저 돌면 붙일
+   * 것이 없어 그냥 지나가고, 다시 돌 일이 없다.
+   *
+   * 그래서 ref 자체를 함수로 둔다. 리액트가 요소를 넘겨줄 때 붙이고
+   * 거둘 때 뗀다 — 언제 생기든 어긋나지 않는다.
+   */
+  const hold = useRef((e: TouchEvent) => {
+    if (draggingRef.current) e.preventDefault()
+  })
+
+  const setGrid = useCallback((el: HTMLDivElement | null) => {
+    const prev = gridRef.current
+    if (prev) prev.removeEventListener('touchmove', hold.current)
+    gridRef.current = el
+    if (el) el.addEventListener('touchmove', hold.current, { passive: false })
   }, [])
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -227,7 +239,7 @@ export function useSweepSelect({
   }
 
   return {
-    ref: gridRef,
+    ref: setGrid,
     handlers: { onPointerDown, onPointerMove, onPointerUp: stop, onPointerCancel: stop },
     dragging,
     handledByPress: () => draggingRef.current,
