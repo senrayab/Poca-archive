@@ -3073,3 +3073,34 @@ a { color: inherit; }
   background:
     linear-gradient(to right, #191510 0 68%, transparent 68% 74%, #191510 74%);
 }
+
+/*
+ * 여백 — 순백. 가운데로 모이고, 아래 알약 옆에 검은 동그라미가 따로 선다.
+ */
+.skin[data-preview='blank'] .skin__shot {
+  --pv-bg: #ffffff;
+  --pv-ink: rgba(21, 22, 26, .20);
+  --pv-cell: rgba(21, 22, 26, .34);
+  --pv-cols: 3;
+}
+.skin[data-preview='blank'] .skin__pvhead {
+  /* 가운데로 모으고 얇게 — 이 스킨은 활자가 가늘고 자간이 넓다 */
+  width: 34%;
+  height: 4px;
+  margin: 2px auto 0;
+}
+.skin[data-preview='blank'] .skin__pvgrid { gap: 6px 5px; margin-top: 11px; }
+.skin[data-preview='blank'] .skin__pvgrid i { border-radius: 1px; }
+.skin[data-preview='blank'] .skin__pvnav {
+  left: 50%;
+  right: auto;
+  width: 50px;
+  height: 12px;
+  transform: translateX(-50%);
+  /* 옅은 알약 하나, 그 오른쪽에 틈을 두고 선 검은 동그라미 하나 */
+  background:
+    linear-gradient(to right,
+      rgba(21, 22, 26, .10) 0 74%,
+      transparent 74% 80%,
+      #15161a 80%);
+}
