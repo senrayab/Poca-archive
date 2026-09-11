@@ -20,26 +20,40 @@ interface ModalProps {
 /*
  * 뒤쪽 목록 스크롤 잠금.
  *
- * 예전에는 body를 position: fixed로 띄우고 top을 현재 위치만큼 끌어올려
- * 붙잡아뒀다. 문서에 overflow: hidden을 주면 스크롤 가능 범위가 0이 되면서
- * 브라우저가 화면을 맨 위로 튕겨 올리기 때문이었다.
- *
- * 스크롤이 문서에서 안쪽 상자(.shell)로 옮겨온 뒤로는 그럴 일이 없다.
- * 안쪽 상자는 멈춰도 있던 자리를 그대로 기억하므로 표시 하나만 세우면
- * 되고, 멈추는 규칙은 CSS(body[data-locked] .shell)가 갖고 있다.
+ * body에 overflow: hidden만 주면 문서의 스크롤 가능 범위가 0이 되면서
+ * 브라우저가 스크롤 위치를 맨 위로 끌어올린다. 그래서 body를 position: fixed로
+ * 띄우고 top을 현재 위치만큼 올려, 보이던 화면을 그대로 붙잡아둔다.
  *
  * 팝업 위에 팝업이 뜨는 경우(상세 → 삭제 확인)가 있어 잠금은 세어서 관리한다.
  */
 let lockCount = 0
+let savedY = 0
+let savedStyle = { position: '', top: '', left: '', right: '' }
 
 function lockScroll() {
   if (lockCount++ > 0) return
-  document.body.dataset.locked = ''
+  savedY = window.scrollY
+  const style = document.body.style
+  savedStyle = {
+    position: style.position,
+    top: style.top,
+    left: style.left,
+    right: style.right,
+  }
+  style.position = 'fixed'
+  style.top = `-${savedY}px`
+  style.left = '0'
+  style.right = '0'
 }
 
 function unlockScroll() {
   if (--lockCount > 0) return
-  delete document.body.dataset.locked
+  const style = document.body.style
+  style.position = savedStyle.position
+  style.top = savedStyle.top
+  style.left = savedStyle.left
+  style.right = savedStyle.right
+  window.scrollTo(0, savedY)
 }
 
 /** 스크림 클릭·ESC로 닫히는 레이어 팝업의 공통 껍데기. */
