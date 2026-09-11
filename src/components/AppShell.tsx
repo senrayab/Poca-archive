@@ -3,8 +3,6 @@ import { Outlet, useLocation } from 'react-router-dom'
 import type { Member } from '@/db/types'
 import { useLayout } from '@/skins'
 import type { HeaderView } from '@/skins/types'
-import { Drawer } from './Drawer'
-import { Fab } from './Fab'
 import { MemberEditor } from './MemberEditor'
 import { ShellContext, type ShellApi } from './shell'
 
@@ -22,17 +20,10 @@ export function Header(view: HeaderView) {
   return <Painted {...view} />
 }
 
-/**
- * 등록 FAB를 띄울 화면. 관리 계열(등록/멤버/통계/설정)에는 띄우지 않는다.
- * 허용 목록으로 둬서 화면을 새로 추가해도 FAB가 딸려 나오지 않게 한다.
- */
-const FAB_ROUTES = new Set(['/', '/favorites', '/trash'])
-
 export function AppShell() {
   const { pathname } = useLocation()
   const { Nav } = useLayout()
   const onCard = pathname.startsWith('/card/')
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [editorMember, setEditorMember] = useState<Member | null>(null)
   const [editorOpen, setEditorOpen] = useState(false)
 
@@ -41,10 +32,7 @@ export function AppShell() {
     setEditorOpen(true)
   }, [])
 
-  const api = useMemo<ShellApi>(
-    () => ({ openDrawer: () => setDrawerOpen(true), openMemberEditor }),
-    [openMemberEditor],
-  )
+  const api = useMemo<ShellApi>(() => ({ openMemberEditor }), [openMemberEditor])
 
   return (
     <ShellContext.Provider value={api}>
@@ -52,22 +40,12 @@ export function AppShell() {
         <Outlet />
       </div>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      {/*
-        길찾기는 스킨이 제 것을 갖고 있으면 그것을 쓴다. 없을 때만 기본
-        차림인 FAB를 띄운다 — 아래 탭바 안에 등록 단추가 있는데 오른쪽
-        아래에도 하나 더 뜨면 어느 쪽이 진짜인지 알 수 없다.
-      */}
       {/*
         자세히보기 페이지에서는 길찾기를 걷는다. 한 장을 크게 보는 자리라
         아래에 바가 걸치면 사진이 그만큼 눌리고, 나가는 길은 왼쪽 위
         닫기가 이미 내주고 있다.
       */}
-      {onCard ? null : Nav ? (
-        <Nav />
-      ) : (
-        FAB_ROUTES.has(pathname) && <Fab onAddMember={() => openMemberEditor()} />
-      )}
+      {onCard ? null : <Nav />}
 
       {editorOpen && (
         <MemberEditor

@@ -41,7 +41,7 @@ export function StatsPage() {
     return (
       <>
         <Header title="통계" />
-        <div className="content content--no-fab" />
+        <div className="content" />
       </>
     )
   }
@@ -104,7 +104,7 @@ export function StatsPage() {
     <>
       <Header title="통계" />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="page">
           <div className="card-panel">
             <StackedBar segments={statusBar} totalLabel="장 거쳐갔어요" />

@@ -174,7 +174,7 @@ export function ManagePage() {
     <>
       <Header title="백업 · 관리" />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="page">
           <h2>
             <BackupIcon size={15} />

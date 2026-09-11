@@ -50,7 +50,7 @@ export function SettingsPage() {
     <>
       <Header title="설정" />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="page">
           <h2>
             <SkinIcon size={15} />
