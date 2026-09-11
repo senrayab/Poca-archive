@@ -383,6 +383,36 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
 
   const body = (
     <>
+      {/*
+        나가는 단추는 카드 판때기 밖에 둔다.
+        안에 두면 판때기의 오른쪽 위에 앉아, 화면을 덮고 열렸다는 것을
+        말해주지 못한다. 덮은 것을 걷는 단추는 덮인 화면의 모서리에 있어야
+        한다. 밖으로 내면 층이 하나 위로 올라가므로, 사진을 옆으로 쓸어
+        넘길 때 손이 걸리지 않게 자리도 위쪽 한 줄로만 잡는다.
+
+        수정 중에는 두지 않는다. 아래에 취소와 저장이 있어 나갈 길이 분명하고,
+        그 둘은 고친 것을 어떻게 할지까지 정해준다.
+      */}
+      {!editing && (
+        /*
+         * 페이지로 열렸을 때는 닫기가 아니라 '뒤로'다.
+         *
+         * 폰의 뒤로가기가 있으니 없어도 되지 않느냐 물으면, 대개는 맞다.
+         * 다만 홈 화면에 얹어 앱처럼 여는 경우 iOS에는 돌아갈 단추도 손짓도
+         * 없다. 이 화면에서는 아래 길찾기까지 걷어두므로, 이것마저 없으면
+         * 나갈 길이 아예 없어진다.
+         *
+         * 그래서 없애는 대신 페이지의 말로 바꾼다 — 오른쪽 위 ×가 아니라
+         * 왼쪽 위 화살표다. ×는 덮인 것을 걷는 표시이고, 화살표는 왔던
+         * 길로 돌아가는 표시다.
+         */
+        <div className="detail__top" data-page={page || undefined}>
+          <button className="detail__close" onClick={requestClose} aria-label={page ? '뒤로' : '닫기'}>
+            {page ? <ChevronLeft size={22} /> : <CloseIcon size={20} />}
+          </button>
+        </div>
+      )}
+
       {/* 수정 중에는 사진을 줄여 폼 자리를 낸다 (높이 전환은 CSS에서) */}
       <div
         className="detail"
@@ -390,31 +420,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/*
-          수정 중에는 닫기를 두지 않는다. 아래에 취소와 저장이 있어 나갈 길이
-          분명하고, 그 둘은 고친 것을 어떻게 할지까지 정해준다. 줄을 통째로
-          걷어내면 좁은 화면에서 폼이 그만큼 넓어진다.
-        */}
-        {!editing && (
-          /*
-           * 페이지로 열렸을 때는 닫기가 아니라 '뒤로'다.
-           *
-           * 폰의 뒤로가기가 있으니 없어도 되지 않느냐 물으면, 대개는
-           * 맞다. 다만 홈 화면에 얹어 앱처럼 여는 경우 iOS에는 돌아갈
-           * 단추도 손짓도 없다. 이 화면에서는 아래 탭바까지 걷어두므로,
-           * 이것마저 없으면 나갈 길이 아예 없어진다.
-           *
-           * 그래서 없애는 대신 페이지의 말로 바꾼다 — 오른쪽 위 ×가 아니라
-           * 왼쪽 위 화살표다. ×는 덮인 것을 걷는 표시이고, 화살표는 왔던
-           * 길로 돌아가는 표시다.
-           */
-          <div className="detail__top" data-page={page || undefined}>
-            <button className="detail__close" onClick={requestClose} aria-label={page ? '뒤로' : '닫기'}>
-              {page ? <ChevronLeft size={22} /> : <CloseIcon size={20} />}
-            </button>
-          </div>
-        )}
-
         {/*
           좌우 이동 버튼은 사진 양옆의 빈 칸에 세운다. 사진 위에 얹으면
           반투명이어도 그 부분이 가려져 카드가 잘 안 보인다.

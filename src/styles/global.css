@@ -1059,8 +1059,27 @@ a { color: inherit; }
 .detail__img--placeholder { filter: blur(10px); transform: scale(1.06); }
 .detail__img[data-loaded] { opacity: 0; transition: opacity .22s ease; }
 .detail__img[data-loaded='true'] { opacity: 1; }
-/* 닫기는 레일에서 빼 오른쪽 위에 따로 띄운다 */
-.detail__top { display: flex; justify-content: flex-end; padding-inline: 2px; }
+/*
+ * 나가는 단추가 앉는 줄.
+ *
+ * 카드 판때기가 아니라 화면의 모서리를 잡는다. 판때기 안에 두면 그 판의
+ * 오른쪽 위에 앉아, 화면을 덮고 열렸다는 것을 말해주지 못했다 — 덮은 것을
+ * 걷는 단추는 덮인 화면의 모서리에 있어야 한다.
+ *
+ * 층은 팝업으로 열리든 페이지로 열리든 화면을 꽉 채우는 쪽(.modal /
+ * .detail-page)이 잡아준다. 카드 판때기는 들어올 때 한 번 움직이는데,
+ * 그 움직임이 남아 있으면 이 줄이 화면이 아니라 판때기를 기준으로 앉는다.
+ * 밖에 두었으니 그럴 일이 없다.
+ */
+.detail__top {
+  position: absolute;
+  top: calc(var(--safe-top) + 14px);
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+}
 /* 페이지에서는 나가는 길이 오른쪽 위 ×가 아니라 왼쪽 위 화살표다 */
 .detail__top[data-page] { justify-content: flex-start; }
 
@@ -1935,13 +1954,6 @@ a { color: inherit; }
  * 흐름에서 빼는 만큼 위쪽 여백을 그 높이만큼 미리 비워, 가운데 모인
  * 내용이 단추 밑으로 파고들지 않게 한다.
  */
-.detail-page .detail__top {
-  position: absolute;
-  top: calc(var(--safe-top) + 14px);
-  left: 16px;
-  right: 16px;
-  z-index: 2;
-}
 
 /*
  * 떠오르는 애니메이션은 페이지에서 끈다.
