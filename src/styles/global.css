@@ -723,6 +723,19 @@ a { color: inherit; }
   color: var(--text-dim);
   line-height: 1.5;
 }
+/*
+ * 전체 선택은 멤버 이름보다 작다.
+ *
+ * 둘이 같은 크기면 한 줄로 읽혀 어느 것이 이름이고 어느 것이 하는 일인지
+ * 갈리지 않는다. 이름은 늘 거기 있는 것이고 이것은 가끔 누르는 것이라,
+ * 한 치수 작은 편이 자리에 맞다.
+ */
+.grid-hint .btn {
+  height: 30px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
 /* 좁아지면 단추가 아니라 안내 쪽이 줄어든다 */
 .grid-hint span {
   flex: 1;
