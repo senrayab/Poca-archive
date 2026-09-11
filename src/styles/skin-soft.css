@@ -470,6 +470,14 @@
   transition: transform .15s var(--ease);
 }
 .softnav__add:active { transform: scale(.92); }
+/*
+ * 등록 화면에 들어와 있는 동안에는 등록도 '지금 여기'다. 나머지 자리가
+ * 채워져서 그것을 말하듯, 여기서도 같은 말을 쓴다 — 흰 판이 먹으로 찬다.
+ */
+.softnav__add.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .softbtn,

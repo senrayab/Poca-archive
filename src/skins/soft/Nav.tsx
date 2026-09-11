@@ -1,4 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { cls, useHere } from '../nav'
 import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/components/Icons'
 
 /**
@@ -23,14 +24,14 @@ import { GridIcon, HeartIcon, MenuIcon, PlusIcon, SearchIcon } from '@/component
  * 나머지 갈 곳(멤버·통계·설정)은 오른쪽 끝에서 서랍으로 이어진다.
  */
 export function Nav() {
-  const navigate = useNavigate()
+  const here = useHere()
 
   return (
     <nav className="softnav" aria-label="길찾기">
-      <NavLink className="softnav__item" to="/" end aria-label="보관함">
+      <NavLink className={cls('softnav__item', here.archive)} to="/" end aria-label="보관함">
         <span className="softnav__well"><GridIcon size={21} /></span>
       </NavLink>
-      <NavLink className="softnav__item" to="/favorites" aria-label="좋아요">
+      <NavLink className={cls('softnav__item', here.favorites)} to="/favorites" aria-label="좋아요">
         <span className="softnav__well"><HeartIcon size={21} /></span>
       </NavLink>
 
@@ -40,11 +41,11 @@ export function Nav() {
         카메라로 찍어 올리는 길이 등록 화면에만 있어서, 눌러 놓고 취소한
         사람은 거기까지 가는 방법을 찾지 못한다. 문 하나만 열어준다.
       */}
-      <button className="softnav__add" onClick={() => navigate('/upload')} aria-label="등록하기">
+      <NavLink className={cls('softnav__add', here.upload)} to="/upload" aria-label="등록하기">
         <PlusIcon size={26} />
-      </button>
+      </NavLink>
 
-      <NavLink className="softnav__item" to="/search" aria-label="검색">
+      <NavLink className={cls('softnav__item', here.search)} to="/search" aria-label="검색">
         <span className="softnav__well"><SearchIcon size={21} /></span>
       </NavLink>
       {/*
@@ -52,7 +53,7 @@ export function Nav() {
         있으므로 남은 것은 '가끔 가는 나머지'뿐인데, 그걸 보자고 화면을
         덮을 이유가 없다. 페이지면 여기가 지금 어디인지도 그대로 보인다.
       */}
-      <NavLink className="softnav__item" to="/more" aria-label="더보기">
+      <NavLink className={cls('softnav__item', here.more)} to="/more" aria-label="더보기">
         <span className="softnav__well"><MenuIcon size={21} /></span>
       </NavLink>
     </nav>
