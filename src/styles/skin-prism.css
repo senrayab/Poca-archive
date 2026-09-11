@@ -424,7 +424,8 @@
   font-size: 8px;
   font-weight: 700;
   font-style: normal;
-  letter-spacing: .12em;
+  /* 벌리면 번호가 아니라 낱낱의 글자로 읽힌다 — 한 덩어리로 붙여 둔다 */
+  letter-spacing: .02em;
   font-variant-numeric: tabular-nums;
   color: color-mix(in srgb, var(--text) 42%, transparent);
 }
