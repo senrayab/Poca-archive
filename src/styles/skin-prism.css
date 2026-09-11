@@ -363,6 +363,33 @@
     var(--frost);
 }
 
+/*
+ * 슬리브에 새긴 번호.
+ *
+ * 진열장의 물건에는 번호표가 붙어 있다. 다만 읽으라고 붙인 것이 아니라
+ * 있다는 걸 알아채라고 붙인 것이라, 아주 작고 아주 옅게 둔다. 눈에 먼저
+ * 띄면 그건 번호표가 아니라 딱지다.
+ *
+ * 유리에 새긴 것처럼 보이려면 글자 위쪽에 밝은 선이 한 줄 있어야 한다.
+ * 파낸 자리의 위쪽 벽이 빛을 받는 것이라, 이 한 줄이 없으면 글자가 유리
+ * 위에 얹혀 있는 것으로 보인다.
+ *
+ * 유리 무늬(::after)보다 뒤에 있으면 서리에 묻히므로 한 겹 앞에 세운다.
+ */
+.przcard__no {
+  position: absolute;
+  left: 7px;
+  bottom: 5px;
+  z-index: 1;
+  font-size: 8px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: .12em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--text) 42%, transparent);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .45);
+}
+
 .przcard__fav {
   position: absolute;
   top: 8px;

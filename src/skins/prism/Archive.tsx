@@ -182,10 +182,11 @@ export function Archive(view: ArchiveView) {
             data-dragging={sweep.dragging || undefined}
             {...sweep.handlers}
           >
-            {cards.map((card) => (
+            {cards.map((card, index) => (
               <Sleeve
                 key={card.id}
                 card={card}
+                no={index + 1}
                 showFav={mode !== 'favorites'}
                 selectable={selectMode}
                 selected={selected.has(card.id)}
@@ -253,6 +254,7 @@ function looseOf(id: string) {
  */
 const Sleeve = memo(function Sleeve({
   card,
+  no,
   showFav,
   selectable,
   selected,
@@ -261,6 +263,8 @@ const Sleeve = memo(function Sleeve({
   handledByPress,
 }: {
   card: Card
+  /** 진열대에서 몇 번째인지 */
+  no: number
   showFav: boolean
   selectable: boolean
   selected: boolean
@@ -296,6 +300,12 @@ const Sleeve = memo(function Sleeve({
       */}
       <span className="przcard__sleeve" aria-hidden="true">
         {url && <img src={url} alt="" />}
+        {/*
+          슬리브에 새겨 넣은 번호. 진열장의 물건에는 번호표가 붙어 있다.
+          세 자리로 맞춰 자릿수가 흔들리지 않게 한다 — 흔들리면 줄마다 끝이
+          어긋나 번호가 아니라 글자처럼 읽힌다.
+        */}
+        <i className="przcard__no">{String(no).padStart(3, '0')}</i>
       </span>
       {selectable && (
         <span className="przcard__check" data-on={selected}>
