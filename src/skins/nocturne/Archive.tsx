@@ -163,6 +163,16 @@ export function Archive(view: ArchiveView) {
             바탕에서는 사진이 저마다 빛나므로 사이를 벌리지 않아도 서로
             섞이지 않는다. 밝은 스킨에서 흰 테가 하던 일을 어둠이 한다.
           */}
+          {!selectMode && (
+            <p className="nocthint">
+              길게 누르면 여러 장을 고를 수 있어요
+              <button onClick={onSelectAll}>
+                <CheckIcon size={13} />
+                전체 선택
+              </button>
+            </p>
+          )}
+
           <div
             className="noctgrid"
             ref={sweep.ref}
@@ -182,16 +192,6 @@ export function Archive(view: ArchiveView) {
               />
             ))}
           </div>
-
-          {!selectMode && (
-            <p className="noctfoot">
-              길게 누르면 여러 장을 고를 수 있어요
-              <button onClick={onSelectAll}>
-                <CheckIcon size={13} />
-                전체 선택
-              </button>
-            </p>
-          )}
         </>
       )}
 
