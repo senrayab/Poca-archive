@@ -3,14 +3,11 @@ import { useSyncExternalStore } from 'react'
 export type ThemeMode = 'system' | 'light' | 'dark'
 export type SkinId = 'pastel' | 'soft' | 'nocturne' | 'prism' | 'atelier' | 'blank'
 export type FavCut = 'notch' | 'disc'
-/** 보관함 이름에 쓸 글꼴 */
-export type NameFont = 'app' | 'system' | 'sans' | 'serif' | 'mono'
 
 const THEME_KEY = 'poca:theme'
 const SKIN_KEY = 'poca:skin'
 const ACCENT_KEY = 'poca:accent'
 const FAVCUT_KEY = 'poca:favcut'
-const NAMEFONT_KEY = 'poca:namefont'
 
 /** 포인트 색 추천값. 직접 고르는 것도 되니 안내용에 가깝다. */
 export const ACCENT_PRESETS = [
@@ -71,37 +68,6 @@ export const FAV_CUTS: Array<{ id: FavCut; name: string }> = [
 const FAV_CUT_IDS: FavCut[] = FAV_CUTS.map((c) => c.id)
 
 /**
- * 보관함 이름에 쓸 글꼴.
- *
- * 폰에 넣어둔 글꼴(스토어에서 산 것 포함)을 쓰려면 브라우저에게 '기기
- * 글꼴을 달라'고 해야 하는데, 그 말을 하는 길이 둘이다.
- *
- *  - system-ui : 기기가 화면을 그릴 때 쓰는 글꼴을 직접 가리킨다.
- *  - sans-serif: 기기에 '기본 고딕으로 뭘 쓰냐'고 묻는다.
- *
- * 둘이 같은 글꼴로 풀리는 폰도 있고, 하나는 폰에 넣은 글꼴로 다른 하나는
- * 브라우저가 들고 있는 글꼴로 갈리는 폰도 있다. 어느 쪽이 통하는지는
- * 기기와 브라우저가 정하는 일이라 미리 알 수 없다. 그래서 둘 다 내주고
- * 고르게 한다 — 고르는 자리에서 이름이 그 글꼴로 바로 보이므로, 어느 것이
- * 제 글꼴인지는 눈으로 알아본다.
- *
- * 명조와 고정폭은 폰이 늘 한 벌씩 갖고 있어 확실히 달라 보이는 쪽이다.
- * 그 밖의 '또렷한 고딕' 같은 구분은 웹에서 받아오지 않는 한 결국 같은
- * 글꼴로 나오므로 두지 않았다.
- *
- * 실제 글꼴 목록은 CSS의 --appname-font가 갖고 있다.
- */
-export const NAME_FONTS: Array<{ id: NameFont; name: string; hint: string }> = [
-  { id: 'app', name: '앱 기본', hint: '지금까지 쓰던 글꼴' },
-  { id: 'system', name: '기기 글꼴', hint: '폰이 화면을 그릴 때 쓰는 글꼴' },
-  { id: 'sans', name: '기기 고딕', hint: '폰의 기본 고딕 — 위와 다를 수 있어요' },
-  { id: 'serif', name: '명조', hint: '붓의 맺음이 남은 쪽' },
-  { id: 'mono', name: '고정폭', hint: '글자마다 자리가 고른 쪽' },
-]
-
-const NAME_FONT_IDS: NameFont[] = NAME_FONTS.map((f) => f.id)
-
-/**
  * 주소창·상태바 색.
  *
  * 예전에는 스킨마다 값을 적어둔 표가 있었다. 그런데 표는 CSS를 보고 손으로
@@ -156,15 +122,6 @@ function readAccent(): string | null {
   }
 }
 
-function readNameFont(): NameFont {
-  try {
-    const raw = localStorage.getItem(NAMEFONT_KEY) as NameFont | null
-    return raw && NAME_FONT_IDS.includes(raw) ? raw : 'app'
-  } catch {
-    return 'app'
-  }
-}
-
 /** 고른 적 없으면 목록의 첫 번째 — 화면에서 왼쪽에 놓인 쪽을 쓴다. */
 function readFavCut(): FavCut {
   try {
@@ -179,7 +136,6 @@ let mode: ThemeMode = readTheme()
 let skin: SkinId = readSkin()
 let accent: string | null = readAccent()
 let favCut: FavCut = readFavCut()
-let nameFont: NameFont = readNameFont()
 const listeners = new Set<() => void>()
 
 function emit() {
@@ -226,7 +182,6 @@ function apply() {
   else root.dataset.theme = mode
   root.dataset.skin = skin
   root.dataset.favcut = favCut
-  root.dataset.namefont = nameFont
 
   /*
    * 포인트 색은 인라인 스타일로 얹는다. 인라인이 스타일시트보다 세므로
@@ -276,17 +231,6 @@ export function setSkin(next: SkinId) {
   skin = next
   try {
     localStorage.setItem(SKIN_KEY, next)
-  } catch {
-    /* 저장에 실패해도 이번 세션에는 적용된다 */
-  }
-  apply()
-  emit()
-}
-
-export function setNameFont(next: NameFont) {
-  nameFont = next
-  try {
-    localStorage.setItem(NAMEFONT_KEY, next)
   } catch {
     /* 저장에 실패해도 이번 세션에는 적용된다 */
   }
@@ -356,14 +300,6 @@ export function useFavCut(): FavCut {
     subscribe,
     () => favCut,
     () => 'notch' as FavCut,
-  )
-}
-
-export function useNameFont(): NameFont {
-  return useSyncExternalStore(
-    subscribe,
-    () => nameFont,
-    () => 'app' as NameFont,
   )
 }
 

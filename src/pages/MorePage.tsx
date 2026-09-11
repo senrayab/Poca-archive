@@ -56,7 +56,7 @@ export function MorePage() {
             <strong className="brand">
               <span className="brand__thin">varies</span> <span className="brand__bold">gem.</span>
             </strong>
-            <span className="appname">{appName}</span>
+            <span>{appName}</span>
           </div>
 
           <p className="more__group">보관함</p>
