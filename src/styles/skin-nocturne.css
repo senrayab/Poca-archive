@@ -12,8 +12,10 @@
  * 모두 무지 배경이었는데, 여기서는 배경이 제목 노릇을 한다 — 멤버를 바꾸면
  * 화면 전체의 빛깔이 바뀌므로 글자로 말할 필요가 줄어든다.
  *
- * 라이트는 '새벽'이다. 뒤집는 게 아니라 같은 짜임을 흰 유리로 옮긴 것이다.
- * 사진은 그대로 깔리고, 덮는 막만 검정에서 흰빛으로 바뀐다.
+ * 이 스킨은 늘 어둡다. 테마를 라이트로 둔 사람이 골라도 어둡게 간다 —
+ * '밤'이 이 스킨의 성격이라 밝히면 얼굴이 사라진다. 그래서 라이트 토큰을
+ * 아예 두지 않는다. 파스텔의 라이트 규칙과 셈이 같지만 이 파일이 뒤에
+ * 읽히므로 여기 값이 이긴다.
  */
 
 :root[data-skin='nocturne'],
@@ -49,17 +51,15 @@
   --radius-sm: 18px;
   --radius-xs: 14px;
   --panel-radius: 22px;
-  /* 넉 장씩 놓으므로 카드 자체는 작게 굴린다 */
-  --thumb-radius: 10px;
+  /* 석 장씩이라 카드가 제법 크다 — 그만큼 굴린다 */
+  --thumb-radius: 13px;
   --stage-radius: 20px;
 
   --rail-bg: transparent;
   --rail-fade: var(--bg);
 
-  /* 오른쪽 기둥이 먹는 폭. 아래 바로 옮기게 되면 이 값만 0으로 두면 된다. */
-  --rail-w: 62px;
-  /* 아래 멤버 줄이 먹는 높이 */
-  --memb-h: 54px;
+  /* 아래 떠 있는 바가 먹는 높이 */
+  --nav-h: 62px;
   /* 뒤에 깔린 사진을 덮는 막 */
   --veil: rgba(7, 7, 10, .78);
   --veil-top: rgba(7, 7, 10, .55);
@@ -67,81 +67,17 @@
   color-scheme: dark;
 }
 
-@media (prefers-color-scheme: light) {
-  :root[data-skin='nocturne']:not([data-theme='dark']) {
-    --bg-base: #eaecf1;
-    --desk-bg-base: #dfe2e8;
-    --bg-elev-base: rgba(255, 255, 255, .62);
-    --bg-elev-2-base: rgba(255, 255, 255, .82);
-    --line-base: rgba(20, 22, 30, .10);
-    --panel-line: rgba(255, 255, 255, .75);
-    --text: #14161c;
-    --text-dim: rgba(20, 22, 28, .55);
-    --accent: #14161c;
-    --accent-ink: #ffffff;
-    --accent-soft: rgba(20, 22, 28, .08);
-    --sky: #2fb0a6;
-    --violet: #6a5bd8;
-    --danger: #d9434e;
-
-    --shadow-sm: 0 1px 3px rgba(28, 32, 44, .07);
-    --shadow-md: 0 6px 20px rgba(28, 32, 44, .10);
-    --shadow-lg: 0 14px 40px rgba(28, 32, 44, .13);
-    --shadow-xl: 0 26px 70px rgba(28, 32, 44, .18);
-    --glow-spread: 0 6px 22px;
-    --glow: 0 6px 22px rgba(28, 32, 44, .18);
-    --wash: none;
-
-    /* 새벽 — 같은 사진 위에 덮는 막만 흰빛으로 바뀐다 */
-    --veil: rgba(234, 236, 241, .80);
-    --veil-top: rgba(234, 236, 241, .58);
-
-    color-scheme: light;
-  }
-}
-
-:root[data-skin='nocturne'][data-theme='light'] {
-  --bg-base: #eaecf1;
-  --desk-bg-base: #dfe2e8;
-  --bg-elev-base: rgba(255, 255, 255, .62);
-  --bg-elev-2-base: rgba(255, 255, 255, .82);
-  --line-base: rgba(20, 22, 30, .10);
-  --panel-line: rgba(255, 255, 255, .75);
-  --text: #14161c;
-  --text-dim: rgba(20, 22, 28, .55);
-  --accent: #14161c;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(20, 22, 28, .08);
-  --sky: #2fb0a6;
-  --violet: #6a5bd8;
-  --danger: #d9434e;
-
-  --shadow-sm: 0 1px 3px rgba(28, 32, 44, .07);
-  --shadow-md: 0 6px 20px rgba(28, 32, 44, .10);
-  --shadow-lg: 0 14px 40px rgba(28, 32, 44, .13);
-  --shadow-xl: 0 26px 70px rgba(28, 32, 44, .18);
-  --glow-spread: 0 6px 22px;
-  --glow: 0 6px 22px rgba(28, 32, 44, .18);
-  --wash: none;
-
-  --veil: rgba(234, 236, 241, .80);
-  --veil-top: rgba(234, 236, 241, .58);
-
-  color-scheme: light;
-}
-
 /*
- * 데스크탑에서 기둥 컬럼에 바탕색을 깔면 뒤에 깔린 사진을 덮어버린다.
+ * 데스크탑에서 가운데 컬럼에 바탕색을 깔면 뒤에 깔린 사진을 덮어버린다.
  * 이 스킨에서만 비워 두고, 사진은 화면 전체에 흐르게 한다.
  */
 @media (min-width: 720px) {
   :root[data-skin='nocturne'] .shell { background: none; }
 }
 
-/* 떠 있는 것들이 앉을 자리만큼 비켜준다 */
+/* 아래 바가 가리지 않도록 발치를 그만큼 비운다 */
 :root[data-skin='nocturne'] .content {
-  padding-right: var(--rail-w);
-  padding-bottom: calc(var(--memb-h) + var(--safe-bottom) + 16px);
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
 }
 
 /* ---------- 뒤에 깔리는 사진 ---------- */
@@ -180,7 +116,7 @@
 
 .noctpill,
 .noctbtn,
-.noctrail {
+.noctnav {
   background: var(--bg-elev);
   box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-md);
   backdrop-filter: blur(18px) saturate(130%);
@@ -242,7 +178,7 @@
 
 .noctfind { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px 0; }
 
-/* ---------- 넉 장씩 ---------- */
+/* ---------- 석 장씩 ---------- */
 
 /*
  * 액자도 그림자도 없이 사진끼리 바짝 붙인다. 어두운 바탕에서는 사진이
@@ -251,8 +187,8 @@
  */
 .noctgrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
   padding: 14px 16px 0;
 }
 
@@ -320,73 +256,74 @@
   font-weight: 700;
 }
 
-/* ---------- 아래 멤버 줄 ---------- */
+/* ---------- 멤버 줄 (위) ---------- */
 
+/*
+ * 위는 무엇을 볼지 고르는 자리, 아래는 어디로 갈지 고르는 자리다.
+ * 둘을 한쪽에 몰면 그쪽이 답답해지고, 가운데에 남는 사진 자리가
+ * 그만큼 줄어든다.
+ */
 .noctmembers {
-  position: fixed;
-  left: 0;
-  right: var(--rail-w);
-  bottom: 0;
-  z-index: 25;
   display: flex;
   gap: 6px;
   align-items: center;
-  height: calc(var(--memb-h) + var(--safe-bottom));
-  padding: 0 16px var(--safe-bottom);
+  padding: 12px 16px 0;
   overflow-x: auto;
   scrollbar-width: none;
   /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
   overscroll-behavior-x: contain;
-  /* 줄 뒤로 사진이 계속 흐르되, 알약은 뜬 것으로 읽히게 아래만 어둡힌다 */
-  background: linear-gradient(to top, var(--veil), transparent);
 }
 .noctmembers::-webkit-scrollbar { display: none; }
 
-/* ---------- 오른쪽 세로 기둥 ---------- */
+/* ---------- 아래 바 ---------- */
 
 /*
- * 가운데 높이에 붙박는다. 위나 아래 끝에 붙이면 한 손으로 쥔 채 손을
- * 옮겨야 한다. 세로로 세운 건 이 스킨이 화면 위아래를 사진에 내주기로
- * 했기 때문이다 — 아래에 바를 깔면 그만큼 사진이 잘린다.
+ * 처음에는 오른쪽에 세로로 세웠다. 세로로는 사진이 끝까지 흐른다는 게
+ * 이유였는데, 써보니 사진이 옆에서 눌려 답답했다. 가로로 눕히면 먹는
+ * 것은 아래 한 줄뿐이고, 그 줄은 어차피 손가락이 있는 자리다.
+ *
+ * 데스크탑에서는 앱이 가운데 좁은 기둥으로 서므로 바도 그 폭에 맞춘다.
  */
-.noctrail {
+.noctnav {
   position: fixed;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 12px);
   z-index: 30;
-  width: 46px;
+  width: min(calc(100% - 32px), calc(var(--app-w) - 32px));
+  height: var(--nav-h);
   display: grid;
-  justify-items: center;
-  gap: 4px;
-  padding: 6px;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  padding: 0 8px;
   border-radius: var(--pill);
 }
 
-.noctrail__item {
-  position: relative;
-  width: 34px;
-  height: 34px;
+.noctnav__item {
+  justify-self: center;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   color: var(--text-dim);
   text-decoration: none;
-  transition: color .15s;
+  transition: color .15s, background .15s;
 }
 /*
  * 지금 있는 자리는 아이콘 뒤에 옅은 원이 켜진다. 어두운 화면에서는
  * 칠하는 것보다 밝히는 쪽이 자연스럽다.
  */
-.noctrail__item.active {
+.noctnav__item.active {
   color: var(--text);
   background: var(--accent-soft);
   box-shadow: inset 0 0 0 1px var(--panel-line);
 }
 
-.noctrail__add {
-  width: 34px;
-  height: 34px;
+.noctnav__add {
+  justify-self: center;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -394,7 +331,7 @@
   color: var(--accent-ink);
   transition: transform .15s var(--ease);
 }
-.noctrail__add:active { transform: scale(.9); }
+.noctnav__add:active { transform: scale(.9); }
 
 /* ---------- 자세히보기 ---------- */
 
@@ -423,5 +360,5 @@
   .noctpill,
   .noctbtn,
   .noctshot,
-  .noctrail__add { transition: none; }
+  .noctnav__add { transition: none; }
 }
