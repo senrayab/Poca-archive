@@ -539,8 +539,6 @@ export function CardDetail({ card, siblings, onNavigate, onClose, page = false }
             {/* 카드 위에 얹히는 유리 시트. 판때기가 아니라 사진이 비쳐 보이는 층이다. */}
             {!editing && (
               <div className="detail__sheet">
-                {/* 유리는 별도 층이다 — 마스크로 윗경계를 흐리려면 글자와 분리돼야 한다 */}
-                <span className="detail__glass" aria-hidden="true" />
                 {/*
                   분류를 감춰둔 동안에는 그 자리에 메모가 들어간다.
                   분류 대신 메모에 알아볼 말을 적는 쪽을 쓰기로 했으므로,
