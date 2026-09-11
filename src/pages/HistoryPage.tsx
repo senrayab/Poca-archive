@@ -83,7 +83,7 @@ export function HistoryPage() {
         }
       />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="subtabs" role="tablist" aria-label="처리 방식">
           {FILTERS.map((option) => (
             <button

@@ -105,7 +105,7 @@ export function MembersPage() {
     <>
       <Header title="멤버 · 카테고리 관리" />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="page">
           <h2>
             <UsersIcon size={15} />

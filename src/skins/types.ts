@@ -89,7 +89,7 @@ export interface Layout {
    * FAB를 띄우지 않는다 — 아래 탭바를 두는 스킨에서 등록 단추가 둘이 되면
    * 어느 쪽이 진짜인지 알 수 없다.
    */
-  Nav?: ComponentType
+  Nav: ComponentType
   /**
    * 자세히보기를 한 페이지로 열지.
    *

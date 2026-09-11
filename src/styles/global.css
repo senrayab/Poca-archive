@@ -270,6 +270,9 @@ a { color: inherit; }
 /* 아래 층이 배경을 통째로 그리는 화면에서는 헤더가 배경을 갖지 않는다 */
 .header[data-bare] { background: none; backdrop-filter: none; }
 
+/* 뒤로 갈 일이 없는 화면에서 왼쪽 자리만 잡아둔다 — 아이콘 단추와 같은 크기 */
+.header__gap { width: 38px; flex: 0 0 auto; }
+
 .header__title {
   flex: 1;
   font-size: 18px;
@@ -304,10 +307,8 @@ a { color: inherit; }
 .icon-btn:hover { background: var(--bg-elev-2); }
 .icon-btn:active { transform: scale(.94); }
 
-/* FAB(58px + 아래 20px)를 살짝 넘길 만큼만 남긴다 */
+/* 아래 길찾기(56px + 발치 14px)를 살짝 넘길 만큼 남긴다 */
 .content { flex: 1; padding-bottom: calc(86px + var(--safe-bottom)); }
-/* FAB가 없는 화면은 아래 여백을 줄인다 */
-.content--no-fab { padding-bottom: calc(24px + var(--safe-bottom)); }
 
 /* ---------- search ---------- */
 
@@ -684,50 +685,104 @@ a { color: inherit; }
   line-height: 1.5;
 }
 
-/* ---------- fab ---------- */
+/* ---------- 파스텔 길찾기 ---------- */
 
-.fab-stack {
+/*
+ * 젖빛 알약과 그 옆의 동그라미.
+ *
+ * 파스텔은 여태 왼쪽 위 햄버거로 서랍을 열었다. 서랍은 화면을 덮고 열리는
+ * 것이라, 한 손으로 쥔 폰에서는 가장 먼 자리에서 가장 자주 눌리는 길이었다.
+ * 다섯 스킨이 모두 아래로 내려온 뒤로는 파스텔만 혼자 위에 남아 있었다.
+ *
+ * 재료는 이 스킨이 원래 쓰던 것 그대로다 — 젖빛 유리에 윗 가장자리로
+ * 분홍·파랑이 어리고, 아래로 그림자가 넓게 깔려 떠 있는 것처럼 보인다.
+ * 어리는 빛은 바깥 그림자 둘을 위로 올려 만든다. 따로 층을 깔고 blur를
+ * 먹이는 쪽이 더 곱지만, 늘 화면에 떠 있는 것이라 폰에서 값이 비싸다.
+ *
+ * 등록만 알약 밖에 따로 선다. 가는 일이 아니라 더하는 일이라서다.
+ */
+.pstnav {
+  /* 기본은 어두운 쪽 — 이 파일의 다른 토큰들과 같은 차례다 */
+  --milk: rgba(38, 35, 50, .84);
+  --milk-cast: rgba(0, 0, 0, .48);
+  --milk-lip: rgba(255, 255, 255, .10);
+
   position: fixed;
-  right: 16px;
-  bottom: calc(20px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 14px);
   z-index: 40;
   display: flex;
-  flex-direction: column-reverse;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.fab {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-ink);
-  display: grid;
-  place-items: center;
-  box-shadow: var(--glow), 0 2px 10px color-mix(in srgb, var(--accent) 45%, transparent);
-  transition: transform .18s var(--ease);
-}
-.fab:active { transform: scale(.93); }
-.fab[data-open='true'] { transform: rotate(45deg); }
-
-.fab-mini {
-  display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 44px;
-  padding: 0 16px 0 14px;
-  border-radius: var(--pill);
-  background: var(--bg-elev);
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: var(--shadow-lg);
-  animation: pop .16s ease-out both;
 }
-@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.96); } }
+:root[data-theme='light'] .pstnav {
+  --milk: rgba(255, 255, 255, .88);
+  --milk-cast: rgba(74, 58, 110, .18);
+  --milk-lip: rgba(255, 255, 255, .95);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) .pstnav {
+    --milk: rgba(255, 255, 255, .88);
+    --milk-cast: rgba(74, 58, 110, .18);
+    --milk-lip: rgba(255, 255, 255, .95);
+  }
+}
 
-/* ---------- drawer ---------- */
+.pstnav__bar,
+.pstnav__add {
+  background: var(--milk);
+  backdrop-filter: var(--bar-blur);
+  box-shadow:
+    /* 아래로 넓게 깔리는 그림자 — 떠 있는 것으로 읽히게 한다 */
+    0 14px 30px var(--milk-cast),
+    /* 윗 가장자리에 어리는 분홍과 파랑 */
+    0 -3px 16px rgba(255, 164, 200, .42),
+    0 -4px 24px rgba(168, 196, 255, .34),
+    /* 위쪽 한 줄 흰 테 — 솟아 있는 면의 윗날이다 */
+    inset 0 1px 0 var(--milk-lip);
+}
+
+.pstnav__bar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: var(--pill);
+}
+
+.pstnav__item {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color .15s, background .15s;
+}
+.pstnav__item.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.pstnav__add {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  transition: transform .15s var(--ease);
+}
+.pstnav__add:active { transform: scale(.92); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pstnav__item,
+  .pstnav__add { transition: none; }
+}
+
+/* ---------- scrim ---------- */
 
 .scrim {
   position: fixed;
@@ -739,97 +794,43 @@ a { color: inherit; }
 }
 @keyframes fade { from { opacity: 0; } }
 
-.drawer {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 51;
-  width: min(78vw, 300px);
-  background: var(--bg-elev);
-  border: none;
-  /* 오른쪽 위만 둥글다 (좌·하단은 화면 끝에 붙는다) */
-  border-radius: 0 34px 0 0;
-  border-right: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-xl);
-  padding: calc(16px + var(--safe-top)) 12px calc(16px + var(--safe-bottom));
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow-y: auto;
-  animation: slide-in .22s var(--ease);
-}
-@keyframes slide-in { from { transform: translateX(-100%); } }
-
-.drawer__brand { padding: 10px 12px 14px; }
-.drawer__brand strong {
+/*
+ * 앱 이름표. 여태 서랍 맨 위에 있던 것이라, 서랍을 걷으면서 더보기로 옮겼다.
+ *
+ * 이름은 두 무게로 이뤄진다 — 앞은 가볍게, 뒤는 최대한 굵게. 그 차이가
+ * 이름의 생김새라 무게를 양 끝으로 벌려 둔다.
+ *
+ * 사이를 flex 간격이 아니라 진짜 띄어쓰기로 둔다. 글씨 크기를 따라 함께
+ * 벌어지고, 읽어주는 기능에도 두 낱말로 전해진다.
+ *
+ * 자리를 밝혀(.more__brand .brand__…) 힘을 올린 건 바로 아래 한 줄 때문이다.
+ * '.more__brand span'은 앱 이름 줄을 12px 흐린 색으로 만드는 규칙인데,
+ * 클래스 하나짜리로 적으면 그 규칙(클래스+요소)보다 힘이 약해 밀린다.
+ */
+.more__brand { padding: 4px 4px 18px; }
+.more__brand strong {
   display: block;
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -.02em;
 }
-/*
- * 이름은 두 무게로 이뤄진다 — 앞은 가볍게, 뒤는 최대한 굵게.
- * 그 차이가 이름의 생김새라, 무게를 양 끝으로 벌려 둔다.
- */
-/*
- * 사이를 flex 간격이 아니라 진짜 띄어쓰기로 둔다. 글씨 크기를 따라 함께
- * 벌어지고, 읽어주는 기능에도 두 낱말로 전해진다.
- *
- * 자리를 밝혀(.drawer__brand .brand__…) 힘을 올린 건 바로 위 한 줄 때문이다.
- * '.drawer__brand span'은 아래 앱 이름 줄을 12px 흐린 색으로 만드는 규칙인데,
- * 클래스 하나짜리로 적으면 그 규칙(클래스+요소)보다 힘이 약해 밀린다.
- * 그래서 이름이 앱 이름과 같은 크기·색으로 나왔다.
- */
 .brand { display: block; }
-.drawer__brand .brand__thin,
-.drawer__brand .brand__bold {
+.more__brand .brand__thin,
+.more__brand .brand__bold {
   /* 감싼 strong의 크기와 색을 그대로 물려받는다 */
   font-size: inherit;
   color: var(--text);
 }
-.drawer__brand .brand__thin {
+.more__brand .brand__thin {
   font-weight: 300;
   /* 획이 얇아 자간이 벌어져 보인다. 조금 당겨야 뒤의 굵은 쪽과 한 이름으로 읽힌다. */
   letter-spacing: -.02em;
 }
-.drawer__brand .brand__bold {
+.more__brand .brand__bold {
   font-weight: 900;
   letter-spacing: -.03em;
 }
-.drawer__brand span { font-size: 12px; color: var(--text-dim); }
-
-.drawer__section {
-  padding: 18px 12px 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .06em;
-  color: var(--text-dim);
-}
-
-.drawer__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left;
-  text-decoration: none;
-  transition: background .15s, color .15s;
-}
-.drawer__item:hover { background: var(--bg-elev-2); }
-.drawer__item[aria-current='page'] {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 700;
-}
-.drawer__item .badge {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--text-dim);
-  font-variant-numeric: tabular-nums;
-}
+.more__brand span { font-size: 12px; color: var(--text-dim); }
 
 /* ---------- modal / detail ---------- */
 
@@ -2872,17 +2873,6 @@ a { color: inherit; }
     padding: 8px 10px;
   }
 
-  .fab-stack {
-    right: 50%;
-    margin-right: calc(var(--app-w) / -2 + 16px);
-  }
-
-  .drawer {
-    left: 50%;
-    right: auto;
-    margin-left: calc(var(--app-w) / -2);
-    width: min(300px, calc(var(--app-w) * 0.8));
-  }
 }
 
 

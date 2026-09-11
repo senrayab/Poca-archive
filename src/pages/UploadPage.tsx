@@ -285,7 +285,7 @@ export function UploadPage() {
     <>
       <Header title="포토카드 등록" back />
 
-      <div className="content content--no-fab">
+      <div className="content">
         <div className="page">
           {/*
             위에서 한 번 고르고 아래가 그걸 따르는 판.

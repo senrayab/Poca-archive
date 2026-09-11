@@ -14,6 +14,7 @@ import {
   UsersIcon,
 } from '@/components/Icons'
 import { useCountsByMember, useTrashCount } from '@/hooks/useData'
+import { useAppName } from '@/lib/appName'
 import { SHOW_CATEGORY } from '@/lib/features'
 
 /**
@@ -27,11 +28,13 @@ import { SHOW_CATEGORY } from '@/lib/features'
  * 페이지로 두면 주소가 생겨 뒤로가기가 저절로 맞고, 탭바에서 지금 여기가
  * 어디인지도 그대로 보인다 — 덮여 있는 동안에는 그 표시가 가려진다.
  *
- * 서랍을 지우지는 않았다. 아직 기본 차림의 스킨들이 그것으로 길을 찾는다.
+ * 파스텔까지 아래로 내려온 뒤로 서랍은 쓰는 곳이 없어 걷었다. 서랍 맨 위에
+ * 있던 이름표는 갈 곳이 없어지므로 이 화면 머리로 옮겨 왔다.
  */
 export function MorePage() {
   const { total } = useCountsByMember()
   const trash = useTrashCount()
+  const appName = useAppName()
 
   const row = (to: string, icon: ReactElement, label: string, badge?: number) => (
     <Link className="more__row" to={to}>
@@ -48,6 +51,14 @@ export function MorePage() {
 
       <div className="content">
         <div className="more">
+          <div className="more__brand">
+            {/* 앞은 가볍게, 뒤는 최대한 굵게 — 두 무게 차이가 이름의 생김새다 */}
+            <strong className="brand">
+              <span className="brand__thin">varies</span> <span className="brand__bold">gem.</span>
+            </strong>
+            <span>{appName}</span>
+          </div>
+
           <p className="more__group">보관함</p>
           <div className="more__panel">
             {row('/', <GridIcon size={19} />, '전체 포토카드', total)}
