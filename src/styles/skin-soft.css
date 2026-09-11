@@ -408,8 +408,8 @@
   /* 링크로 그려지는 자리가 섞여 있어 밑줄이 딸려 온다 */
   text-decoration: none;
   justify-items: center;
-  gap: 4px;
-  padding: 6px 0;
+  gap: 5px;
+  padding: 5px 0;
   color: var(--text-dim);
   font-size: 10px;
   font-weight: 600;
@@ -417,27 +417,34 @@
 }
 .softnav__item span { line-height: 1; }
 /*
- * 그림이 앉는 자리. 여기만 판 안으로 눌려 들어간다.
+ * 그림이 앉는 자리.
  *
- * 칸 전체를 눌리게 해봤더니 알약 바 안에 또 알약이 들어앉아, 담는 것과
- * 담기는 것이 같은 모양으로 겹쳐 보였다. 파인 자국은 눌린 만큼만 파여야
- * 한다 — 손가락 끝으로 누른 자국은 동그랗지 칸 모양이 아니다.
+ * 그림마다 제 판을 하나씩 깔고 이름은 그 아래에 둔다. 아이콘만 늘어놓으면
+ * 줄이 글자와 그림으로만 이뤄져 밋밋한데, 판을 깔면 누를 것이 다섯 개
+ * 놓여 있다는 게 한눈에 보인다.
  *
- * 이름은 자국 밖에 남는다. 안에 넣으려면 자국이 이름만큼 길어져야 하고,
- * 그러면 다시 알약이 된다.
+ * 네모를 굴린 모양이다. 담는 바가 알약이므로 안에 또 알약을 넣으면 담는
+ * 것과 담기는 것이 겹쳐 보이고, 정원으로 두면 판이 아니라 자국으로 읽힌다.
+ * 굴린 네모가 그 사이다.
+ *
+ * 지금 있는 자리만 채운다. 나머지는 바탕보다 한 톤 낮은 빈 판이라, 채워진
+ * 하나가 저절로 앞으로 나온다 — 이 스킨에서 '검은 것이 지금 이것'이다.
  */
 .softnav__well {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  transition: background .15s, box-shadow .15s;
+  border-radius: 14px;
+  background: var(--bg-elev-2);
+  box-shadow: inset 0 1px 0 var(--lift-top), inset 0 -1px 0 var(--lift-foot);
+  transition: background .15s, color .15s, box-shadow .15s;
 }
 .softnav__item.active { color: var(--text); font-weight: 800; }
 .softnav__item.active .softnav__well {
-  background: var(--bg-elev-2);
-  box-shadow: inset 0 2px 4px var(--lift-foot), inset 0 -1px 0 var(--lift-top);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--lift-1);
 }
 
 /*
