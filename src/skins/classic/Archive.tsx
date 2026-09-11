@@ -150,25 +150,32 @@ export function Archive(view: ArchiveView) {
         {loading ? null : cards.length === 0 ? (
           empty
         ) : (
-          <CardGrid
-            cards={cards}
-            showFav={mode !== 'favorites'}
-            selectable={selectMode}
-            selectedIds={selected}
-            onSweep={onSweep}
-            onOpen={onOpen}
-            onToggleSelect={onToggleSelect}
-          />
-        )}
+          <>
+            {/*
+              누르는 방법을 일러주는 줄은 목록 위에 둔다. 아래에 두면 다 내려간
+              뒤에야 보이는데, 그때는 이미 알아냈거나 그냥 지나간 뒤다.
+              장수도 같은 줄에 붙여 한 줄로 끝낸다.
+            */}
+            {!selectMode && (
+              <p className="grid-hint">
+                <span>총 {cards.length}장 · 길게 눌러 여러 장 선택</span>
+                <button className="btn btn--sm" onClick={onSelectAll}>
+                  <CheckIcon size={15} />
+                  전체 선택
+                </button>
+              </p>
+            )}
 
-        {!selectMode && cards.length > 0 && (
-          <div className="grid-foot">
-            <span>총 {cards.length}장 · 카드를 길게(우클릭) 누르면 여러 장 선택</span>
-            <button className="btn btn--sm" onClick={onSelectAll}>
-              <CheckIcon size={15} />
-              전체 선택
-            </button>
-          </div>
+            <CardGrid
+              cards={cards}
+              showFav={mode !== 'favorites'}
+              selectable={selectMode}
+              selectedIds={selected}
+              onSweep={onSweep}
+              onOpen={onOpen}
+              onToggleSelect={onToggleSelect}
+            />
+          </>
         )}
       </div>
     </>
