@@ -177,11 +177,18 @@ export function ArchivePage({ mode }: ArchivePageProps) {
 
   const view: ArchiveView = {
     mode,
-    title: selectMode
-      ? `${selected.size}장 선택`
-      : mode === 'all'
-        ? appName
-        : TITLES[mode],
+    title: selectMode ? (
+      `${selected.size}장 선택`
+    ) : mode === 'all' ? (
+      /*
+       * 보관함 이름만 기기의 글꼴로 적는다. 나머지 글자는 앱이 고른 글꼴을
+       * 쓰지만, 이 한 줄은 쓰는 사람이 제 폰에 골라둔 글꼴로 보이는 편이
+       * 제 물건답다.
+       */
+      <span className="appname">{appName}</span>
+    ) : (
+      TITLES[mode]
+    ),
     loading,
     cards: list,
     empty: (
