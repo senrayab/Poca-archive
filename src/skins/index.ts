@@ -1,5 +1,6 @@
 import type { SkinId } from '@/lib/theme'
 import { useSkin } from '@/lib/theme'
+import { atelier } from './atelier'
 import { classic } from './classic'
 import { nocturne } from './nocturne'
 import { prism } from './prism'
@@ -13,7 +14,7 @@ import type { Layout } from './types'
  * 색만 달리 입을 수 있고(지금 넷이 그렇다), 하나가 제 레이아웃을 갖게 되면
  * 이 표에서 그 줄만 바꾸면 된다.
  */
-const LAYOUTS = { classic, soft, nocturne, prism } as const
+const LAYOUTS = { classic, soft, nocturne, prism, atelier } as const
 
 type LayoutId = keyof typeof LAYOUTS
 
@@ -25,6 +26,7 @@ const OF_SKIN: Record<SkinId, LayoutId> = {
   soft: 'soft',
   nocturne: 'nocturne',
   prism: 'prism',
+  atelier: 'atelier',
 }
 
 export function useLayout(): Layout {

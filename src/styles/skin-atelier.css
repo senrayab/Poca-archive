@@ -1,0 +1,415 @@
+/* ---------- skin: atelier ---------- */
+
+/*
+ * 여덟 번째 스킨. 작품 목록이다.
+ *
+ * 앞의 일곱이 '사진을 어떻게 담을까'로 갈렸다면 여기는 활자로 갈린다.
+ * 화면 이름은 작은 라벨로, 장수는 큰 숫자로, 카드마다 번호와 날짜가 붙는다.
+ * 번호가 매겨지면 같은 격자라도 '사진 더미'가 아니라 '작품 목록'으로 읽힌다.
+ *
+ * 층은 그림자가 아니라 선으로 가른다. 소프트·녹턴·프리즘은 전부 떠 있는
+ * 것으로 층을 갈랐는데, 종이에는 머리카락처럼 얇은 선이 그어질 뿐이다.
+ * 그래서 이 스킨의 그림자는 거의 없고 둥글기도 작다 — 인쇄물의 모서리는
+ * 크게 굴지 않는다.
+ *
+ * 검정은 단추에만 쓴다. 크림 종이가 넓게 남아야 종이로 읽히고, 검은 것이
+ * 작을수록 검다.
+ */
+
+:root[data-skin='atelier'],
+:root[data-skin='atelier'][data-theme='dark'] {
+  --bg-base: #16130f;
+  --desk-bg-base: #0d0b09;
+  --bg-elev-base: #201c16;
+  --bg-elev-2-base: #2a251d;
+  --line-base: #383127;
+  --panel-line: #332c23;
+  --text: #f4efe5;
+  --text-dim: #9b9084;
+  /* 어두운 데서는 종이빛이 '지금 이것'이 된다 */
+  --accent: #f4efe5;
+  --accent-ink: #16130f;
+  --accent-soft: rgba(244, 239, 229, .10);
+  /* 그래프 색도 흙빛으로 — 이름이 아니라 자리다 */
+  --sky: #8fae94;
+  --violet: #d1a06a;
+  --danger: #e07a63;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-md: 0 3px 10px rgba(0, 0, 0, .38);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, .44);
+  --shadow-xl: 0 20px 56px rgba(0, 0, 0, .55);
+  --glow-spread: 0 6px 18px;
+  --glow: 0 6px 18px rgba(0, 0, 0, .45);
+  --wash:
+    radial-gradient(56% 38% at 4% 0%, rgba(209, 160, 106, .10), transparent 70%),
+    radial-gradient(60% 40% at 98% 92%, rgba(143, 174, 148, .08), transparent 72%);
+
+  /* 인쇄물의 모서리는 크게 굴지 않는다 */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+  --panel-radius: 12px;
+  --thumb-radius: 5px;
+  --stage-radius: 10px;
+
+  --rail-bg: transparent;
+  --rail-fade: var(--bg);
+
+  --nav-h: 52px;
+  --cols: 3;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='atelier']:not([data-theme='dark']) {
+    --bg-base: #f6f2ea;
+    --desk-bg-base: #eae3d7;
+    --bg-elev-base: #fffdf8;
+    --bg-elev-2-base: #f0e9dd;
+    --line-base: #e0d7c8;
+    --panel-line: #e6ddcf;
+    --text: #191510;
+    --text-dim: #8b8173;
+    --accent: #191510;
+    --accent-ink: #f6f2ea;
+    --accent-soft: rgba(25, 21, 16, .07);
+    --sky: #5f8a6c;
+    --violet: #a9743f;
+    --danger: #b4432f;
+
+    --shadow-sm: 0 1px 2px rgba(70, 55, 35, .06);
+    --shadow-md: 0 3px 10px rgba(70, 55, 35, .07);
+    --shadow-lg: 0 10px 28px rgba(70, 55, 35, .09);
+    --shadow-xl: 0 20px 56px rgba(70, 55, 35, .14);
+    --glow-spread: 0 6px 18px;
+    --glow: 0 6px 18px rgba(25, 21, 16, .18);
+    --wash:
+      radial-gradient(56% 38% at 4% 0%, rgba(216, 178, 128, .22), transparent 70%),
+      radial-gradient(60% 40% at 98% 92%, rgba(150, 180, 155, .16), transparent 72%);
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='atelier'][data-theme='light'] {
+  --bg-base: #f6f2ea;
+  --desk-bg-base: #eae3d7;
+  --bg-elev-base: #fffdf8;
+  --bg-elev-2-base: #f0e9dd;
+  --line-base: #e0d7c8;
+  --panel-line: #e6ddcf;
+  --text: #191510;
+  --text-dim: #8b8173;
+  --accent: #191510;
+  --accent-ink: #f6f2ea;
+  --accent-soft: rgba(25, 21, 16, .07);
+  --sky: #5f8a6c;
+  --violet: #a9743f;
+  --danger: #b4432f;
+
+  --shadow-sm: 0 1px 2px rgba(70, 55, 35, .06);
+  --shadow-md: 0 3px 10px rgba(70, 55, 35, .07);
+  --shadow-lg: 0 10px 28px rgba(70, 55, 35, .09);
+  --shadow-xl: 0 20px 56px rgba(70, 55, 35, .14);
+  --glow-spread: 0 6px 18px;
+  --glow: 0 6px 18px rgba(25, 21, 16, .18);
+  --wash:
+    radial-gradient(56% 38% at 4% 0%, rgba(216, 178, 128, .22), transparent 70%),
+    radial-gradient(60% 40% at 98% 92%, rgba(150, 180, 155, .16), transparent 72%);
+
+  color-scheme: light;
+}
+
+/* 아래 알약이 가리지 않도록 발치를 비운다 */
+:root[data-skin='atelier'] .content {
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 22px);
+}
+
+/* ---------- 머리 ---------- */
+
+.atlhead { padding: calc(18px + var(--safe-top)) 20px 0; }
+
+/* 잡지의 꼭지 이름처럼 — 작게, 넓게, 물러나 */
+.atlhead__label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/*
+ * 장수는 큰 숫자로 세운다. 단위는 작게 뒤에 붙인다 — 같은 크기로 두면
+ * '76장'이 한 낱말이 되어버리고 숫자가 주인공인 느낌이 사라진다.
+ */
+.atlhead__title {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.atlhead__title em {
+  font-size: 15px;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
+
+.atlhead__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/*
+ * 층을 가르는 것은 선 하나뿐이다. 종이에는 그림자가 아니라 선이 그어진다.
+ */
+.atlrule {
+  margin: 16px 0 0;
+  border: none;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- 단추 ---------- */
+
+/*
+ * 테두리만 두른 알약. 검게 채우는 것은 지금 하려는 일 하나뿐이고,
+ * 나머지는 선으로만 있는다 — 종이 위에서 검은 덩어리가 여럿이면 시끄럽다.
+ */
+.atlbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  transition: transform .15s var(--ease);
+}
+.atlbtn:active { transform: scale(.95); }
+.atlbtn--on {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: none;
+}
+
+/* ---------- 멤버 (활자 목록) ---------- */
+
+/*
+ * 밑줄도 알약도 없다. 지금 고른 것만 검게 서고 나머지는 종이 빛에 가깝게
+ * 물러난다 — 잡지의 꼭지 차례가 그렇게 놓인다. 모노도 활자로 가지만
+ * 그쪽은 작은 글씨에 밑줄이고, 여기는 크고 무게로만 가린다.
+ */
+.atlmembers {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
+  overscroll-behavior-x: contain;
+}
+.atlmembers::-webkit-scrollbar { display: none; }
+
+.atlname {
+  flex-shrink: 0;
+  padding: 2px 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--text-dim);
+  transition: color .15s;
+}
+.atlname[aria-selected='true'] { color: var(--text); font-weight: 800; }
+.atlname--add { color: var(--text-dim); opacity: .7; }
+
+.atlhint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 16px 20px 0;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.atlhint button {
+  margin-left: auto;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- 작품 목록 ---------- */
+
+.atlgrid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 16px 12px;
+  padding: 18px 20px 0;
+}
+
+.atlplate {
+  display: block;
+  width: 100%;
+  /* 단추의 기본 좌우 여백을 걷는다 */
+  padding: 0;
+  text-align: left;
+  /* 길게 누르면 폰이 사진 저장 메뉴를 띄운다 — 고르기 손짓과 부딪힌다 */
+  -webkit-touch-callout: none;
+}
+
+.atlplate__shot {
+  position: relative;
+  display: block;
+  aspect-ratio: var(--card-ratio);
+  border-radius: var(--thumb-radius);
+  overflow: hidden;
+  background: var(--bg-elev-2);
+  box-shadow: var(--shadow-sm);
+  transition: transform .16s var(--ease);
+}
+.atlplate:active .atlplate__shot { transform: scale(.96); }
+.atlplate__shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.atlplate[data-selected='true'] .atlplate__shot {
+  box-shadow: inset 0 0 0 2.5px var(--accent), var(--shadow-sm);
+}
+
+/*
+ * 번호와 날짜. 이 두 줄이 '사진 더미'를 '작품 목록'으로 바꾼다.
+ * 번호가 날짜보다 짙은 건 먼저 읽히는 쪽이 번호여야 하기 때문이다.
+ */
+.atlplate__no {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.atlplate__at {
+  display: block;
+  margin-top: 1px;
+  font-size: 10px;
+  letter-spacing: .04em;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.atlplate__fav {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: var(--fav);
+  line-height: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .35));
+}
+.atlplate__check {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .45);
+  color: #fff;
+}
+.atlplate__check[data-on='true'] { background: var(--accent); color: var(--accent-ink); }
+
+/* ---------- 이어진 두 알약 ---------- */
+
+/*
+ * 폭을 다 쓰지 않는다. 크림 종이가 넓게 남아야 종이로 읽히고, 검은 것이
+ * 작을수록 검다.
+ *
+ * 둘로 나눈 건 하는 일이 다르기 때문이다 — 왼쪽은 '어디로 갈까', 오른쪽은
+ * '무엇을 더할까'. 붙여 두되 틈 하나로 갈라 놓으면 두 일이라는 게 보인다.
+ */
+.atlnav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 14px);
+  z-index: 30;
+  display: flex;
+  gap: 3px;
+}
+
+.atlnav__go {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+  height: var(--nav-h);
+  border-radius: var(--pill);
+  background: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.atlnav__item {
+  width: 42px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--pill);
+  color: color-mix(in srgb, var(--accent-ink) 52%, transparent);
+  text-decoration: none;
+  transition: color .15s, background .15s;
+}
+/* 지금 있는 자리는 종이빛이 또렷해진다 — 검은 알약 안에서는 그것이 강조다 */
+.atlnav__item.active {
+  color: var(--accent-ink);
+  background: color-mix(in srgb, var(--accent-ink) 14%, transparent);
+}
+
+.atlnav__add {
+  width: var(--nav-h);
+  height: var(--nav-h);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+  transition: transform .15s var(--ease);
+}
+.atlnav__add:active { transform: scale(.9); }
+
+/* ---------- 자세히보기 ---------- */
+
+/*
+ * 사진 한 장이 주인공인 자리라 떠 있는 것을 최소로 둔다. 누르는 것만
+ * 종이 위의 알약으로 세운다.
+ */
+:root[data-skin='atelier'] .detail-page .detail__close,
+:root[data-skin='atelier'] .detail-page .detail__nav {
+  background: var(--bg-elev);
+  box-shadow: inset 0 0 0 1px var(--line);
+  border-radius: 50%;
+  opacity: 1;
+}
+:root[data-skin='atelier'] .detail-page .detail__rail {
+  padding: 4px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlbtn,
+  .atlplate__shot,
+  .atlnav__add { transition: none; }
+}

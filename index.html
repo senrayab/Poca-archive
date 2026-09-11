@@ -18,7 +18,7 @@
         if (t === 'light' || t === 'dark') r.dataset.theme = t
         var s = localStorage.getItem('poca:skin')
         // theme.ts의 SKIN_IDS와 같은 목록. 스킨을 더하면 여기에도 한 낱말 더한다.
-        r.dataset.skin = ['mono', 'aurora', 'brick', 'soft', 'nocturne', 'prism'].indexOf(s) >= 0 ? s : 'pastel'
+        r.dataset.skin = ['mono', 'aurora', 'brick', 'soft', 'nocturne', 'prism', 'atelier'].indexOf(s) >= 0 ? s : 'pastel'
 
         var a = localStorage.getItem('poca:accent')
         if (a && /^#[0-9a-f]{6}$/i.test(a)) {
