@@ -19,6 +19,9 @@
         var s = localStorage.getItem('poca:skin')
         // theme.ts의 SKIN_IDS와 같은 목록. 스킨을 더하면 여기에도 한 낱말 더한다.
         r.dataset.skin = ['soft', 'nocturne', 'prism', 'atelier', 'blank'].indexOf(s) >= 0 ? s : 'pastel'
+        // 보관함 이름의 글꼴. theme.ts의 NAME_FONT_IDS와 같은 목록이다.
+        var f = localStorage.getItem('poca:namefont')
+        r.dataset.namefont = ['system', 'sans', 'serif', 'mono'].indexOf(f) >= 0 ? f : 'app'
 
         var a = localStorage.getItem('poca:accent')
         if (a && /^#[0-9a-f]{6}$/i.test(a)) {

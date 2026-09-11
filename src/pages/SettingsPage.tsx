@@ -8,17 +8,20 @@ import {
   SkinIcon,
   SunIcon,
 } from '@/components/Icons'
-import { DEFAULT_APP_NAME, setAppName, useAppNameInput } from '@/lib/appName'
+import { DEFAULT_APP_NAME, setAppName, useAppName, useAppNameInput } from '@/lib/appName'
 import {
   ACCENT_PRESETS,
   FAV_CUTS,
+  NAME_FONTS,
   SKINS,
   setAccent,
   setFavCut,
+  setNameFont,
   setSkin,
   setThemeMode,
   useAccent,
   useFavCut,
+  useNameFont,
   useSkin,
   useThemeMode,
   type ThemeMode,
@@ -45,6 +48,8 @@ export function SettingsPage() {
   const favCut = useFavCut()
   const accent = useAccent()
   const appNameInput = useAppNameInput()
+  const appName = useAppName()
+  const nameFont = useNameFont()
 
   return (
     <>
@@ -58,10 +63,10 @@ export function SettingsPage() {
           </h2>
           <div className="card-panel">
             <p>
-              보관함 화면 제목과 서랍 메뉴에 쓰이는 이름입니다. 비워두면
+              보관함 화면 제목과 더보기 머리에 쓰이는 이름입니다. 비워두면
               <b> {DEFAULT_APP_NAME}</b>로 돌아갑니다.
             </p>
-            <label className="field" style={{ marginBottom: 0 }}>
+            <label className="field">
               <span>보관함 이름</span>
               <input
                 type="text"
@@ -71,6 +76,36 @@ export function SettingsPage() {
                 maxLength={40}
               />
             </label>
+
+            {/*
+              글꼴은 이름만 보고 고르기 어렵다. 폰마다 같은 이름이 다른
+              글꼴로 풀리기도 해서, 고르는 자리에서 제 이름이 그 글꼴로
+              바로 보이게 한다 — 눈으로 알아보는 편이 빠르다.
+            */}
+            <p style={{ marginTop: 18 }}>
+              이름에 쓸 글꼴입니다. 폰에 넣어둔 글꼴을 부르는 길이 둘이라
+              <b> 기기 글꼴</b>과 <b>기기 고딕</b>을 따로 뒀어요. 어느 쪽이 통하는지는
+              기기가 정하는 일이라, 보고 마음에 드는 것을 고르시면 됩니다.
+            </p>
+            <div className="fontpick" role="radiogroup" aria-label="보관함 이름 글꼴">
+              {NAME_FONTS.map((option) => (
+                <button
+                  key={option.id}
+                  className="fontpick__row"
+                  role="radio"
+                  aria-checked={nameFont === option.id}
+                  onClick={() => setNameFont(option.id)}
+                >
+                  <span className="fontpick__label">
+                    <b>{option.name}</b>
+                    <small>{option.hint}</small>
+                  </span>
+                  <span className="fontpick__try" data-namefont={option.id}>
+                    {appName}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="card-panel">
