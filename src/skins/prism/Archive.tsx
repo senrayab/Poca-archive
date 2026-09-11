@@ -208,9 +208,10 @@ export function Archive(view: ArchiveView) {
  * 아래쪽에 있는 사진이 적지 않아 크게 덮으면 무엇인지 알아볼 수 없다.
  * 유리에 꽂혀 있다는 것만 말해주면 그걸로 충분하다.
  *
- * 흐림(backdrop-filter)은 쓰지 않았다. 한 화면에 서른 장이 깔리는
- * 자리라 폰에서 값이 너무 크다. 대신 흰 기운을 얇게 덮고 그 위쪽
- * 가장자리에 밝은 실선을 그으면, 작은 크기에서는 같은 그림이 된다.
+ * 흐림은 뒤를 들여다보는 방식(backdrop-filter)이 아니라, 같은 사진을 한
+ * 장 더 깔아 그것을 흐리는 방식이다. 앞의 것은 스크롤할 때마다 뒤를 다시
+ * 읽어 값이 크고, 뒤의 것은 한 번 그려두면 그대로 쓰인다. 같은 그림에
+ * 값은 훨씬 싸다.
  */
 const Sleeve = memo(function Sleeve({
   card,
@@ -247,7 +248,15 @@ const Sleeve = memo(function Sleeve({
       aria-label={card.title || card.memo || '포토카드'}
     >
       {url && <img src={url} alt="" loading="lazy" decoding="async" />}
-      <span className="przcard__sleeve" aria-hidden="true" />
+      {/*
+        슬리브 안에는 같은 사진을 한 장 더 깔고 흐린다.
+        덮개만 씌우면 밑이 또렷해서 '가려진 것'으로 보이지, 유리 너머로
+        보이는 것이 아니다. 같은 주소라 브라우저가 디코드한 그림을 다시
+        쓰므로 사진을 두 번 읽는 값은 들지 않는다.
+      */}
+      <span className="przcard__sleeve" aria-hidden="true">
+        {url && <img src={url} alt="" />}
+      </span>
       {selectable && (
         <span className="przcard__check" data-on={selected}>
           {selected && <CheckIcon size={12} />}
