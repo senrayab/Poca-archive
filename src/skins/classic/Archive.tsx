@@ -50,7 +50,7 @@ export function Archive(view: ArchiveView) {
         title={title}
         actions={
           selectMode ? (
-            <>
+            <div className="pick" data-picking>
               {mode === 'trash' ? (
                 <>
                   <button className="icon-btn" onClick={onRestore} aria-label="되돌리기">
@@ -68,7 +68,7 @@ export function Archive(view: ArchiveView) {
               <button className="icon-btn" onClick={onClearSelection} aria-label="선택 해제">
                 <CloseIcon />
               </button>
-            </>
+            </div>
           ) : (
             <>
               {mode === 'trash' && cards.length > 0 && (

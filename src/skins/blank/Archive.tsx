@@ -62,7 +62,7 @@ export function Archive(view: ArchiveView) {
         </p>
 
         {(selectMode || (mode === 'trash' && cards.length > 0)) && (
-          <div className="blnkhead__actions">
+          <div className="blnkhead__actions" data-picking={selectMode || undefined}>
             {selectMode ? (
               <>
                 {mode === 'trash' ? (

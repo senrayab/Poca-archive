@@ -73,7 +73,7 @@ export function Archive(view: ArchiveView) {
             </button>
           )}
 
-          <div className="softhead__actions">
+          <div className="softhead__actions" data-picking={selectMode || undefined}>
             {selectMode ? (
               <>
                 {mode === 'trash' ? (
