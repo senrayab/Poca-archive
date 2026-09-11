@@ -130,7 +130,7 @@ export function Archive(view: ArchiveView) {
               <p className="grid-hint">
                 <span>총 {cards.length}장 · 길게 눌러 여러 장 선택</span>
                 <button className="btn btn--sm" onClick={onSelectAll}>
-                  <CheckIcon size={15} />
+                  <CheckIcon size={13} />
                   전체 선택
                 </button>
               </p>

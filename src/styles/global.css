@@ -602,11 +602,11 @@ a { color: inherit; }
 /* ---------- grid ---------- */
 
 /* 폰에서는 한 줄에 4장 고정, 화면이 넓어지면 칸 수를 늘린다. */
-/* 사이 여백과 바깥 여백은 녹턴과 같은 값을 쓴다 — 칸 크기까지 그대로 맞는다 */
+/* 바깥 여백은 녹턴과 같은 값을 쓰고, 사이는 그보다 좁은 4px로 둔다 */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 4px;
   padding: 14px 16px 0;
 }
 /* 쓸어서 고르는 동안에는 목록이 손가락을 따라 움직이면 안 된다 */
@@ -734,12 +734,13 @@ a { color: inherit; }
  *
  * 둘이 같은 크기면 한 줄로 읽혀 어느 것이 이름이고 어느 것이 하는 일인지
  * 갈리지 않는다. 이름은 늘 거기 있는 것이고 이것은 가끔 누르는 것이라,
- * 한 치수 작은 편이 자리에 맞다.
+ * 작은 편이 자리에 맞다. 기본 작은 단추에서 두 치수 내린 크기다.
  */
 .grid-hint .btn {
-  height: 30px;
-  padding: 0 12px;
-  font-size: 12px;
+  height: 26px;
+  padding: 0 10px;
+  gap: 5px;
+  font-size: 11px;
 }
 
 /* 좁아지면 단추가 아니라 안내 쪽이 줄어든다 */
@@ -2972,7 +2973,7 @@ a { color: inherit; }
   /* 컬럼이 좁아졌으니 넓은 화면용 그리드가 아니라 폰과 같은 4열을 쓴다 */
   .grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    gap: 4px;
     padding: 14px 16px 0;
   }
 
