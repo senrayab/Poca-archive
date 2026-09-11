@@ -1029,16 +1029,21 @@ a { color: inherit; }
  * 원이 아니라 꼭짓점에 붙은 부채꼴이 되어, 모서리가 잘려 나간 것으로 읽힌다.
  * 가운데는 완전히 비우고 바깥으로 길게 풀어, 그림자가 모서리 쪽으로 갈수록
  * 옅어지다 사라지게 한다.
+ *
+ * 푸는 길이가 요점이다. 짧게 끊으면 옅어지다 만 자리에 원호의 끝이 남아,
+ * 결국 동그란 자국으로 보인다. 완전히 비우는 안쪽은 그대로 두고 바깥으로만
+ * 길게 늘여야 한다 — 그림자가 닿는 거리(--shade-room)의 절반쯤 가면 눈이
+ * 가장자리를 찾지 못한다.
  */
 .detail__canvas[data-cut] + .detail__shade {
   -webkit-mask-image: radial-gradient(
-    circle calc(var(--fav-cut-r) + 26px)
+    circle calc(var(--fav-cut-r) + 58px)
       at right var(--shade-room) top var(--shade-room),
-    transparent 0 38%, #000 100%);
+    transparent 0 23%, #000 100%);
   mask-image: radial-gradient(
-    circle calc(var(--fav-cut-r) + 26px)
+    circle calc(var(--fav-cut-r) + 58px)
       at right var(--shade-room) top var(--shade-room),
-    transparent 0 38%, #000 100%);
+    transparent 0 23%, #000 100%);
 }
 
 .detail__img {
