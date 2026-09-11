@@ -138,7 +138,12 @@ export function useSweepSelect({
   const roll = () => {
     frame.current = 0
     if (!draggingRef.current || !speed.current) return
-    window.scrollBy(0, speed.current)
+    /*
+     * 굴리는 것은 창이 아니라 앱 안쪽 상자다. 문서는 움직이지 않게
+     * 묶어두었으므로(global.css의 html/overflow 참고) window.scrollBy는
+     * 아무 일도 하지 않는다.
+     */
+    scrollerOf(gridRef.current)?.scrollBy(0, speed.current)
     // 목록이 움직였으니 손가락 밑의 카드도 달라졌다
     paint(at.current.x, at.current.y)
     frame.current = requestAnimationFrame(roll)
@@ -244,4 +249,15 @@ export function useSweepSelect({
     dragging,
     handledByPress: () => draggingRef.current,
   }
+}
+
+/** 이 요소를 감싸고 있는, 실제로 굴러가는 상자. 없으면 null. */
+function scrollerOf(el: Element | null): Element | null {
+  for (let node = el?.parentElement ?? null; node; node = node.parentElement) {
+    const { overflowY } = getComputedStyle(node)
+    if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+      return node
+    }
+  }
+  return null
 }
