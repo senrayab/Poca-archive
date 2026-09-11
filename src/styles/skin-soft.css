@@ -238,8 +238,8 @@
 
 .softmembers {
   display: flex;
-  /* 이름들이 한 줄로 읽히게 바짝 붙인다 — 알약이 이미 서로를 가른다 */
-  gap: 6px;
+  /* 판을 두른 것이 하나뿐이라 더 붙여도 서로 엉키지 않는다 */
+  gap: 2px;
   /*
    * 발치의 14px은 알약이 드리우는 그림자의 자리다.
    *
@@ -567,6 +567,10 @@
 /*
  * 적는 칸도 흰 판이다. 테두리를 걷고 그림자를 안쪽으로 한 겹 넣으면
  * '파인 자리'로 읽혀, 떠 있는 단추와 성격이 갈린다.
+ *
+ * 다만 자세히보기 안은 뺀다. 거기는 사진 위에 얹힌 얇은 층이라 네모 판이
+ * 넷 겹치면 사진을 덮은 판때기처럼 보인다 — 밑줄 하나로 두는 것이
+ * global.css의 규칙이고, 이 스킨만 그 규칙을 덮고 있었다.
  */
 :root[data-skin='soft'] .field input[type='text'],
 :root[data-skin='soft'] .field select,
@@ -581,6 +585,20 @@
 :root[data-skin='soft'] .field textarea:focus {
   border-color: transparent;
   box-shadow: var(--shadow-sm), 0 0 0 2.5px var(--accent);
+}
+/* 자세히보기 안에서는 밑줄 하나와 비친 바탕으로 — 다른 다섯 스킨과 같다 */
+:root[data-skin='soft'] .detail .field input[type='text'],
+:root[data-skin='soft'] .detail .field select,
+:root[data-skin='soft'] .detail .field textarea {
+  background: none;
+  border-bottom: 1.5px solid var(--glass-line);
+  box-shadow: none;
+}
+:root[data-skin='soft'] .detail .field input[type='text']:focus,
+:root[data-skin='soft'] .detail .field select:focus,
+:root[data-skin='soft'] .detail .field textarea:focus {
+  box-shadow: none;
+  border-bottom-color: var(--accent);
 }
 
 /* 갈래 이름은 판 밖에 놓이는 곁말이라 판의 안쪽 여백에 맞춰 들인다 */
