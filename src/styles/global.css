@@ -2984,9 +2984,13 @@ a { color: inherit; }
 /*
  * 서랍이 하던 일을 한 화면에 펼친 것이다.
  *
- * 줄은 판때기 안에 묶어 둔다. 낱장으로 흩어 놓으면 '보관함'과 '관리'가
- * 어디서 갈리는지 여백만으로 재야 하는데, 묶어두면 판 하나가 곧 한 갈래다.
- * 판 안쪽의 줄 사이만 선으로 가른다.
+ * 줄은 갈래마다 묶어 두되 판때기는 깔지 않는다. 한때는 판 하나가 곧 한
+ * 갈래였는데, 갈래마다 위에 작은 이름('보관함', '관리')이 이미 서 있어서
+ * 판까지 두르면 같은 말을 두 번 하는 셈이었다. 이름과 그 아래 벌어진 사이가
+ * 갈래를 가르고, 줄 사이만 선으로 가른다.
+ *
+ * 줄의 아이콘은 위 이름과 같은 세로선에 선다. 줄은 양옆으로 조금 삐져나와
+ * 있어서, 누를 때 번지는 바탕이 아이콘에 바짝 붙지 않는다.
  */
 .more { padding: 8px 16px 16px; max-width: 640px; margin: 0 auto; }
 
@@ -2999,19 +3003,12 @@ a { color: inherit; }
 }
 .more__group:first-child { margin-top: 6px; }
 
-.more__panel {
-  background: var(--bg-elev);
-  border: 1px solid var(--panel-line);
-  border-radius: var(--panel-radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
 .more__row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  margin-inline: -8px;
+  padding: 14px 12px;
   color: var(--text);
   text-decoration: none;
   font-size: 14px;

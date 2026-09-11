@@ -559,8 +559,13 @@
  *
  * 기본 차림의 단추는 바탕보다 한 톤 짙은 회색이다. 회색 종이 위에서는
  * 그 회색이 종이와 섞여 단추로 읽히지 않는다. 흰색으로 띄워야 손이 간다.
+ *
+ * 다만 자르기와 카메라는 빼놓는다. 둘은 딤이나 검은 화면 위라 글씨가
+ * 흰색이고, 단추는 바탕을 비워 흰 선만 남긴다(global.css의 '.crop .btn').
+ * 이 규칙은 :root까지 붙어 그보다 힘이 세서, 빼놓지 않으면 흰 판에 흰
+ * 글씨가 되어 '되돌리기'가 빈 알약으로 보였다.
  */
-:root[data-skin='soft'] .btn { background: var(--bg-elev); }
+:root[data-skin='soft'] .btn:not(:is(.crop, .shot) .btn) { background: var(--bg-elev); }
 :root[data-skin='soft'] .btn--primary { background: var(--accent); color: var(--accent-ink); }
 :root[data-skin='soft'] .btn--danger { background: var(--danger); color: #fff; }
 
