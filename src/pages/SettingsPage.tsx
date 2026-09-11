@@ -87,10 +87,20 @@ export function SettingsPage() {
                   aria-pressed={skin === option.id}
                   onClick={() => setSkin(option.id)}
                 >
-                  <span className="skin__swatch" aria-hidden="true">
-                    <i />
-                    <i />
-                    <i />
+                  {/*
+                    스킨이 색만 갈아끼우던 때는 색 띠 하나로 충분했다.
+                    이제는 짜임이 갈리므로 짜임을 보여준다 — 머리가 어떻게
+                    생겼는지, 한 줄에 몇 장인지, 길찾기가 어디 있는지.
+                    고르기 전에 알 수 있어야 고르는 값이 있다.
+                  */}
+                  <span className="skin__shot" aria-hidden="true">
+                    <i className="skin__pvhead" />
+                    <span className="skin__pvgrid">
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <i key={i} />
+                      ))}
+                    </span>
+                    <i className="skin__pvnav" />
                   </span>
                   <b>{option.name}</b>
                   <small>{option.hint}</small>

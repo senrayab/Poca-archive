@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 export type ThemeMode = 'system' | 'light' | 'dark'
-export type SkinId = 'pastel' | 'mono' | 'aurora' | 'brick' | 'soft' | 'nocturne' | 'prism' | 'atelier'
+export type SkinId = 'pastel' | 'soft' | 'nocturne' | 'prism' | 'atelier'
 export type FavCut = 'notch' | 'disc'
 
 const THEME_KEY = 'poca:theme'
@@ -27,12 +27,6 @@ export const ACCENT_PRESETS = [
  */
 export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
   { id: 'pastel', name: '파스텔', hint: '파스텔 얼룩 배경에 코랄 포인트, 한쪽이 물린 둥글기' },
-  { id: 'mono', name: '모노', hint: '안개 낀 무채색 배경, 붓으로 그은 듯한 탭과 얇은 테두리' },
-  {
-    id: 'aurora',
-    name: '오로라',
-    hint: '라벤더에서 분홍으로 갈리는 유리빛 배경, 방울처럼 떠 있는 탭',
-  },
   {
     id: 'atelier',
     name: '아틀리에',
@@ -52,11 +46,6 @@ export const SKINS: Array<{ id: SkinId; name: string; hint: string }> = [
     id: 'soft',
     name: '소프트',
     hint: '회색 바탕에 흰 판이 떠 있는 결, 세 열 격자와 아래 알약 탭바',
-  },
-  {
-    id: 'brick',
-    name: '블록',
-    hint: '노란 조각이 놓인 모눈 판, 고르면 눌러 끼운 것처럼 들어가는 탭',
   },
 ]
 
