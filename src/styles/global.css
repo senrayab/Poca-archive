@@ -1117,12 +1117,16 @@ a { color: inherit; }
    * 색이든 그 위에서 읽히는 쪽(검정 또는 흰색)이 함께 정해지므로, 여기서
    * 다시 따질 것이 없다.
    *
-   * 조금 비친다. 알림은 화면 위에 잠깐 떴다 사라지는 것이라 뒤를 가려도
+   * 꽤 비친다. 알림은 화면 위에 잠깐 떴다 사라지는 것이라 뒤를 가려도
    * 되지만, 이 상자는 사진 위에 계속 앉아 있다 — 덮은 만큼 사진이 줄어드는
    * 것이니 글자가 읽히는 선까지만 채운다.
    */
-  background: color-mix(in srgb, var(--accent) 86%, transparent);
-  box-shadow: var(--shadow-md);
+  background: color-mix(in srgb, var(--accent) 74%, transparent);
+  /*
+   * 그림자는 두지 않는다. 그림자는 떠 있다는 말인데, 여기서 떠 있어야 할
+   * 것은 사진이지 이 상자가 아니다. 상자가 사진보다 앞으로 나오면 무엇을
+   * 보러 들어온 화면인지가 흐려진다.
+   */
   border: none;
   --on-scrim: var(--accent-ink);
   --on-scrim-ink: var(--accent);
