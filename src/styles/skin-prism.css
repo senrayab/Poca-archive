@@ -1,0 +1,407 @@
+/* ---------- skin: prism ---------- */
+
+/*
+ * 일곱 번째 스킨. 유리 진열장이다.
+ *
+ * 다른 스킨이 '사진을 어떻게 놓을까'를 풀었다면 여기는 '사진을 무엇에
+ * 담을까'를 푼다. 카드 한 장 한 장이 서리유리 슬리브에 꽂혀 있고, 뒤에는
+ * 민트와 하늘빛 덩어리가 크게 번져 있다.
+ *
+ * 흐림은 아껴 쓴다. 떠 있는 층(아래 캡슐·멤버 그릇·단추)에만 걸고, 목록의
+ * 카드에는 걸지 않는다. 한 화면에 서른 장이 깔리는 자리라 폰에서 값이 너무
+ * 크다. 카드의 슬리브는 흰 기운을 얇게 덮고 위쪽 가장자리에 밝은 실선을
+ * 긋는 것으로 대신한다 — 작은 크기에서는 같은 그림이 된다.
+ *
+ * 오로라와 색이 겹치지 않게 갈라 두었다. 오로라는 라벤더에서 분홍으로,
+ * 프리즘은 민트에서 하늘로 간다.
+ */
+
+:root[data-skin='prism'],
+:root[data-skin='prism'][data-theme='dark'] {
+  --bg-base: #0c1417;
+  --desk-bg-base: #070d0f;
+  --bg-elev-base: rgba(255, 255, 255, .08);
+  --bg-elev-2-base: rgba(255, 255, 255, .13);
+  --line-base: rgba(255, 255, 255, .14);
+  /* 유리의 가장자리. 이 스킨에서 선은 경계가 아니라 빛이 닿은 자리다. */
+  --panel-line: rgba(255, 255, 255, .16);
+  --text: #eef6f6;
+  --text-dim: rgba(238, 246, 246, .55);
+  --accent: #5fe0cd;
+  --accent-ink: #06211f;
+  --accent-soft: rgba(95, 224, 205, .16);
+  --sky: #7cc4f5;
+  --violet: #a79bf0;
+  --danger: #ff6f7d;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .4);
+  --shadow-md: 0 8px 26px rgba(0, 0, 0, .44);
+  --shadow-lg: 0 16px 44px rgba(0, 0, 0, .5);
+  --shadow-xl: 0 28px 72px rgba(0, 0, 0, .58);
+  --glow-spread: 0 8px 26px;
+  --glow: 0 8px 26px rgba(95, 224, 205, .26);
+  /* 뒤에 번지는 덩어리. 움직이지는 않는다 — 폰에서 값이 비싸다. */
+  --wash:
+    radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .20), transparent 70%),
+    radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .18), transparent 72%),
+    radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .16), transparent 72%);
+
+  --radius: 26px;
+  --radius-sm: 20px;
+  --radius-xs: 15px;
+  --panel-radius: 22px;
+  --thumb-radius: 14px;
+  --stage-radius: 24px;
+
+  --rail-bg: transparent;
+  --rail-fade: var(--bg);
+
+  /* 아래 떠 있는 캡슐이 먹는 높이 */
+  --nav-h: 66px;
+  /* 한 줄에 몇 장 */
+  --cols: 3;
+  /* 슬리브가 사진을 덮는 깊이 */
+  --sleeve: 20%;
+  /* 슬리브의 흰 기운 */
+  --frost: rgba(255, 255, 255, .16);
+  --frost-rim: rgba(255, 255, 255, .30);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-skin='prism']:not([data-theme='dark']) {
+    --bg-base: #f1f6f6;
+    --desk-bg-base: #e5edee;
+    --bg-elev-base: rgba(255, 255, 255, .58);
+    --bg-elev-2-base: rgba(255, 255, 255, .80);
+    --line-base: rgba(18, 48, 48, .10);
+    --panel-line: rgba(255, 255, 255, .85);
+    --text: #14262a;
+    --text-dim: rgba(20, 38, 42, .55);
+    /* 흰 종이 위에서 글자가 되기도 하므로 한 단계 내려 앉힌 청록 */
+    --accent: #0f8e80;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(15, 142, 128, .12);
+    --sky: #3f9fe0;
+    --violet: #7b6ae0;
+    --danger: #d9434e;
+
+    --shadow-sm: 0 1px 3px rgba(20, 60, 60, .07);
+    --shadow-md: 0 8px 26px rgba(20, 60, 60, .09);
+    --shadow-lg: 0 16px 44px rgba(20, 60, 60, .12);
+    --shadow-xl: 0 28px 72px rgba(20, 60, 60, .17);
+    --glow-spread: 0 8px 26px;
+    --glow: 0 8px 26px rgba(15, 142, 128, .22);
+    --wash:
+      radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .34), transparent 70%),
+      radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .30), transparent 72%),
+      radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .24), transparent 72%);
+
+    --frost: rgba(255, 255, 255, .52);
+    --frost-rim: rgba(255, 255, 255, .92);
+
+    color-scheme: light;
+  }
+}
+
+:root[data-skin='prism'][data-theme='light'] {
+  --bg-base: #f1f6f6;
+  --desk-bg-base: #e5edee;
+  --bg-elev-base: rgba(255, 255, 255, .58);
+  --bg-elev-2-base: rgba(255, 255, 255, .80);
+  --line-base: rgba(18, 48, 48, .10);
+  --panel-line: rgba(255, 255, 255, .85);
+  --text: #14262a;
+  --text-dim: rgba(20, 38, 42, .55);
+  --accent: #0f8e80;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(15, 142, 128, .12);
+  --sky: #3f9fe0;
+  --violet: #7b6ae0;
+  --danger: #d9434e;
+
+  --shadow-sm: 0 1px 3px rgba(20, 60, 60, .07);
+  --shadow-md: 0 8px 26px rgba(20, 60, 60, .09);
+  --shadow-lg: 0 16px 44px rgba(20, 60, 60, .12);
+  --shadow-xl: 0 28px 72px rgba(20, 60, 60, .17);
+  --glow-spread: 0 8px 26px;
+  --glow: 0 8px 26px rgba(15, 142, 128, .22);
+  --wash:
+    radial-gradient(62% 42% at 8% 2%, rgba(95, 224, 205, .34), transparent 70%),
+    radial-gradient(58% 40% at 96% 12%, rgba(124, 196, 245, .30), transparent 72%),
+    radial-gradient(66% 44% at 88% 96%, rgba(167, 155, 240, .24), transparent 72%);
+
+  --frost: rgba(255, 255, 255, .52);
+  --frost-rim: rgba(255, 255, 255, .92);
+
+  color-scheme: light;
+}
+
+/* 아래 캡슐이 가리지 않도록 발치를 비운다 */
+:root[data-skin='prism'] .content {
+  padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
+}
+
+/* ---------- 유리의 공통 결 ---------- */
+
+.przbtn,
+.prznav,
+.przmembers__inner {
+  background: var(--bg-elev);
+  box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-md);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
+.przbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform .15s var(--ease);
+}
+.przbtn:active { transform: scale(.95); }
+.przbtn--on { background: var(--accent); color: var(--accent-ink); box-shadow: var(--glow); }
+
+/* ---------- 머리 ---------- */
+
+.przhead { padding: calc(14px + var(--safe-top)) 20px 0; }
+.przhead__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.przhead__title {
+  margin: 0;
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.15;
+}
+.przhead__sub { margin: 5px 0 0; font-size: 13px; font-weight: 500; color: var(--text-dim); }
+
+.przfind { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 20px 0; }
+
+/* ---------- 멤버 세그먼트 ---------- */
+
+/*
+ * 담는 그릇이 있다. 소프트와 녹턴은 알약이 저마다 떠 있는데, 유리는 칸을
+ * 나누는 물건이라 한 판 안에서 자리가 갈리는 쪽이 이 스킨의 말이다.
+ *
+ * 그릇에만 흐림을 건다 — 안쪽 칸은 그 위에 얹히는 것이므로 따로 흐릴
+ * 필요가 없고, 흐림을 겹치면 값만 두 배가 된다.
+ */
+.przmembers { padding: 16px 20px 0; }
+.przmembers__inner {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--pill);
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
+  overscroll-behavior-x: contain;
+}
+.przmembers__inner::-webkit-scrollbar { display: none; }
+
+.przseg {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+  transition: color .15s, background .15s;
+}
+/* 지금 고른 것만 한 겹 앞으로 나온다 */
+.przseg[aria-selected='true'] {
+  background: var(--bg-elev-2);
+  color: var(--text);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-sm);
+}
+.przseg--add { padding: 0 12px; }
+
+/* ---------- 슬리브에 꽂힌 격자 ---------- */
+
+.przgrid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 12px;
+  padding: 18px 20px 0;
+}
+
+.przcard {
+  position: relative;
+  display: block;
+  width: 100%;
+  /* 단추의 기본 좌우 여백을 걷는다 — 비율은 테두리 상자에 걸린다 */
+  padding: 0;
+  aspect-ratio: var(--card-ratio);
+  border-radius: var(--thumb-radius);
+  overflow: hidden;
+  background: var(--bg-elev-2);
+  box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-md);
+  transition: transform .18s var(--ease);
+  /* 길게 누르면 폰이 사진 저장 메뉴를 띄운다 — 고르기 손짓과 부딪힌다 */
+  -webkit-touch-callout: none;
+}
+.przcard:active { transform: scale(.96); }
+.przcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.przcard[data-selected='true'] {
+  box-shadow: inset 0 0 0 2.5px var(--accent), var(--shadow-md);
+}
+
+/*
+ * 슬리브. 아래 한 자락만 덮는다.
+ *
+ * 실제 탑로더는 훨씬 많이 가리지만, 얼굴이 아래쪽에 있는 사진이 적지 않아
+ * 크게 덮으면 무엇인지 알아볼 수 없다. 유리에 꽂혀 있다는 것만 말해주면
+ * 그걸로 충분하다.
+ *
+ * 위쪽 가장자리의 밝은 실선이 요점이다. 흰 기운만 덮으면 그냥 흐릿한
+ * 그라데이션인데, 선이 하나 그어지면 거기서부터 유리가 시작한다고 읽힌다.
+ */
+.przcard__sleeve {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--sleeve);
+  pointer-events: none;
+  background: linear-gradient(to top, var(--frost), color-mix(in srgb, var(--frost) 35%, transparent));
+  border-top: 1px solid var(--frost-rim);
+}
+
+.przcard__fav {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--fav);
+  line-height: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .35));
+}
+.przcard__check {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .42);
+  backdrop-filter: blur(4px);
+  color: #fff;
+}
+.przcard__check[data-on='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  backdrop-filter: none;
+}
+
+.przfoot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 18px 20px 0;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.przfoot button {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---------- 아래 캡슐 ---------- */
+
+.prznav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 12px);
+  z-index: 30;
+  width: min(calc(100% - 32px), calc(var(--app-w) - 32px));
+  height: var(--nav-h);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  padding: 0 6px;
+  border-radius: var(--pill);
+}
+
+.prznav__item {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 7px 0;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 600;
+  transition: color .15s, background .15s;
+}
+.prznav__item span { line-height: 1; }
+/*
+ * 지금 있는 자리는 맑은 유리 알약이 한 겹 앞으로 나온다. 소프트는 검게
+ * 채우고 녹턴은 옅게 밝히는데, 유리는 무엇이 앞에 있는지를 두께로 말하는
+ * 물건이라 여기서는 앞으로 나오는 것이 맞다.
+ */
+.prznav__item.active {
+  color: var(--text);
+  font-weight: 800;
+  background: var(--bg-elev-2);
+  box-shadow: inset 0 0 0 1px var(--panel-line), var(--shadow-sm);
+}
+
+.prznav__add {
+  justify-self: center;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: var(--glow);
+  transition: transform .15s var(--ease);
+}
+.prznav__add:active { transform: scale(.9); }
+
+/* ---------- 자세히보기 ---------- */
+
+/*
+ * 사진 한 장이 주인공인 자리라 떠 있는 것을 최소로 둔다. 누르는 것만
+ * 유리로 띄우고, 사진에는 같은 슬리브를 한 겹 씌운다.
+ */
+:root[data-skin='prism'] .detail-page .detail__close,
+:root[data-skin='prism'] .detail-page .detail__nav {
+  background: var(--bg-elev);
+  box-shadow: inset 0 0 0 1px var(--panel-line);
+  backdrop-filter: blur(20px);
+  border-radius: 50%;
+  opacity: 1;
+}
+:root[data-skin='prism'] .detail-page .detail__rail {
+  padding: 4px;
+  border-radius: var(--pill);
+  background: var(--bg-elev);
+  box-shadow: inset 0 0 0 1px var(--panel-line);
+  backdrop-filter: blur(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .przbtn,
+  .przcard,
+  .przseg,
+  .prznav__add { transition: none; }
+}
