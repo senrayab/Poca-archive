@@ -14,6 +14,19 @@
   --radius-sm: 15px;
   --radius-xs: 11px;
   --pill: 999px;
+  /*
+   * 아래 길찾기가 먹는 높이. 스킨마다 다르므로 저마다 제 값을 덮어쓰고,
+   * 여기 있는 것은 기본 차림(파스텔)의 값이다.
+   */
+  --nav-h: 56px;
+  /*
+   * 화면 아래에 뭔가를 띄울 때 비켜야 하는 만큼.
+   *
+   * 길찾기가 모든 스킨에서 아래에 떠 있게 된 뒤로, 아래에 뜨는 것들이
+   * 그 위에 겹쳐 앉았다. 스킨마다 바의 높이도 바닥에서 띄운 거리도 달라
+   * 한 값으로 적을 수가 없으므로, 각자의 --nav-h에서 셈해 쓴다.
+   */
+  --nav-clear: calc(var(--nav-h) + var(--safe-bottom) + 26px);
 
   --thumb-radius: 12px;
   --stage-radius: 22px;
@@ -2474,7 +2487,8 @@ a { color: inherit; }
   position: fixed;
   left: 16px;
   right: 16px;
-  bottom: calc(30px + var(--safe-bottom));
+  /* 아래 길찾기 위로 비켜 선다 — 얼마나 비켜야 하는지는 스킨이 안다 */
+  bottom: var(--nav-clear);
   margin-inline: auto;
   width: fit-content;
   z-index: 80;
