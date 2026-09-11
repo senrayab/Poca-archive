@@ -60,8 +60,6 @@ export interface HeaderView {
   title: string
   /** 흐름을 빠져나오는 화면(등록)만 뒤로가기를 쓴다 */
   back?: boolean
-  /** 아래 붙는 층이 헤더 자리까지 덮는 배경을 직접 그릴 때 켠다 */
-  bare?: boolean
   actions?: ReactNode
 }
 

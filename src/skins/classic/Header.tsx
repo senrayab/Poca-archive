@@ -50,12 +50,12 @@ function iconFor(pathname: string): ReactElement {
  * 왼쪽에 그림표, 그 옆에 이름, 오른쪽에 그 화면이 주는 일.
  * 흐린 바 하나로 위에 떠 있다.
  */
-export function Header({ title, back = false, bare = false, actions }: HeaderView) {
+export function Header({ title, back = false, actions }: HeaderView) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
   return (
-    <header className="header" data-bare={bare || undefined}>
+    <header className="header">
       {back ? (
         <button className="icon-btn" onClick={() => navigate(-1)} aria-label="뒤로">
           <ChevronLeft />

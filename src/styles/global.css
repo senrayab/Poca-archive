@@ -266,22 +266,30 @@ a { color: inherit; }
 
 .shell { min-height: 100%; display: flex; flex-direction: column; }
 
-/* 헤더·탭은 경계선 대신 프로스티드 유리로 띄운다 */
+/*
+ * 머리는 흐름 속에 둔다.
+ *
+ * 위에 붙박아 뒀던 건 그 아래 멤버 줄이 함께 붙어 있었기 때문이다. 한참
+ * 내려간 자리에서도 멤버를 바꿀 수 있어야 했으므로 둘이 같이 걸려 있어야
+ * 했고, 걸린 것 뒤로 카드가 지나가니 흐린 유리가 필요했다.
+ *
+ * 멤버 줄이 목록과 함께 올라가게 된 지금, 위에 남을 것은 화면 이름 하나뿐
+ * 이다. 이름은 한 번 읽고 마는 것이라 걸어둘 값이 없다 — 나머지 다섯
+ * 스킨의 머리가 모두 흐름 속에 있는 것도 같은 까닭이다.
+ */
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 30;
   padding-top: var(--safe-top);
   height: calc(var(--header-h) + var(--safe-top));
   display: flex;
   align-items: center;
   gap: 6px;
   padding-inline: 10px;
-  background: var(--bar-bg);
-  backdrop-filter: var(--bar-blur);
+  /*
+   * 바탕도 흐림도 두지 않는다. 걸려 있을 때는 뒤로 카드가 지나갔으므로
+   * 흐린 유리가 필요했지만, 함께 올라가는 지금은 뒤에 아무것도 지나가지
+   * 않는다 — 아무것도 없는 자리에 유리를 얹으면 그 유리만 보인다.
+   */
 }
-/* 아래 층이 배경을 통째로 그리는 화면에서는 헤더가 배경을 갖지 않는다 */
-.header[data-bare] { background: none; backdrop-filter: none; }
 
 /* 지금 화면의 그림표. 누를 것이 아니므로 단추의 바탕과 눌림은 없다. */
 .header__icon {
@@ -356,8 +364,6 @@ a { color: inherit; }
   background-image: var(--wash);
   background-attachment: fixed;
 }
-
-:root[data-skin='pastel'] .find { top: calc(var(--header-h) + var(--safe-top)); }
 
 .find__bar {
   display: flex;
