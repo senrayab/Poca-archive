@@ -681,16 +681,30 @@ a { color: inherit; }
 }
 
 /* 그리드 아래 요약 */
-.grid-foot {
+/*
+ * 누르는 방법을 일러주는 줄.
+ *
+ * 목록 아래에 있던 것을 위로 올렸다. 아래에 두면 다 내려간 뒤에야 보이는데,
+ * 그때는 이미 알아냈거나 그냥 지나간 뒤다. 장수도 같은 줄에 붙여 두 줄이던
+ * 것을 한 줄로 끝낸다 — 나머지 다섯 스킨이 모두 이 차림이다.
+ */
+.grid-hint {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 6px 16px 0;
-  text-align: center;
+  margin: 0;
+  padding: 12px 16px 0;
   font-size: 12px;
   color: var(--text-dim);
   line-height: 1.5;
+}
+/* 좁아지면 단추가 아니라 안내 쪽이 줄어든다 */
+.grid-hint span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* ---------- 파스텔 길찾기 ---------- */
