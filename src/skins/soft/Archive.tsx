@@ -58,52 +58,51 @@ export function Archive(view: ArchiveView) {
     <div className="content soft">
       <header className="softhead">
         {/*
-          위층은 할 일이 있을 때만 선다.
+          위층은 비울 것이 있을 때만 선다.
           서랍을 여는 단추는 두지 않는다 — 아래 탭바의 '더보기'가 이미 그
           일을 하므로, 위에도 두면 같은 문을 두 곳에서 여는 셈이다. 그래서
-          고르는 중이거나 비울 것이 있을 때만 이 줄이 나타나고, 평소에는
-          이름이 맨 위에 혼자 선다.
+          평소에는 이름이 맨 위에 혼자 선다.
+
+          고르는 동안의 단추는 이 줄에 앉지 않고 한 덩어리로 아래에 내려간다.
+          '그만 고르기'도 그 덩어리 안에 있어야 한다 — 밖에 두면 버리기만
+          내려가고 그만두는 단추는 머리에 혼자 남는다. 내려간 덩어리는 머리의
+          자리를 먹지 않으므로, 줄로 감싸지 않아야 빈 줄이 생기지 않는다.
         */}
-        {(selectMode || (mode === 'trash' && cards.length > 0)) && (
-        <div className="softhead__row">
-          {selectMode && (
+        {selectMode ? (
+          <div className="softhead__actions" data-picking>
             <button className="softbtn" onClick={onClearSelection}>
               <CloseIcon size={17} />
               그만 고르기
             </button>
-          )}
-
-          <div className="softhead__actions" data-picking={selectMode || undefined}>
-            {selectMode ? (
+            {mode === 'trash' ? (
               <>
-                {mode === 'trash' ? (
-                  <>
-                    <button className="softbtn softbtn--round" onClick={onRestore} aria-label="되돌리기">
-                      <RestoreIcon size={19} />
-                    </button>
-                    <button className="softbtn softbtn--dark" onClick={onPurge}>
-                      <TrashIcon size={17} />
-                      완전 삭제
-                    </button>
-                  </>
-                ) : (
-                  <button className="softbtn softbtn--dark" onClick={onTrash}>
-                    <TrashIcon size={17} />
-                    {selected.size}장 버리기
-                  </button>
-                )}
+                <button className="softbtn softbtn--round" onClick={onRestore} aria-label="되돌리기">
+                  <RestoreIcon size={19} />
+                </button>
+                <button className="softbtn softbtn--dark" onClick={onPurge}>
+                  <TrashIcon size={17} />
+                  완전 삭제
+                </button>
               </>
             ) : (
-              mode === 'trash' &&
-              cards.length > 0 && (
+              <button className="softbtn softbtn--dark" onClick={onTrash}>
+                <TrashIcon size={17} />
+                {selected.size}장 버리기
+              </button>
+            )}
+          </div>
+        ) : (
+          mode === 'trash' &&
+          cards.length > 0 && (
+            <div className="softhead__row">
+              <div className="softhead__actions">
                 <button className="softbtn" onClick={onEmptyTrash}>
                   <TrashIcon size={17} />
                   비우기
                 </button>
-              )
-            )}
-          </div>
-        </div>
+              </div>
+            </div>
+          )
         )}
 
         <h1 className="softhead__title">{title}</h1>
