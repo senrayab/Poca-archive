@@ -497,13 +497,25 @@ a { color: inherit; }
   .tabs-fade { transition: none; }
 }
 
+/*
+ * 멤버 줄은 아래 길찾기와 같은 재료다.
+ *
+ * 이 스킨의 성격은 짜임이 아니라 재료에 있다 — 젖빛 유리에 윗 가장자리로
+ * 분홍·파랑이 어린다. 길찾기에만 그 재료를 쓰고 멤버 줄은 여느 홈통으로
+ * 두면, 한 화면에 다른 물건 둘이 놓인 것처럼 보인다.
+ */
 .tabs {
   display: flex;
   padding: 5px;
   border-radius: var(--pill);
-  background: var(--rail-bg);
-  border: 1px solid var(--panel-line);
-  box-shadow: var(--shadow-md);
+  background: var(--milk);
+  backdrop-filter: var(--bar-blur);
+  border: none;
+  box-shadow:
+    0 10px 22px var(--milk-cast),
+    0 -2px 12px rgba(255, 164, 200, .34),
+    0 -3px 18px rgba(168, 196, 255, .28),
+    inset 0 1px 0 var(--milk-lip);
   overflow-x: auto;
   scrollbar-width: none;
   /* 끝까지 갔을 때 페이지가 같이 끌려가지 않게 */
@@ -539,9 +551,16 @@ a { color: inherit; }
 }
 .chip:hover { background: var(--bg-elev-2); }
 .chip:active { transform: scale(.95); }
+/*
+ * 지금 고른 이름은 젖빛 홈통 위로 한 겹 떠오른다. 통째로 코랄을 칠하면
+ * 알약이 홈통과 다른 물건이 되는데, 같은 젖빛이 한 겹 앞에 있을 뿐이고
+ * 글자만 코랄이면 한 재료 안에서 자리가 갈린다.
+ */
 .chip[aria-selected='true'] {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--bg-elev);
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 5px 12px var(--milk-cast), inset 0 1px 0 var(--milk-lip);
 }
 .chip__count { font-size: 10px; opacity: .75; font-variant-numeric: tabular-nums; }
 /*
@@ -742,7 +761,8 @@ a { color: inherit; }
  *
  * 등록만 알약 밖에 따로 선다. 가는 일이 아니라 더하는 일이라서다.
  */
-.pstnav {
+.pstnav,
+.tabs {
   /* 기본은 어두운 쪽 — 이 파일의 다른 토큰들과 같은 차례다 */
   --milk: rgba(38, 35, 50, .84);
   --milk-cast: rgba(0, 0, 0, .48);
@@ -757,13 +777,15 @@ a { color: inherit; }
   align-items: center;
   gap: 10px;
 }
-:root[data-theme='light'] .pstnav {
+:root[data-theme='light'] .pstnav,
+:root[data-theme='light'] .tabs {
   --milk: rgba(255, 255, 255, .88);
   --milk-cast: rgba(74, 58, 110, .18);
   --milk-lip: rgba(255, 255, 255, .95);
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) .pstnav {
+  :root:not([data-theme='dark']) .pstnav,
+  :root:not([data-theme='dark']) .tabs {
     --milk: rgba(255, 255, 255, .88);
     --milk-cast: rgba(74, 58, 110, .18);
     --milk-lip: rgba(255, 255, 255, .95);
@@ -1999,7 +2021,7 @@ a { color: inherit; }
 }
 .detail__title {
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: -.02em;
   line-height: 1.32;
